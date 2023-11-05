@@ -1,2 +1,12 @@
 git.sr.ht/~emersion/gqlclient v0.0.0-20230820050442-8873fe0204b9 h1:QNwHP6WknvS7X6MEFxCpefQb1QJMqgIIt+vn/PVoMMg=
 git.sr.ht/~emersion/gqlclient v0.0.0-20230820050442-8873fe0204b9/go.mod h1:kvl/JK0Z3VRmtbBxdOJR4ydyXVouUIcFIXgv4H6rVAY=
+github.com/google/uuid v1.4.0 h1:MtMxsa51/r9yyhkyLsVeVt0B+BGQZzpQiTQ4eHZ8bc4=
+github.com/google/uuid v1.4.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/hasura/go-graphql-client v0.10.0 h1:eQm/ap/rqxMG6yAGe6J+FkXu1VqJ9p21E63vz0A7zLQ=
+github.com/hasura/go-graphql-client v0.10.0/go.mod h1:z9UPkMmCBMuJjvBEtdE6F+oTR2r15AcjirVNq/8P+Ig=
+github.com/klauspost/compress v1.17.2 h1:RlWWUY/Dr4fL8qk9YG7DTZ7PDgME2V4csBXA8L/ixi4=
+github.com/klauspost/compress v1.17.2/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=
+github.com/mmcloughlin/geohash v0.10.0 h1:9w1HchfDfdeLc+jFEf/04D27KP7E2QmpDu52wPbJWRE=
+github.com/mmcloughlin/geohash v0.10.0/go.mod h1:oNZxQo5yWJh0eMQEP/8hwQuVx9Z9tjwFUqcTB1SmG0c=
+nhooyr.io/websocket v1.8.10 h1:mv4p+MnGrLDcPlBoWsvPP7XCzTYMXP9F9eIGoKbgx7Q=
+nhooyr.io/websocket v1.8.10/go.mod h1:rN9OFWIUwuxg4fR5tELlYC04bXYowCP9GX47ivo2l+c=
