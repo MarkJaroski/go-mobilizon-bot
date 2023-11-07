@@ -177,6 +177,8 @@ func createEvents(r Response, addrs map[string]Place) {
 			"tags":            tags,
 		}
 
+		// TODO do authentication and fetch an organizerActorId
+
 		err := c.Mutate(context.Background(), &m, variables)
 		if err != nil {
 			log.Fatal(err)
