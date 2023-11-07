@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +10,8 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/hasura/go-graphql-client"
 )
 
 type Response struct {
@@ -46,23 +49,30 @@ type Address struct {
 }
 
 type Place struct {
-	PlaceId     int       `json:"place_id"`
-	Name        string    `json:"name"`
-	Lat         string    `json:"lat"`
-	Lon         string    `json:"lon"`
-	Address     []Address `json:"address"`
-	DisplayName string    `json:"display_name"`
+	PlaceId     int     `json:"place_id"`
+	Name        string  `json:"name"`
+	Lat         string  `json:"lat"`
+	Lon         string  `json:"lon"`
+	Address     Address `json:"address"`
+	DisplayName string  `json:"display_name"`
 }
 
 type NominatumResponse []Place
 
+type MobilizonAddress struct {
+	Description string `json:"description"`
+	Locality    string `json:"locality"`
+	PostalCode  string `json:"postalCode"`
+	Street      string `json:"street"`
+	Country     string `json:"country"`
+}
+
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
 
 func main() {
-
 	// read the concertcloud API
 	// TODO: this needs to be in configuration
-	response, err := http.Get("https://api.concertcloud.live/api/events?title=&city=Lausanne&limit=150")
+	response, err := http.Get("https://api.concertcloud.live/api/events?title=&city=Lausanne&limit=1")
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -77,8 +87,9 @@ func main() {
 	json.Unmarshal(responseData, &responseObject)
 
 	var addrs = fetchAddrs(responseObject)
-	fmt.Println(addrs[""].DisplayName)
+	log.Print(addrs)
 
+	createEvents(responseObject, addrs)
 }
 
 func fetchAddrs(responseObject Response) map[string]Place {
@@ -88,8 +99,8 @@ func fetchAddrs(responseObject Response) map[string]Place {
 
 		place, ok := addrs[event.Location]
 
-		if ok {
-			fmt.Println(place.DisplayName)
+		if !ok {
+			log.Print(place.DisplayName)
 		} else {
 			var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
 				url.QueryEscape(event.Location),
@@ -123,5 +134,53 @@ func fetchAddrs(responseObject Response) map[string]Place {
 }
 
 func createEvents(r Response, addrs map[string]Place) {
+	var m struct {
+		CreateEvent struct {
+			Id   string
+			Uuid string
+		} `graphql:"createEvent(title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags)"`
+	}
 
+	c := graphql.NewClient("https://mobilisons.ch/api", nil)
+
+	for _, event := range r.Event {
+
+		fmt.Println(event.Title)
+
+		var place = addrs[event.Location]
+		addr := MobilizonAddress{
+			Description: place.Name,
+			Locality:    place.Address.City,
+			PostalCode:  place.Address.PostCode,
+			Street:      fmt.Sprintf("%s %s", place.Address.Road, place.Address.HouseNumber),
+			Country:     place.Address.Country,
+		}
+
+		// TODO fetch a picture
+
+		var tags = []string{
+			"concert",
+			event.Location,
+			fmt.Sprintf("%s%s", event.Location, "concerts"),
+			fmt.Sprintf("%s%s", place.Address.Country, "concerts"),
+		}
+
+		variables := map[string]interface{}{
+			"category":        "Music",
+			"visibility":      "PUBLIC",
+			"title":           event.Title,
+			"description":     event.Comment,
+			"physicalAddress": addr,
+			"beginsOn":        event.Date,
+			"draft":           true,
+			"onlineAddress":   event.URL,
+			"tags":            tags,
+		}
+
+		err := c.Mutate(context.Background(), &m, variables)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Created event %s %s\n", m.CreateEvent.Id, m.CreateEvent.Uuid)
+	}
 }
