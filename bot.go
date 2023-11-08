@@ -59,7 +59,7 @@ type Place struct {
 
 type NominatumResponse []Place
 
-type MobilizonAddress struct {
+type AddressInput struct {
 	Description string `json:"description"`
 	Locality    string `json:"locality"`
 	PostalCode  string `json:"postalCode"`
@@ -68,6 +68,26 @@ type MobilizonAddress struct {
 }
 
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
+
+type EventCategory string
+
+const (
+	MUSIC   EventCategory = "MUSIC"
+	PARTY   EventCategory = "PARTY"
+	COMEDY  EventCategory = "COMEDY"
+	THEATRE EventCategory = "THEATRE"
+)
+
+type EventVisibility string
+
+const (
+	PRIVATE    EventVisibility = "PRIVATE"
+	PUBLIC     EventVisibility = "PUBLIC"
+	RESTRICTED EventVisibility = "RESTRICTED"
+	UNLISTED   EventVisibility = "UNLISTED"
+)
+
+type DateTime string
 
 func main() {
 	// read the concertcloud API
@@ -87,7 +107,6 @@ func main() {
 	json.Unmarshal(responseData, &responseObject)
 
 	var addrs = fetchAddrs(responseObject)
-	log.Print(addrs)
 
 	createEvents(responseObject, addrs)
 }
@@ -99,9 +118,10 @@ func fetchAddrs(responseObject Response) map[string]Place {
 
 		place, ok := addrs[event.Location]
 
-		if !ok {
-			log.Print(place.DisplayName)
+		if ok {
+			log.Println(fmt.Sprintf("Found : %s", place.DisplayName))
 		} else {
+			log.Println("Doing lookup in OpenStreetMap")
 			var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
 				url.QueryEscape(event.Location),
 				url.QueryEscape(event.City))
@@ -109,8 +129,7 @@ func fetchAddrs(responseObject Response) map[string]Place {
 			nresp, err := http.Get(nurl)
 
 			if err != nil {
-				fmt.Print(err.Error())
-				os.Exit(1)
+				log.Fatal(err.Error())
 			}
 
 			addrData, err := io.ReadAll(nresp.Body)
@@ -121,8 +140,7 @@ func fetchAddrs(responseObject Response) map[string]Place {
 			json.Unmarshal(addrData, &addrObject)
 
 			if len(addrObject) == 0 {
-				fmt.Print("Not found: ")
-				fmt.Println(event.Location)
+				log.Println(fmt.Sprintf("Not found: %s", event.Location))
 				addrs[event.Location] = Place{}
 			} else {
 				addrs[event.Location] = addrObject[0]
@@ -138,7 +156,7 @@ func createEvents(r Response, addrs map[string]Place) {
 		CreateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags)"`
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags)"`
 	}
 
 	c := graphql.NewClient("https://mobilisons.ch/api", nil)
@@ -148,7 +166,7 @@ func createEvents(r Response, addrs map[string]Place) {
 		fmt.Println(event.Title)
 
 		var place = addrs[event.Location]
-		addr := MobilizonAddress{
+		addr := AddressInput{
 			Description: place.Name,
 			Locality:    place.Address.City,
 			PostalCode:  place.Address.PostCode,
@@ -166,15 +184,17 @@ func createEvents(r Response, addrs map[string]Place) {
 		}
 
 		variables := map[string]interface{}{
-			"category":        "Music",
-			"visibility":      "PUBLIC",
-			"title":           event.Title,
-			"description":     event.Comment,
-			"physicalAddress": addr,
-			"beginsOn":        event.Date,
-			"draft":           true,
-			"onlineAddress":   event.URL,
-			"tags":            tags,
+			"organizerActorId": graphql.ID("0"),
+			"attributedToId":   graphql.ID("0"),
+			"category":         EventCategory("MUSIC"),
+			"visibility":       EventVisibility("PUBLIC"),
+			"title":            event.Title,
+			"description":      event.Comment,
+			"physicalAddress":  addr,
+			"beginsOn":         DateTime(event.Date.Format(time.RFC3339)),
+			"draft":            true,
+			"onlineAddress":    event.URL,
+			"tags":             tags,
 		}
 
 		// TODO do authentication and fetch an organizerActorId
