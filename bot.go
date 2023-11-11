@@ -12,7 +12,13 @@ import (
 	"time"
 
 	"github.com/hasura/go-graphql-client"
+	"github.com/rxwycdh/rxhash"
+	"golang.org/x/oauth2"
+
+	"github.com/spf13/pflag"
 )
+
+const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 
 type Response struct {
 	Event    []Event `json:"data"`
@@ -65,6 +71,7 @@ type AddressInput struct {
 	PostalCode  string `json:"postalCode"`
 	Street      string `json:"street"`
 	Country     string `json:"country"`
+	Geom        string `json:"geom"`
 }
 
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
@@ -87,12 +94,66 @@ const (
 	UNLISTED   EventVisibility = "UNLISTED"
 )
 
+type EventJoinOptions string
+
+const (
+	FREE EventJoinOptions = "FREE"
+)
+
 type DateTime string
 
+type EventCommentModeration string
+
+const (
+	ALLOW_ALL EventCommentModeration = "ALLOW_ALL"
+	CLOSED    EventCommentModeration = "CLOSED"
+	MODERATED EventCommentModeration = "MODERATED"
+)
+
+type EventOptionsInput struct {
+	CommentModeration EventCommentModeration `json:"commentModeration"`
+	ShowStartTime     graphql.Boolean        `json:"showStartTime"`
+	ShowEndTime       graphql.Boolean        `json:"showEndTime"`
+}
+
+var actorID *string
+var groupID *string
+
 func main() {
-	// read the concertcloud API
-	// TODO: this needs to be in configuration
-	response, err := http.Get("https://api.concertcloud.live/api/events?title=&city=Lausanne&limit=1")
+	ccCity := pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid flooding
+	ccCountry := pflag.String("country", "", "The concertcloud API param 'country'")
+	ccLimit := pflag.String("limit", "", "The concertcloud API param 'limit'")
+	ccPage := pflag.String("page", "", "The concertcloud API param 'page'")
+	ccRadius := pflag.String("radius", "", "The concertcloud API param 'radius'")
+	ccDate := pflag.String("date", "", "The concertcloud API param 'date'")
+	actorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
+	groupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
+
+	pflag.Parse()
+
+	ccQuery := ""
+	if *ccCity != "" {
+		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*ccCity))
+	}
+	if *ccCountry != "" {
+		ccQuery = fmt.Sprintf("%s&country=%s", ccQuery, url.QueryEscape(*ccCountry))
+	}
+	if *ccLimit != "" {
+		ccQuery = fmt.Sprintf("%s&limit=%s", ccQuery, *ccLimit)
+	}
+	if *ccPage != "" {
+		ccQuery = fmt.Sprintf("%s&page=%s", ccQuery, *ccPage)
+	}
+	if *ccRadius != "" {
+		ccQuery = fmt.Sprintf("%s&radius=%s", ccQuery, *ccRadius)
+	}
+	if *ccDate != "" {
+		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*ccDate))
+	}
+
+	// Fetch some concerts from Concert Cloud
+	fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
+	response, err := http.Get(fetchUrl)
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -156,10 +217,15 @@ func createEvents(r Response, addrs map[string]Place) {
 		CreateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags)"`
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options)"`
 	}
 
-	c := graphql.NewClient("https://mobilisons.ch/api", nil)
+	src := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: os.Getenv("GRAPHQL_TOKEN")},
+	)
+	httpClient := oauth2.NewClient(context.Background(), src)
+
+	c := graphql.NewClient("https://mobilisons.ch/api", httpClient)
 
 	for _, event := range r.Event {
 
@@ -172,6 +238,7 @@ func createEvents(r Response, addrs map[string]Place) {
 			PostalCode:  place.Address.PostCode,
 			Street:      fmt.Sprintf("%s %s", place.Address.Road, place.Address.HouseNumber),
 			Country:     place.Address.Country,
+			Geom:        fmt.Sprintf("%s;%s", place.Lon, place.Lat),
 		}
 
 		// TODO fetch a picture
@@ -179,30 +246,50 @@ func createEvents(r Response, addrs map[string]Place) {
 		var tags = []string{
 			"concert",
 			event.Location,
-			fmt.Sprintf("%s%s", event.Location, "concerts"),
+			fmt.Sprintf("%s%s", event.City, "concerts"),
 			fmt.Sprintf("%s%s", place.Address.Country, "concerts"),
 		}
 
+		options := EventOptionsInput{
+			CommentModeration: EventCommentModeration("ALLOW_ALL"),
+			ShowStartTime:     graphql.Boolean(true),
+			ShowEndTime:       graphql.Boolean(false),
+		}
+
+		// add a plug for ConcertCloud
+		event.Comment = fmt.Sprintf("%s\n\n%s", event.Comment, CC_PLUG)
+
 		variables := map[string]interface{}{
-			"organizerActorId": graphql.ID("0"),
-			"attributedToId":   graphql.ID("0"),
+			"organizerActorId": graphql.ID(*actorID),
+			"attributedToId":   graphql.ID(*groupID),
 			"category":         EventCategory("MUSIC"),
 			"visibility":       EventVisibility("PUBLIC"),
+			"joinOptions":      EventJoinOptions("FREE"),
 			"title":            event.Title,
 			"description":      event.Comment,
 			"physicalAddress":  addr,
 			"beginsOn":         DateTime(event.Date.Format(time.RFC3339)),
+			"endsOn":           DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
 			"draft":            true,
 			"onlineAddress":    event.URL,
 			"tags":             tags,
+			"options":          options,
 		}
 
 		// TODO do authentication and fetch an organizerActorId
 
+		// run the mutation against the Mobilizon instance
 		err := c.Mutate(context.Background(), &m, variables)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("Created event %s %s\n", m.CreateEvent.Id, m.CreateEvent.Uuid)
+
+		// calculate a hash of the event
+		hash, err := rxhash.HashStruct(event)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("%s %s %s\n", hash, m.CreateEvent.Id, m.CreateEvent.Uuid)
 	}
 }
