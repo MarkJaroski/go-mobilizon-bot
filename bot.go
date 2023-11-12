@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -20,6 +21,18 @@ import (
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 
+type Options struct {
+	City     *string
+	Country  *string
+	Limit    *string
+	Page     *string
+	Radius   *string
+	Date     *string
+	ActorID  *string
+	GroupID  *string
+	Timezone *string
+}
+
 type Response struct {
 	Event    []Event `json:"data"`
 	Page     int     `json:"page"`
@@ -27,6 +40,8 @@ type Response struct {
 	Total    int     `json:"total"`
 	LastPage int     `json:"last_page"`
 }
+
+var opts Options
 
 type Event struct {
 	Title     string    `json:"title"`
@@ -114,41 +129,58 @@ type EventOptionsInput struct {
 	CommentModeration EventCommentModeration `json:"commentModeration"`
 	ShowStartTime     graphql.Boolean        `json:"showStartTime"`
 	ShowEndTime       graphql.Boolean        `json:"showEndTime"`
+	Timezone          string                 `json:"timezone"`
 }
 
 var actorID *string
 var groupID *string
+var timezone *string
 
 func main() {
-	ccCity := pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid flooding
-	ccCountry := pflag.String("country", "", "The concertcloud API param 'country'")
-	ccLimit := pflag.String("limit", "", "The concertcloud API param 'limit'")
-	ccPage := pflag.String("page", "", "The concertcloud API param 'page'")
-	ccRadius := pflag.String("radius", "", "The concertcloud API param 'radius'")
-	ccDate := pflag.String("date", "", "The concertcloud API param 'date'")
-	actorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
-	groupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
+	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
+	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
+	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
+	opts.Page = pflag.String("page", "", "The concertcloud API param 'page'")
+	opts.Radius = pflag.String("radius", "", "The concertcloud API param 'radius'")
+	opts.Date = pflag.String("date", "", "The concertcloud API param 'date'")
+	opts.ActorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
+	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
+	opts.Timezone = pflag.String("timezone", "EU/Zurich", "The timezone to use for the event attribution.")
+
+	register := pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
+
+	authorize := pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
 
 	pflag.Parse()
 
+	if *register {
+		registerApp()
+		return
+	}
+
+	if *authorize {
+		authorizeApp()
+		return
+	}
+
 	ccQuery := ""
-	if *ccCity != "" {
-		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*ccCity))
+	if *opts.City != "" {
+		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*opts.City))
 	}
-	if *ccCountry != "" {
-		ccQuery = fmt.Sprintf("%s&country=%s", ccQuery, url.QueryEscape(*ccCountry))
+	if *opts.Country != "" {
+		ccQuery = fmt.Sprintf("%s&country=%s", ccQuery, url.QueryEscape(*opts.Country))
 	}
-	if *ccLimit != "" {
-		ccQuery = fmt.Sprintf("%s&limit=%s", ccQuery, *ccLimit)
+	if *opts.Limit != "" {
+		ccQuery = fmt.Sprintf("%s&limit=%s", ccQuery, *opts.Limit)
 	}
-	if *ccPage != "" {
-		ccQuery = fmt.Sprintf("%s&page=%s", ccQuery, *ccPage)
+	if *opts.Page != "" {
+		ccQuery = fmt.Sprintf("%s&page=%s", ccQuery, *opts.Page)
 	}
-	if *ccRadius != "" {
-		ccQuery = fmt.Sprintf("%s&radius=%s", ccQuery, *ccRadius)
+	if *opts.Radius != "" {
+		ccQuery = fmt.Sprintf("%s&radius=%s", ccQuery, *opts.Radius)
 	}
-	if *ccDate != "" {
-		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*ccDate))
+	if *opts.Date != "" {
+		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*opts.Date))
 	}
 
 	// Fetch some concerts from Concert Cloud
@@ -254,6 +286,7 @@ func createEvents(r Response, addrs map[string]Place) {
 			CommentModeration: EventCommentModeration("ALLOW_ALL"),
 			ShowStartTime:     graphql.Boolean(true),
 			ShowEndTime:       graphql.Boolean(false),
+			Timezone:          *timezone,
 		}
 
 		// add a plug for ConcertCloud
@@ -292,4 +325,45 @@ func createEvents(r Response, addrs map[string]Place) {
 
 		fmt.Printf("%s %s %s\n", hash, m.CreateEvent.Id, m.CreateEvent.Uuid)
 	}
+}
+
+func registerApp() {
+
+	fmt.Println("Doing app registration")
+
+	type Registration struct {
+		ClientID     string `json:"client_id"`
+		ClientSecret string `json:"client_secret"`
+	}
+
+	var posturl = "https://mobilisons.ch/apps"
+	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create`)
+	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	fmt.Println("Doing HTTP Post")
+
+	c := &http.Client{}
+	res, err := c.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resData, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var reg Registration
+	json.Unmarshal(resData, &reg)
+
+	fmt.Println("export GRAPHQL_CLIENT_ID=" + reg.ClientID)
+	fmt.Println("export GRAPHQL_CLIENT_SECRET=" + reg.ClientSecret)
+}
+
+func authorizeApp() {
 }
