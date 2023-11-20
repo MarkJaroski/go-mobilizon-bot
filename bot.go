@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/hasura/go-graphql-client"
+	"github.com/otiai10/opengraph"
 	"github.com/rxwycdh/rxhash"
 	"golang.org/x/oauth2"
 
@@ -31,7 +32,10 @@ type Options struct {
 	ActorID  *string
 	GroupID  *string
 	Timezone *string
+	NoOp     *bool
 }
+
+var opts Options
 
 type Response struct {
 	Event    []Event `json:"data"`
@@ -40,8 +44,6 @@ type Response struct {
 	Total    int     `json:"total"`
 	LastPage int     `json:"last_page"`
 }
-
-var opts Options
 
 type Event struct {
 	Title     string    `json:"title"`
@@ -146,6 +148,7 @@ func main() {
 	opts.ActorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
 	opts.Timezone = pflag.String("timezone", "EU/Zurich", "The timezone to use for the event attribution.")
+	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
 
 	register := pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 
@@ -209,12 +212,10 @@ func fetchAddrs(responseObject Response) map[string]Place {
 
 	for _, event := range responseObject.Event {
 
-		place, ok := addrs[event.Location]
+		_, ok := addrs[event.Location]
 
-		if ok {
-			log.Println(fmt.Sprintf("Found : %s", place.DisplayName))
-		} else {
-			log.Println("Doing lookup in OpenStreetMap")
+		if !ok {
+			// log.Println("Doing lookup in OpenStreetMap")
 			var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
 				url.QueryEscape(event.Location),
 				url.QueryEscape(event.City))
@@ -253,7 +254,7 @@ func createEvents(r Response, addrs map[string]Place) {
 	}
 
 	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GRAPHQL_TOKEN")},
+		&oauth2.Token{AccessToken: os.Getenv("MOBILIZON_ACCESS_TOKEN")},
 	)
 	httpClient := oauth2.NewClient(context.Background(), src)
 
@@ -261,7 +262,7 @@ func createEvents(r Response, addrs map[string]Place) {
 
 	for _, event := range r.Event {
 
-		fmt.Println(event.Title)
+		// fmt.Println(event.Title)
 
 		var place = addrs[event.Location]
 		addr := AddressInput{
@@ -272,8 +273,6 @@ func createEvents(r Response, addrs map[string]Place) {
 			Country:     place.Address.Country,
 			Geom:        fmt.Sprintf("%s;%s", place.Lon, place.Lat),
 		}
-
-		// TODO fetch a picture
 
 		var tags = []string{
 			"concert",
@@ -286,15 +285,22 @@ func createEvents(r Response, addrs map[string]Place) {
 			CommentModeration: EventCommentModeration("ALLOW_ALL"),
 			ShowStartTime:     graphql.Boolean(true),
 			ShowEndTime:       graphql.Boolean(false),
-			Timezone:          *timezone,
+			Timezone:          *opts.Timezone,
 		}
 
 		// add a plug for ConcertCloud
 		event.Comment = fmt.Sprintf("%s\n\n%s", event.Comment, CC_PLUG)
 
+		// fetch the official image for the event
+		imageURL := fetchOGImage(event.URL)
+		// TODO fetch a backup image
+		if imageURL == "" {
+			imageURL = fetchBiggestImage(event.URL)
+		}
+
 		variables := map[string]interface{}{
-			"organizerActorId": graphql.ID(*actorID),
-			"attributedToId":   graphql.ID(*groupID),
+			"organizerActorId": graphql.ID(*opts.ActorID),
+			"attributedToId":   graphql.ID(*opts.GroupID),
 			"category":         EventCategory("MUSIC"),
 			"visibility":       EventVisibility("PUBLIC"),
 			"joinOptions":      EventJoinOptions("FREE"),
@@ -309,27 +315,33 @@ func createEvents(r Response, addrs map[string]Place) {
 			"options":          options,
 		}
 
-		// TODO do authentication and fetch an organizerActorId
+		if *opts.NoOp {
 
-		// run the mutation against the Mobilizon instance
-		err := c.Mutate(context.Background(), &m, variables)
-		if err != nil {
-			log.Fatal(err)
+			// if this is a dry run just print some stuff out
+			// spew.Dump(variables)
+			// spew.Dump(imageURL)
+
+		} else {
+
+			// run the mutation against the Mobilizon instance
+			err := c.Mutate(context.Background(), &m, variables)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// calculate a hash of the event
+			hash, err := rxhash.HashStruct(event)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			// output the hash and event ID to be stored somehwere
+			fmt.Printf("%s %s %s\n", hash, m.CreateEvent.Id, m.CreateEvent.Uuid)
 		}
-
-		// calculate a hash of the event
-		hash, err := rxhash.HashStruct(event)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("%s %s %s\n", hash, m.CreateEvent.Id, m.CreateEvent.Uuid)
 	}
 }
 
 func registerApp() {
-
-	fmt.Println("Doing app registration")
 
 	type Registration struct {
 		ClientID     string `json:"client_id"`
@@ -345,8 +357,6 @@ func registerApp() {
 
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	fmt.Println("Doing HTTP Post")
-
 	c := &http.Client{}
 	res, err := c.Do(r)
 	if err != nil {
@@ -361,9 +371,117 @@ func registerApp() {
 	var reg Registration
 	json.Unmarshal(resData, &reg)
 
+	os.Setenv("GRAPHQL_CLIENT_ID", reg.ClientID)
+	os.Setenv("GRAPHQL_CLIENT_SECRET", reg.ClientSecret)
+
 	fmt.Println("export GRAPHQL_CLIENT_ID=" + reg.ClientID)
 	fmt.Println("export GRAPHQL_CLIENT_SECRET=" + reg.ClientSecret)
 }
 
 func authorizeApp() {
+	var posturl = "https://mobilisons.ch/login/device/code"
+
+	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
+	// clientSecret := os.Getenv("GRAPHQL_CLIENT_SECRET")
+
+	body := []byte("client_id=" + clientID + "&scope=write:event:create")
+	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	c := &http.Client{}
+	res, err := c.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resData, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	type DeviceCodeGrant struct {
+		DeviceCode      string `json:"device_code"`
+		ExpiresIn       int    `json:"expires_in"`
+		Interval        int    `json:"interval"`
+		UserCode        string `json:"user_code"`
+		VerificationURI string `json:"verification_uri"`
+	}
+
+	var resp DeviceCodeGrant
+	json.Unmarshal(resData, &resp)
+
+	fmt.Println("Please visit this URL and enter the code below " + resp.VerificationURI)
+	fmt.Println()
+	fmt.Println(resp.UserCode)
+	fmt.Println()
+	fmt.Println("Then press any key to continue.")
+
+	// wait for input
+	fmt.Scanln()
+
+	var token_url = "https://mobilisons.ch/oauth/token"
+	token_body := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
+	tokreq, err := http.NewRequest("POST", token_url, bytes.NewBuffer(token_body))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tokreq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	tokres, err := c.Do(tokreq)
+
+	resData, err = io.ReadAll(tokres.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	type TokenResponse struct {
+		AccessToken           string `json:"access_token"`
+		ExpiresIn             string `json:"expires_in"`
+		RefreshToken          string `json:"refresh_token"`
+		RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
+		Scopes                string `json:"scopes"`
+		TokenType             string `json:"token_type"`
+	}
+
+	var tokenResp TokenResponse
+	json.Unmarshal(resData, &tokenResp)
+
+	os.Setenv("MOBILIZON_ACCESS_TOKEN", tokenResp.AccessToken)
+	os.Setenv("MOBILIZON_REFRESH_TOKEN", tokenResp.RefreshToken)
+
+	fmt.Println("export MOBILIZON_ACCESS_TOKEN=" + tokenResp.AccessToken)
+	fmt.Println("export MOBILIZON_REFRESH_TOKEN=" + tokenResp.RefreshToken)
+
+}
+
+func fetchOGImage(url string) string {
+
+	retUrl := ""
+
+	// get the ogp object
+	ogp, err := opengraph.Fetch(url)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// convert URLs to absolute
+	ogp.ToAbsURL()
+
+	// if we have a URL return it
+	if len(ogp.Image) > 0 {
+		retUrl = ogp.Image[0].URL
+	} else {
+		log.Println("No image found for " + url)
+	}
+
+	return retUrl
+}
+
+func fetchBiggestImage(url string) string {
+	return ""
 }
