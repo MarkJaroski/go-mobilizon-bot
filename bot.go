@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -23,16 +25,18 @@ import (
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 
 type Options struct {
-	City     *string
-	Country  *string
-	Limit    *string
-	Page     *string
-	Radius   *string
-	Date     *string
-	ActorID  *string
-	GroupID  *string
-	Timezone *string
-	NoOp     *bool
+	City      *string
+	Country   *string
+	Limit     *string
+	Page      *string
+	Radius    *string
+	Date      *string
+	ActorID   *string
+	GroupID   *string
+	Timezone  *string
+	NoOp      *bool
+	Register  *bool
+	Authorize *bool
 }
 
 var opts Options
@@ -149,19 +153,17 @@ func main() {
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
 	opts.Timezone = pflag.String("timezone", "EU/Zurich", "The timezone to use for the event attribution.")
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
-
-	register := pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
-
-	authorize := pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
+	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
+	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
 
 	pflag.Parse()
 
-	if *register {
+	if *opts.Register {
 		registerApp()
 		return
 	}
 
-	if *authorize {
+	if *opts.Authorize {
 		authorizeApp()
 		return
 	}
@@ -293,10 +295,21 @@ func createEvents(r Response, addrs map[string]Place) {
 
 		// fetch the official image for the event
 		imageURL := fetchOGImage(event.URL)
-		// TODO fetch a backup image
+		// fetch a backup image
 		if imageURL == "" {
 			imageURL = fetchBiggestImage(event.URL)
 		}
+
+		// download the image
+		if imageURL != "" {
+			_, err := downloadFile(imageURL)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		// TODO upload the image
+		// imgReq := newfileUploadRequest(imageURL)
 
 		variables := map[string]interface{}{
 			"organizerActorId": graphql.ID(*opts.ActorID),
@@ -482,6 +495,75 @@ func fetchOGImage(url string) string {
 	return retUrl
 }
 
+// TODO this should do something
 func fetchBiggestImage(url string) string {
 	return ""
+}
+
+// Creates a new file upload http request with optional extra params
+func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*http.Request, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	fileContents, err := io.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(paramName, fi.Name())
+	if err != nil {
+		return nil, err
+	}
+	part.Write(fileContents)
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequest("POST", uri, body)
+}
+
+func downloadFile(URL string) (string, error) {
+	//Get the response bytes from the url
+	response, err := http.Get(URL)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return "", errors.New("Received non 200 response code")
+	}
+	// get tmp filename
+	f, err := os.CreateTemp("", "cc2mob.")
+	if err != nil {
+		return f.Name(), err
+	}
+
+	//Create a empty file
+	file, err := os.Create(f.Name())
+	if err != nil {
+		return f.Name(), err
+	}
+	defer file.Close()
+
+	//Write the bytes to the file
+	_, err = io.Copy(file, response.Body)
+	if err != nil {
+		return f.Name(), err
+	}
+
+	return f.Name(), nil
 }
