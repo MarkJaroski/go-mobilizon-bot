@@ -14,6 +14,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gocolly/colly"
 	"github.com/hasura/go-graphql-client"
 	"github.com/otiai10/opengraph"
 	"github.com/rxwycdh/rxhash"
@@ -297,7 +298,11 @@ func createEvents(r Response, addrs map[string]Place) {
 		imageURL := fetchOGImage(event.URL)
 		// fetch a backup image
 		if imageURL == "" {
-			imageURL = fetchBiggestImage(event.URL)
+			imageURL = fetchEventImage(event.URL)
+		}
+
+		if imageURL == "" {
+			log.Println("No image found for " + event.URL)
 		}
 
 		// download the image
@@ -486,18 +491,51 @@ func fetchOGImage(url string) string {
 	ogp.ToAbsURL()
 
 	// if we have a URL return it
-	if len(ogp.Image) > 0 {
+	if len(ogp.Image) > 0 && url != ogp.Image[0].URL+"/" {
 		retUrl = ogp.Image[0].URL
-	} else {
-		log.Println("No image found for " + url)
 	}
 
 	return retUrl
 }
 
-// TODO this should do something
-func fetchBiggestImage(url string) string {
-	return ""
+// this should try harder to find the best image
+func fetchEventImage(url string) string {
+
+	var srcs []string
+
+	c := colly.NewCollector()
+
+	// claim to be a browser
+	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+
+	c.OnHTML("img", func(e *colly.HTMLElement) {
+		i := e.Request.AbsoluteURL(e.Attr("src"))
+		srcs = append(srcs, i)
+	})
+	c.Visit(url)
+	c.Wait()
+
+	// Is biggest best? Well maybe not, but that's what we have to work with.
+	if len(srcs) > 0 {
+		var best = 0
+		var size int64 = 0
+		for i, src := range srcs {
+			// log.Println("Fetching " + src)
+			res, err := http.Head(src)
+			if err != nil {
+				log.Println(err)
+			}
+			cl := res.ContentLength
+			if cl > size {
+				best = i
+				size = cl
+			}
+			log.Printf("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
+		}
+		return srcs[best]
+	} else {
+		return ""
+	}
 }
 
 // Creates a new file upload http request with optional extra params
@@ -566,4 +604,8 @@ func downloadFile(URL string) (string, error) {
 	}
 
 	return f.Name(), nil
+}
+
+func uploadImage(path string) string {
+	return ""
 }
