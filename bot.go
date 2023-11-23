@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -307,14 +308,22 @@ func createEvents(r Response, addrs map[string]Place) {
 
 		// download the image
 		if imageURL != "" {
-			_, err := downloadFile(imageURL)
+			path, err := downloadFile(imageURL)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+			} else {
+				// upload the image
+				multi, err := newfileUploadRequest(path)
+				if err != nil {
+					log.Println(err)
+				}
+				log.Println("Uploading the image")
+				_, err = httpClient.Do(multi)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}
-
-		// TODO upload the image
-		// imgReq := newfileUploadRequest(imageURL)
 
 		variables := map[string]interface{}{
 			"organizerActorId": graphql.ID(*opts.ActorID),
@@ -367,7 +376,7 @@ func registerApp() {
 	}
 
 	var posturl = "https://mobilisons.ch/apps"
-	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create`)
+	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal(err)
@@ -402,7 +411,7 @@ func authorizeApp() {
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 	// clientSecret := os.Getenv("GRAPHQL_CLIENT_SECRET")
 
-	body := []byte("client_id=" + clientID + "&scope=write:event:create")
+	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:media:upload")
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal(err)
@@ -492,7 +501,14 @@ func fetchOGImage(url string) string {
 
 	// if we have a URL return it
 	if len(ogp.Image) > 0 && url != ogp.Image[0].URL+"/" {
-		retUrl = ogp.Image[0].URL
+		// but check that it works first
+		res, err := http.Head(ogp.Image[0].URL)
+		if err != nil {
+			log.Println(err)
+		}
+		if res.StatusCode == 200 {
+			retUrl = ogp.Image[0].URL
+		}
 	}
 
 	return retUrl
@@ -501,6 +517,7 @@ func fetchOGImage(url string) string {
 // this should try harder to find the best image
 func fetchEventImage(url string) string {
 
+	// log.Println("Fetching an image URL from " + url)
 	var srcs []string
 
 	c := colly.NewCollector()
@@ -520,6 +537,10 @@ func fetchEventImage(url string) string {
 		var best = 0
 		var size int64 = 0
 		for i, src := range srcs {
+			// occassionally we get an inline image
+			if strings.HasPrefix(src, "data:") {
+				return src
+			}
 			// log.Println("Fetching " + src)
 			res, err := http.Head(src)
 			if err != nil {
@@ -530,7 +551,7 @@ func fetchEventImage(url string) string {
 				best = i
 				size = cl
 			}
-			log.Printf("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
+			// log.Printf("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
 		}
 		return srcs[best]
 	} else {
@@ -538,42 +559,58 @@ func fetchEventImage(url string) string {
 	}
 }
 
-// Creates a new file upload http request with optional extra params
-func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*http.Request, error) {
+func newfileUploadRequest(path string) (*http.Request, error) {
+
+	// grab the file
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
+
+	// get the contents
 	fileContents, err := io.ReadAll(file)
 	if err != nil {
 		return nil, err
 	}
+
+	// get the filename etc
 	fi, err := file.Stat()
 	if err != nil {
 		return nil, err
 	}
-	file.Close()
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, fi.Name())
+
+	// writer.SetBoundary("---------------------------164507724316293925132493775707")
+
+	// TODO make this a template string or something to avoid the long line
+	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { id } }")
+	writer.WriteField("variables", "{\"name\":\""+fi.Name()+"\",\"file\":\"image1\"}")
+
+	part, err := writer.CreateFormFile("image1", fi.Name())
 	if err != nil {
 		return nil, err
 	}
 	part.Write(fileContents)
-
-	for key, val := range params {
-		_ = writer.WriteField(key, val)
-	}
 	err = writer.Close()
 	if err != nil {
 		return nil, err
 	}
 
-	return http.NewRequest("POST", uri, body)
+	r, err := http.NewRequest("POST", "https://mobilisons.ch/api", body)
+	r.Header.Add("Content-Type", writer.FormDataContentType())
+
+	return r, err
 }
 
 func downloadFile(URL string) (string, error) {
+	// if this is a data URL just return it. The uplaod function will deal.
+	if strings.HasPrefix(URL, "data:") {
+		return URL, nil
+	}
+
 	//Get the response bytes from the url
 	response, err := http.Get(URL)
 	if err != nil {
@@ -582,7 +619,7 @@ func downloadFile(URL string) (string, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return "", errors.New("Received non 200 response code")
+		return "", errors.New(fmt.Sprintf("Received response code %d for %s", response.StatusCode, URL))
 	}
 	// get tmp filename
 	f, err := os.CreateTemp("", "cc2mob.")
@@ -604,8 +641,4 @@ func downloadFile(URL string) (string, error) {
 	}
 
 	return f.Name(), nil
-}
-
-func uploadImage(path string) string {
-	return ""
 }
