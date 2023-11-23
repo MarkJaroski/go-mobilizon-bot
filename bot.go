@@ -63,6 +63,18 @@ type Event struct {
 	Date      time.Time `json:"date"`
 }
 
+type MediaUpload struct {
+	Id string `json:"id"`
+}
+
+type MediaData struct {
+	Upload MediaUpload `json:"uploadMedia"`
+}
+
+type MediaResponse struct {
+	Data MediaData `json:"data"`
+}
+
 type Address struct {
 	Amenity       string `json:"amenity"`
 	HouseNumber   string `json:"house_number"`
@@ -95,6 +107,10 @@ type AddressInput struct {
 	Street      string `json:"street"`
 	Country     string `json:"country"`
 	Geom        string `json:"geom"`
+}
+
+type MediaInput struct {
+	Id graphql.ID `json:"id"`
 }
 
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
@@ -306,6 +322,7 @@ func createEvents(r Response, addrs map[string]Place) {
 			log.Println("No image found for " + event.URL)
 		}
 
+		var imageId string = ""
 		// download the image
 		if imageURL != "" {
 			path, err := downloadFile(imageURL)
@@ -318,10 +335,18 @@ func createEvents(r Response, addrs map[string]Place) {
 					log.Println(err)
 				}
 				log.Println("Uploading the image")
-				_, err = httpClient.Do(multi)
+				response, err := httpClient.Do(multi)
 				if err != nil {
 					log.Println(err)
 				}
+				responseData, err := io.ReadAll(response.Body)
+				if err != nil {
+					log.Fatal(err)
+				}
+				var mediaObject MediaResponse
+				json.Unmarshal(responseData, &mediaObject)
+
+				log.Println("ID:" + mediaObject.Data.Upload.Id)
 			}
 		}
 
@@ -340,6 +365,11 @@ func createEvents(r Response, addrs map[string]Place) {
 			"onlineAddress":    event.URL,
 			"tags":             tags,
 			"options":          options,
+		}
+
+		if imageId != "" {
+			mi := MediaInput{Id: graphql.ID(imageId)}
+			variables["mediaInput"] = mi
 		}
 
 		if *opts.NoOp {
