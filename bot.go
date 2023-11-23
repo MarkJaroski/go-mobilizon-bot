@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -19,6 +21,7 @@ import (
 	"github.com/hasura/go-graphql-client"
 	"github.com/otiai10/opengraph"
 	"github.com/rxwycdh/rxhash"
+	"github.com/vincent-petithory/dataurl"
 	"golang.org/x/oauth2"
 
 	"github.com/spf13/pflag"
@@ -110,7 +113,7 @@ type AddressInput struct {
 }
 
 type MediaInput struct {
-	Id graphql.ID `json:"id"`
+	MediaId graphql.ID `json:"mediaId"`
 }
 
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
@@ -270,7 +273,7 @@ func createEvents(r Response, addrs map[string]Place) {
 		CreateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 
 	src := oauth2.StaticTokenSource(
@@ -334,7 +337,7 @@ func createEvents(r Response, addrs map[string]Place) {
 				if err != nil {
 					log.Println(err)
 				}
-				log.Println("Uploading the image")
+				// log.Println("Uploading the image")
 				response, err := httpClient.Do(multi)
 				if err != nil {
 					log.Println(err)
@@ -345,9 +348,13 @@ func createEvents(r Response, addrs map[string]Place) {
 				}
 				var mediaObject MediaResponse
 				json.Unmarshal(responseData, &mediaObject)
-
-				log.Println("ID:" + mediaObject.Data.Upload.Id)
+				imageId = mediaObject.Data.Upload.Id
 			}
+		}
+
+		// hack to fix short titles
+		if len(event.Title) < 3 {
+			event.Title = event.Title + " ..."
 		}
 
 		variables := map[string]interface{}{
@@ -361,15 +368,15 @@ func createEvents(r Response, addrs map[string]Place) {
 			"physicalAddress":  addr,
 			"beginsOn":         DateTime(event.Date.Format(time.RFC3339)),
 			"endsOn":           DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
-			"draft":            true,
+			"draft":            false,
 			"onlineAddress":    event.URL,
 			"tags":             tags,
 			"options":          options,
 		}
 
 		if imageId != "" {
-			mi := MediaInput{Id: graphql.ID(imageId)}
-			variables["mediaInput"] = mi
+			mi := MediaInput{MediaId: graphql.ID(imageId)}
+			variables["picture"] = mi
 		}
 
 		if *opts.NoOp {
@@ -591,23 +598,37 @@ func fetchEventImage(url string) string {
 
 func newfileUploadRequest(path string) (*http.Request, error) {
 
-	// grab the file
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+	var fileContents []byte
+	var fi fs.FileInfo
+	if strings.HasPrefix(path, "data:") {
+		dataURL, err := dataurl.DecodeString(path)
+		if err != nil {
+			return nil, err
+		}
+		fileContents, err = base64.StdEncoding.DecodeString(dataURL.String())
+		if err != nil {
+			return nil, err
+		}
+	} else {
 
-	// get the contents
-	fileContents, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
+		// grab the file
+		file, err := os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
 
-	// get the filename etc
-	fi, err := file.Stat()
-	if err != nil {
-		return nil, err
+		// get the contents
+		fileContents, err = io.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
+
+		// get the filename etc
+		fi, err = file.Stat()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	body := new(bytes.Buffer)
