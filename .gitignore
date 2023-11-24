@@ -22,3 +22,6 @@ go.work
 
 # binary
 ConcertCloudMobilizonBot
+
+# Storage
+hashes.txt
