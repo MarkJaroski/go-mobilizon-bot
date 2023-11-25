@@ -28,6 +28,7 @@ import (
 )
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
+const MAX_IMG_SIZE = 1000000
 
 type Options struct {
 	City      *string
@@ -276,6 +277,13 @@ func createEvents(r Response, addrs map[string]Place) {
 		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 
+	var m_nopic struct {
+		CreateEvent struct {
+			Id   string
+			Uuid string
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+	}
+
 	src := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("MOBILIZON_ACCESS_TOKEN")},
 	)
@@ -387,10 +395,18 @@ func createEvents(r Response, addrs map[string]Place) {
 
 		} else {
 
-			// run the mutation against the Mobilizon instance
-			err := c.Mutate(context.Background(), &m, variables)
-			if err != nil {
-				log.Fatal(err)
+			if imageId == "" {
+				// run the mutation against the Mobilizon instance
+				err := c.Mutate(context.Background(), &m_nopic, variables)
+				if err != nil {
+					log.Fatal(err)
+				}
+			} else {
+				// run the mutation against the Mobilizon instance
+				err := c.Mutate(context.Background(), &m, variables)
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 
 			// calculate a hash of the event
@@ -546,6 +562,10 @@ func fetchOGImage(url string) string {
 		if res.StatusCode == 200 {
 			retUrl = ogp.Image[0].URL
 		}
+		// some venues put the full size image in the metadata
+		if res.ContentLength > MAX_IMG_SIZE {
+			retUrl = ""
+		}
 	}
 
 	return retUrl
@@ -576,15 +596,14 @@ func fetchEventImage(url string) string {
 		for i, src := range srcs {
 			// occassionally we get an inline image
 			if strings.HasPrefix(src, "data:") {
-				return src
+				continue
 			}
-			// log.Println("Fetching " + src)
 			res, err := http.Head(src)
 			if err != nil {
 				log.Println(err)
 			}
 			cl := res.ContentLength
-			if cl > size {
+			if cl > size && cl < MAX_IMG_SIZE {
 				best = i
 				size = cl
 			}
@@ -601,6 +620,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	var fileContents []byte
 	var fi fs.FileInfo
 	if strings.HasPrefix(path, "data:") {
+		log.Println(path)
 		dataURL, err := dataurl.DecodeString(path)
 		if err != nil {
 			return nil, err
