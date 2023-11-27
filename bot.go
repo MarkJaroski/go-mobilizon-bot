@@ -64,6 +64,7 @@ type Event struct {
 	Comment   string    `json:"comment"`
 	Type      string    `json:"type"`
 	SourceUrl string    `json:"sourceUrl"`
+	ImageUrl  string    `json:"imageUrl"`
 	Date      time.Time `json:"date"`
 }
 
@@ -295,6 +296,10 @@ func createEvents(r Response, addrs map[string]Place) {
 
 		// fmt.Println(event.Title)
 
+		if eventExists(event, c) {
+			continue
+		}
+
 		var place = addrs[event.Location]
 		addr := AddressInput{
 			Description: place.Name,
@@ -339,6 +344,8 @@ func createEvents(r Response, addrs map[string]Place) {
 			path, err := downloadFile(imageURL)
 			if err != nil {
 				log.Println(err)
+			} else if *opts.NoOp {
+				// log.Println("NoOp: Skipping the media upload too.")
 			} else {
 				// upload the image
 				multi, err := newfileUploadRequest(path)
@@ -712,4 +719,39 @@ func downloadFile(URL string) (string, error) {
 	}
 
 	return f.Name(), nil
+}
+
+func eventExists(e Event, c *graphql.Client) bool {
+
+	// log.Println("Searching for ", e.Title, " ", e.Date.Format(time.RFC3339))
+	var s struct {
+		SearchEvents struct {
+			Total    int `json:"total"`
+			Elements []struct {
+				Id       graphql.ID `json:"id"`
+				Title    string     `json:"title"`
+				BeginsOn string     `json:"beginsOn"`
+			}
+		} `graphql:"searchEvents(term: $term)"`
+	}
+	vars := map[string]interface{}{
+		"term": e.Title + " " + e.Location,
+	}
+	err := c.Query(context.Background(), &s, vars)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// loop through the events and return true if we have a real match
+	for _, el := range s.SearchEvents.Elements {
+		// include beginsOn in conditional
+		// TODO include place name in condition
+		if el.Title == e.Title && el.BeginsOn == e.Date.Format(time.RFC3339) {
+			// log.Println("Found: ", el.Title, " ", el.BeginsOn)
+			return true
+		}
+	}
+
+	log.Println("Event not found ", e.Title, " ", e.Date.Format(time.RFC3339))
+	return false
 }
