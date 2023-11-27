@@ -350,20 +350,21 @@ func createEvents(r Response, addrs map[string]Place) {
 				// upload the image
 				multi, err := newfileUploadRequest(path)
 				if err != nil {
-					log.Println(err)
+					log.Println(event.Title, " ", err)
+				} else {
+					// log.Println("Uploading the image")
+					response, err := httpClient.Do(multi)
+					if err != nil {
+						log.Println(err)
+					}
+					responseData, err := io.ReadAll(response.Body)
+					if err != nil {
+						log.Fatal(err)
+					}
+					var mediaObject MediaResponse
+					json.Unmarshal(responseData, &mediaObject)
+					imageId = mediaObject.Data.Upload.Id
 				}
-				// log.Println("Uploading the image")
-				response, err := httpClient.Do(multi)
-				if err != nil {
-					log.Println(err)
-				}
-				responseData, err := io.ReadAll(response.Body)
-				if err != nil {
-					log.Fatal(err)
-				}
-				var mediaObject MediaResponse
-				json.Unmarshal(responseData, &mediaObject)
-				imageId = mediaObject.Data.Upload.Id
 			}
 		}
 
@@ -589,7 +590,7 @@ func fetchEventImage(url string) string {
 	// claim to be a browser
 	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
 
-	c.OnHTML("img", func(e *colly.HTMLElement) {
+	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
 		i := e.Request.AbsoluteURL(e.Attr("src"))
 		srcs = append(srcs, i)
 	})
@@ -601,8 +602,13 @@ func fetchEventImage(url string) string {
 		var best = 0
 		var size int64 = 0
 		for i, src := range srcs {
+			// log.Println(src)
 			// occassionally we get an inline image
 			if strings.HasPrefix(src, "data:") {
+				continue
+			}
+			// sometimes we don't get the absolute URL
+			if strings.HasPrefix(src, "/") {
 				continue
 			}
 			res, err := http.Head(src)
@@ -627,7 +633,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	var fileContents []byte
 	var fi fs.FileInfo
 	if strings.HasPrefix(path, "data:") {
-		log.Println(path)
+		// log.Println(path)
 		dataURL, err := dataurl.DecodeString(path)
 		if err != nil {
 			return nil, err
@@ -747,11 +753,11 @@ func eventExists(e Event, c *graphql.Client) bool {
 		// include beginsOn in conditional
 		// TODO include place name in condition
 		if el.Title == e.Title && el.BeginsOn == e.Date.Format(time.RFC3339) {
-			// log.Println("Found: ", el.Title, " ", el.BeginsOn)
+			log.Println("Found: ", el.Title, " ", el.BeginsOn)
 			return true
 		}
 	}
 
-	log.Println("Event not found ", e.Title, " ", e.Date.Format(time.RFC3339))
+	// log.Println("Event not found ", e.Title, " ", e.Date.Format(time.RFC3339))
 	return false
 }
