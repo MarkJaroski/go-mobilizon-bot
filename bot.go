@@ -154,11 +154,13 @@ const (
 	MODERATED EventCommentModeration = "MODERATED"
 )
 
+type Timezone string
+
 type EventOptionsInput struct {
 	CommentModeration EventCommentModeration `json:"commentModeration"`
 	ShowStartTime     graphql.Boolean        `json:"showStartTime"`
 	ShowEndTime       graphql.Boolean        `json:"showEndTime"`
-	Timezone          string                 `json:"timezone"`
+	Timezone          Timezone               `json:"timezone"`
 }
 
 var actorID *string
@@ -174,7 +176,7 @@ func main() {
 	opts.Date = pflag.String("date", "", "The concertcloud API param 'date'")
 	opts.ActorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
-	opts.Timezone = pflag.String("timezone", "EU/Zurich", "The timezone to use for the event attribution.")
+	opts.Timezone = pflag.String("timezone", "Europe/Zurich", "The timezone to use for the event attribution.")
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
 	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
@@ -192,7 +194,7 @@ func main() {
 	}
 
 	ccQuery := ""
-	if *opts.City != "" {
+	if *opts.City != "X" && *opts.City != "" {
 		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*opts.City))
 	}
 	if *opts.Country != "" {
@@ -259,7 +261,7 @@ func fetchAddrs(responseObject Response) map[string]Place {
 			json.Unmarshal(addrData, &addrObject)
 
 			if len(addrObject) == 0 {
-				log.Println(fmt.Sprintf("Not found: %s", event.Location))
+				log.Println(fmt.Sprintf("OSM Place Not found: %s", event.Location))
 				addrs[event.Location] = Place{}
 			} else {
 				addrs[event.Location] = addrObject[0]
@@ -294,7 +296,13 @@ func createEvents(r Response, addrs map[string]Place) {
 
 	for _, event := range r.Event {
 
+		event.Title = strings.TrimSpace(event.Title)
 		// fmt.Println(event.Title)
+
+		// hack to fix short titles
+		if len(event.Title) < 3 {
+			event.Title = event.Title + " ..."
+		}
 
 		if eventExists(event, c) {
 			continue
@@ -313,19 +321,21 @@ func createEvents(r Response, addrs map[string]Place) {
 		var tags = []string{
 			"concert",
 			event.Location,
-			fmt.Sprintf("%s%s", event.City, "concerts"),
-			fmt.Sprintf("%s%s", place.Address.Country, "concerts"),
+			event.City + " Concerts",
+			place.Address.Country + " Concerts/Konzerte",
 		}
+
+		tz := Timezone(*opts.Timezone)
 
 		options := EventOptionsInput{
 			CommentModeration: EventCommentModeration("ALLOW_ALL"),
 			ShowStartTime:     graphql.Boolean(true),
 			ShowEndTime:       graphql.Boolean(false),
-			Timezone:          *opts.Timezone,
+			Timezone:          tz,
 		}
 
 		// add a plug for ConcertCloud
-		event.Comment = fmt.Sprintf("%s\n\n%s", event.Comment, CC_PLUG)
+		event.Comment = event.Comment + "\n\n\n" + CC_PLUG
 
 		// fetch the official image for the event
 		imageURL := fetchOGImage(event.URL)
@@ -366,11 +376,6 @@ func createEvents(r Response, addrs map[string]Place) {
 					imageId = mediaObject.Data.Upload.Id
 				}
 			}
-		}
-
-		// hack to fix short titles
-		if len(event.Title) < 3 {
-			event.Title = event.Title + " ..."
 		}
 
 		variables := map[string]interface{}{
@@ -554,7 +559,7 @@ func fetchOGImage(url string) string {
 	// get the ogp object
 	ogp, err := opengraph.Fetch(url)
 	if err != nil {
-		log.Println(err)
+		log.Println("fetchOGImage", err)
 	}
 
 	// convert URLs to absolute
@@ -565,7 +570,7 @@ func fetchOGImage(url string) string {
 		// but check that it works first
 		res, err := http.Head(ogp.Image[0].URL)
 		if err != nil {
-			log.Println(err)
+			log.Println("fetchOGImage", err)
 		}
 		if res.StatusCode == 200 {
 			retUrl = ogp.Image[0].URL
@@ -729,7 +734,7 @@ func downloadFile(URL string) (string, error) {
 
 func eventExists(e Event, c *graphql.Client) bool {
 
-	// log.Println("Searching for ", e.Title, " ", e.Date.Format(time.RFC3339))
+	// log.Println("Searching for '" + e.Title + "' " + e.Date.Format(time.RFC3339))
 	var s struct {
 		SearchEvents struct {
 			Total    int `json:"total"`
@@ -738,26 +743,36 @@ func eventExists(e Event, c *graphql.Client) bool {
 				Title    string     `json:"title"`
 				BeginsOn string     `json:"beginsOn"`
 			}
-		} `graphql:"searchEvents(term: $term)"`
+		} `graphql:"searchEvents(term: $term, beginsOn: $beginsOn)"`
 	}
 	vars := map[string]interface{}{
-		"term": e.Title + " " + e.Location,
+		"term":     e.Title + " " + e.Location,
+		"beginsOn": DateTime(e.Date.Format(time.RFC3339)),
 	}
 	err := c.Query(context.Background(), &s, vars)
 	if err != nil {
-		log.Println(err)
+		log.Println("eventExists", err)
+		//
+		// FIXME
+		//
+		// When the server is loaded the graphql API fails to return
+		// certain events. I haven't been able to identify why, but the
+		// same events always fail which suggest a better approach.
+		// That said, this works for the time being.
+		time.Sleep(3 * time.Second)
+		c.Query(context.Background(), &s, vars)
 	}
 
 	// loop through the events and return true if we have a real match
 	for _, el := range s.SearchEvents.Elements {
 		// include beginsOn in conditional
-		// TODO include place name in condition
+		// log.Println("Mobilizòn returned: '" + el.Title + "' " + el.BeginsOn)
 		if el.Title == e.Title && el.BeginsOn == e.Date.Format(time.RFC3339) {
-			log.Println("Found: ", el.Title, " ", el.BeginsOn)
+			// log.Println("Found: " + el.Title + " " + el.BeginsOn)
 			return true
 		}
 	}
 
-	// log.Println("Event not found ", e.Title, " ", e.Date.Format(time.RFC3339))
+	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339))
 	return false
 }
