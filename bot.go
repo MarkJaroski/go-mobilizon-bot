@@ -337,9 +337,15 @@ func createEvents(r Response, addrs map[string]Place) {
 		// add a plug for ConcertCloud
 		event.Comment = event.Comment + "\n\n\n" + CC_PLUG
 
-		// fetch the official image for the event
-		imageURL := fetchOGImage(event.URL)
-		// fetch a backup image
+		// get the event image
+		var imageURL = event.ImageUrl
+
+		// fetch the opengraph image for the event if there is no event image
+		if imageURL == "" {
+			imageURL = fetchOGImage(event.URL)
+		}
+
+		// fetch a backup image if we don't already have something
 		if imageURL == "" {
 			imageURL = fetchEventImage(event.URL)
 		}
@@ -759,6 +765,7 @@ func eventExists(e Event, c *graphql.Client) bool {
 		// certain events. I haven't been able to identify why, but the
 		// same events always fail which suggest a better approach.
 		// That said, this works for the time being.
+		//
 		time.Sleep(3 * time.Second)
 		c.Query(context.Background(), &s, vars)
 	}
