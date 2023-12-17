@@ -43,6 +43,7 @@ type Options struct {
 	NoOp      *bool
 	Register  *bool
 	Authorize *bool
+	Draft     *bool
 }
 
 var opts Options
@@ -180,6 +181,7 @@ func main() {
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
 	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
+	opts.Draft = pflag.Bool("draft", false, "Create events in draft mode.")
 
 	pflag.Parse()
 
@@ -335,7 +337,7 @@ func createEvents(r Response, addrs map[string]Place) {
 		}
 
 		// add a plug for ConcertCloud
-		event.Comment = event.Comment + "\n\n\n" + CC_PLUG
+		event.Comment = event.Comment + " <br/><br/> " + CC_PLUG
 
 		// get the event image
 		var imageURL = event.ImageUrl
@@ -395,7 +397,7 @@ func createEvents(r Response, addrs map[string]Place) {
 			"physicalAddress":  addr,
 			"beginsOn":         DateTime(event.Date.Format(time.RFC3339)),
 			"endsOn":           DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
-			"draft":            false,
+			"draft":            graphql.Boolean(*opts.Draft),
 			"onlineAddress":    event.URL,
 			"tags":             tags,
 			"options":          options,
@@ -577,6 +579,7 @@ func fetchOGImage(url string) string {
 		res, err := http.Head(ogp.Image[0].URL)
 		if err != nil {
 			log.Println("fetchOGImage", err)
+			return ""
 		}
 		if res.StatusCode == 200 {
 			retUrl = ogp.Image[0].URL
@@ -624,7 +627,7 @@ func fetchEventImage(url string) string {
 			}
 			res, err := http.Head(src)
 			if err != nil {
-				log.Println(err)
+				log.Println("fetchEventImage", err)
 			}
 			cl := res.ContentLength
 			if cl > size && cl < MAX_IMG_SIZE {
