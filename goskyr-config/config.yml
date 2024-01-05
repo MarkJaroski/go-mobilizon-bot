@@ -1,0 +1,54 @@
+scrapers:
+  - name: LeReflet
+    url: https://www.lereflet.ch/saison-actuelle
+    item: article
+    fields:
+      - name: city
+        value: Vevey
+      - name: country
+        value: Switzerland
+      - name: "sourceUrl"
+        value: https://www.lereflet.ch/saison-actuelle
+      - name: title
+        type: text
+        location:
+          - selector: a
+            attr: title
+      - name: url
+        type: url
+        location:
+          - selector: a
+            attr: href
+      - name: type
+        type: text
+        location:
+          - selector: a > div.content-row.top > span
+      - name: imageUrl
+        type: url
+        location:
+          - selector: a > div.card-image > img
+            attr: src
+      - name: comment
+        type: text
+        on_subpage: url
+        location:
+          - selector: div.event-details-block > div.content-inner > div.single-row
+            entire_subtree: true
+      - name: date
+        type: date
+        on_subpage: url
+        components:
+          - covers:
+              day: true
+              month: true
+              year: true
+              time: true
+            location:
+              selector: div > div > div:nth-child(2) > div > div > div:nth-child(1) > div > div.event-info > div > div:nth-child(1) > ul > li
+              # - selector: div > div > div:nth-child(2) > div > div > div:nth-child(1) > div > div.event-info > div > div:nth-child(1) > div.custom-dateofshow > p
+            layout:
+              - "Monday 2 January 2006 /\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t15h"
+              - "Monday 2 January 2006 /\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t15h04"
+        date_location: CET
+        date_language: fr_FR
+
