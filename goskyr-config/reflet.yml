@@ -3,6 +3,8 @@ scrapers:
     url: https://www.lereflet.ch/saison-actuelle
     item: article
     fields:
+      - name: "location"
+        value: "Théâtre Le Reflet"
       - name: city
         value: Vevey
       - name: country

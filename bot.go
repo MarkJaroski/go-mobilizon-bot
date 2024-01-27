@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -37,6 +38,7 @@ type Options struct {
 	Page      *string
 	Radius    *string
 	Date      *string
+	File      *string
 	ActorID   *string
 	GroupID   *string
 	Timezone  *string
@@ -100,6 +102,7 @@ type Place struct {
 	Name        string  `json:"name"`
 	Lat         string  `json:"lat"`
 	Lon         string  `json:"lon"`
+	Type        string  `json:"type"`
 	Address     Address `json:"address"`
 	DisplayName string  `json:"display_name"`
 }
@@ -128,6 +131,7 @@ const (
 	PARTY   EventCategory = "PARTY"
 	COMEDY  EventCategory = "COMEDY"
 	THEATRE EventCategory = "THEATRE"
+	ARTS    EventCategory = "ARTS"
 )
 
 type EventVisibility string
@@ -168,6 +172,9 @@ var actorID *string
 var groupID *string
 var timezone *string
 
+var HttpClient *http.Client
+var Client *graphql.Client
+
 func main() {
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
@@ -175,6 +182,7 @@ func main() {
 	opts.Page = pflag.String("page", "", "The concertcloud API param 'page'")
 	opts.Radius = pflag.String("radius", "", "The concertcloud API param 'radius'")
 	opts.Date = pflag.String("date", "", "The concertcloud API param 'date'")
+	opts.File = pflag.String("file", "", "Instead of fetching from concertcloud, use local file.")
 	opts.ActorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
 	opts.Timezone = pflag.String("timezone", "Europe/Zurich", "The timezone to use for the event attribution.")
@@ -215,28 +223,91 @@ func main() {
 		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*opts.Date))
 	}
 
-	// Fetch some concerts from Concert Cloud
-	fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
-	response, err := http.Get(fetchUrl)
-	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
-	}
-
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	// this will hold our json object whether local or from ConcertCloud
 	var responseObject Response
-	json.Unmarshal(responseData, &responseObject)
+
+	if *opts.File != "" {
+		log.Println("using local file:", *opts.File)
+		dat, err := os.ReadFile(*opts.File)
+		if err != nil {
+			log.Fatal(err)
+		}
+		json.Unmarshal(dat, &responseObject)
+	} else {
+		// Fetch some concerts from Concert Cloud
+		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
+		response, err := http.Get(fetchUrl)
+		if err != nil {
+			fmt.Print(err.Error())
+			os.Exit(1)
+		}
+
+		responseData, err := io.ReadAll(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		json.Unmarshal(responseData, &responseObject)
+	}
+
+	src := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: os.Getenv("MOBILIZON_ACCESS_TOKEN")},
+	)
+	HttpClient = oauth2.NewClient(context.Background(), src)
+	Client = graphql.NewClient("https://mobilisons.ch/api", HttpClient)
 
 	var addrs = fetchAddrs(responseObject)
 
 	createEvents(responseObject, addrs)
 }
 
-func fetchAddrs(responseObject Response) map[string]Place {
+func fetchAddrs(responseObject Response) map[string]AddressInput {
+	var addrs = make(map[string]AddressInput)
+
+	for _, event := range responseObject.Event {
+
+		// if we already have the don't bother with the query
+		_, ok := addrs[event.Location]
+		if ok {
+			// log.Println("Skipping " + event.Location)
+			continue
+		}
+
+		var s struct {
+			SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
+		}
+		vars := map[string]interface{}{
+			"query": event.Location + " " + event.City,
+		}
+		err := Client.Query(context.Background(), &s, vars)
+		if err != nil {
+			log.Println("fetchAddrs", err)
+			time.Sleep(3 * time.Second)
+			Client.Query(context.Background(), &s, vars)
+		}
+
+		if len(s.SearchAddress) == 0 {
+			log.Println(fmt.Sprintf("Mobilizòn Place Not found: %s", event.Location))
+		}
+
+		if len(s.SearchAddress) == 0 {
+			a := s.SearchAddress[0]
+			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Locality)
+			addrs[event.Location] = a
+		}
+		for _, a := range s.SearchAddress {
+			if a.Description == event.Location && a.Locality == event.City {
+				// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Locality)
+				addrs[event.Location] = a
+			}
+		}
+
+	}
+
+	return addrs
+}
+
+func fetchOSMAddrs(responseObject Response) map[string]Place {
 	var addrs = make(map[string]Place)
 
 	for _, event := range responseObject.Event {
@@ -265,8 +336,14 @@ func fetchAddrs(responseObject Response) map[string]Place {
 			if len(addrObject) == 0 {
 				log.Println(fmt.Sprintf("OSM Place Not found: %s", event.Location))
 				addrs[event.Location] = Place{}
-			} else {
+			} else if len(addrObject) == 1 {
 				addrs[event.Location] = addrObject[0]
+			} else {
+				for _, p := range addrObject {
+					if p.Type == "nightclub" {
+						addrs[event.Location] = p
+					}
+				}
 			}
 		}
 	}
@@ -274,7 +351,7 @@ func fetchAddrs(responseObject Response) map[string]Place {
 	return addrs
 }
 
-func createEvents(r Response, addrs map[string]Place) {
+func createEvents(r Response, addrs map[string]AddressInput) {
 	var m struct {
 		CreateEvent struct {
 			Id   string
@@ -289,14 +366,15 @@ func createEvents(r Response, addrs map[string]Place) {
 		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options)"`
 	}
 
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("MOBILIZON_ACCESS_TOKEN")},
-	)
-	httpClient := oauth2.NewClient(context.Background(), src)
-
-	c := graphql.NewClient("https://mobilisons.ch/api", httpClient)
-
 	for _, event := range r.Event {
+
+		// do not upload events from bejazz.ch. They don't like us.
+		// opt out FIXME this should be loaded from a file or something
+		match, _ := regexp.MatchString("bejazz.ch", event.URL)
+		if match {
+			log.Println("This is a bejazz concert. Skip it.")
+			continue
+		}
 
 		event.Title = strings.TrimSpace(event.Title)
 		// fmt.Println(event.Title)
@@ -306,25 +384,17 @@ func createEvents(r Response, addrs map[string]Place) {
 			event.Title = event.Title + " ..."
 		}
 
-		if eventExists(event, c) {
+		if eventExists(event) {
 			continue
 		}
 
-		var place = addrs[event.Location]
-		addr := AddressInput{
-			Description: place.Name,
-			Locality:    place.Address.City,
-			PostalCode:  place.Address.PostCode,
-			Street:      fmt.Sprintf("%s %s", place.Address.Road, place.Address.HouseNumber),
-			Country:     place.Address.Country,
-			Geom:        fmt.Sprintf("%s;%s", place.Lon, place.Lat),
-		}
+		var addr = addrs[event.Location]
 
 		var tags = []string{
 			"concert",
 			event.Location,
 			event.City + " Concerts",
-			place.Address.Country + " Concerts/Konzerte",
+			addr.Country + " Concerts/Konzerte",
 		}
 
 		tz := Timezone(*opts.Timezone)
@@ -371,7 +441,7 @@ func createEvents(r Response, addrs map[string]Place) {
 					log.Println(event.Title, " ", err)
 				} else {
 					// log.Println("Uploading the image")
-					response, err := httpClient.Do(multi)
+					response, err := HttpClient.Do(multi)
 					if err != nil {
 						log.Println(err)
 					}
@@ -386,10 +456,21 @@ func createEvents(r Response, addrs map[string]Place) {
 			}
 		}
 
+		var category = EventCategory("MUSIC")
+		if strings.Contains(strings.ToLower(event.Type), "theatre") {
+			category = EventCategory("THEATRE")
+		} else if strings.Contains(strings.ToLower(event.Type), "cirque") {
+			category = EventCategory("THEATRE")
+		} else if strings.Contains(strings.ToLower(event.Type), "théâtre") {
+			category = EventCategory("THEATRE")
+		} else if strings.Contains(strings.ToLower(event.Type), "humour") {
+			category = EventCategory("COMEDY")
+		}
+
 		variables := map[string]interface{}{
 			"organizerActorId": graphql.ID(*opts.ActorID),
 			"attributedToId":   graphql.ID(*opts.GroupID),
-			"category":         EventCategory("MUSIC"),
+			"category":         category,
 			"visibility":       EventVisibility("PUBLIC"),
 			"joinOptions":      EventJoinOptions("FREE"),
 			"title":            event.Title,
@@ -418,13 +499,13 @@ func createEvents(r Response, addrs map[string]Place) {
 
 			if imageId == "" {
 				// run the mutation against the Mobilizon instance
-				err := c.Mutate(context.Background(), &m_nopic, variables)
+				err := Client.Mutate(context.Background(), &m_nopic, variables)
 				if err != nil {
 					log.Fatal(err)
 				}
 			} else {
 				// run the mutation against the Mobilizon instance
-				err := c.Mutate(context.Background(), &m, variables)
+				err := Client.Mutate(context.Background(), &m, variables)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -741,7 +822,7 @@ func downloadFile(URL string) (string, error) {
 	return f.Name(), nil
 }
 
-func eventExists(e Event, c *graphql.Client) bool {
+func eventExists(e Event) bool {
 
 	// log.Println("Searching for '" + e.Title + "' " + e.Date.Format(time.RFC3339))
 	var s struct {
@@ -758,7 +839,7 @@ func eventExists(e Event, c *graphql.Client) bool {
 		"term":     e.Title + " " + e.Location,
 		"beginsOn": DateTime(e.Date.Format(time.RFC3339)),
 	}
-	err := c.Query(context.Background(), &s, vars)
+	err := Client.Query(context.Background(), &s, vars)
 	if err != nil {
 		log.Println("eventExists", err)
 		//
@@ -770,7 +851,7 @@ func eventExists(e Event, c *graphql.Client) bool {
 		// That said, this works for the time being.
 		//
 		time.Sleep(3 * time.Second)
-		c.Query(context.Background(), &s, vars)
+		Client.Query(context.Background(), &s, vars)
 	}
 
 	// loop through the events and return true if we have a real match
