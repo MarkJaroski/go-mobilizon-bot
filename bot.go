@@ -109,13 +109,16 @@ type Place struct {
 
 type NominatumResponse []Place
 
+type Point string
+
 type AddressInput struct {
+	Id          int    `json:"id"`
 	Description string `json:"description"`
 	Locality    string `json:"locality"`
 	PostalCode  string `json:"postalCode"`
 	Street      string `json:"street"`
 	Country     string `json:"country"`
-	Geom        string `json:"geom"`
+	Region      string `json:"region"`
 }
 
 type MediaInput struct {
@@ -372,7 +375,7 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)
 		if match {
-			log.Println("This is a bejazz concert. Skip it.")
+			log.Println("Skipping bejazz.")
 			continue
 		}
 
