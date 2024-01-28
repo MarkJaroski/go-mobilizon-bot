@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -130,12 +131,70 @@ var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
 type EventCategory string
 
 const (
-	MUSIC   EventCategory = "MUSIC"
-	PARTY   EventCategory = "PARTY"
-	COMEDY  EventCategory = "COMEDY"
-	THEATRE EventCategory = "THEATRE"
-	ARTS    EventCategory = "ARTS"
+	ARTS                          EventCategory = "ARTS"
+	AUTO_BOAT_AIR                 EventCategory = "AUTO_BOAT_AIR"
+	BOOK_CLUBS                    EventCategory = "BOOK_CLUBS"
+	BUSINESS                      EventCategory = "BUSINESS"
+	CAUSES                        EventCategory = "CAUSES"
+	COMEDY                        EventCategory = "COMEDY"
+	COMMUNITY                     EventCategory = "COMMUNITY"
+	CRAFTS                        EventCategory = "CRAFTS"
+	FAMILY_EDUCATION              EventCategory = "FAMILY_EDUCATION"
+	FASHION_BEAUTY                EventCategory = "FASHION_BEAUTY"
+	FILM_MEDIA                    EventCategory = "FILM_MEDIA"
+	FOOD_DRINK                    EventCategory = "FOOD_DRINK"
+	GAMES                         EventCategory = "GAMES"
+	HEALTH                        EventCategory = "HEALTH"
+	LANGUAGE_CULTURE              EventCategory = "LANGUAGE_CULTURE"
+	LEARNING                      EventCategory = "LEARNING"
+	LGBTQ                         EventCategory = "LGBTQ"
+	MEETING                       EventCategory = "MEETING"
+	MOVEMENTS_POLITICS            EventCategory = "MOVEMENTS_POLITICS"
+	MUSIC                         EventCategory = "MUSIC"
+	NETWORKING                    EventCategory = "NETWORKING"
+	OUTDOORS_ADVENTURE            EventCategory = "OUTDOORS_ADVENTURE"
+	PARTY                         EventCategory = "PARTY"
+	PERFORMING_VISUAL_ARTS        EventCategory = "PERFORMING_VISUAL_ARTS"
+	PETS                          EventCategory = "PETS"
+	PHOTOGRAPHY                   EventCategory = "PHOTOGRAPHY"
+	SCIENCE_TECH                  EventCategory = "SCIENCE_TECH"
+	SPIRITUALITY_RELIGION_BELIEFS EventCategory = "SPIRITUALITY_RELIGION_BELIEFS"
+	SPORTS                        EventCategory = "SPORTS"
+	THEATRE                       EventCategory = "THEATRE"
 )
+
+var EventTypeStrings = []string{
+	"ARTS",
+	"AUTO_BOAT_AIR",
+	"BOOK_CLUBS",
+	"BUSINESS",
+	"CAUSES",
+	"COMEDY",
+	"COMMUNITY",
+	"CRAFTS",
+	"FAMILY_EDUCATION",
+	"FASHION_BEAUTY",
+	"FILM_MEDIA",
+	"FOOD_DRINK",
+	"GAMES",
+	"HEALTH",
+	"LANGUAGE_CULTURE",
+	"LEARNING",
+	"LGBTQ",
+	"MEETING",
+	"MOVEMENTS_POLITICS",
+	"MUSIC",
+	"NETWORKING",
+	"OUTDOORS_ADVENTURE",
+	"PARTY",
+	"PERFORMING_VISUAL_ARTS",
+	"PETS",
+	"PHOTOGRAPHY",
+	"SCIENCE_TECH",
+	"SPIRITUALITY_RELIGION_BELIEFS",
+	"SPORTS",
+	"THEATRE",
+}
 
 type EventVisibility string
 
@@ -461,17 +520,13 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 			}
 		}
 
+		// if the goskyr config has Mobilizòn event types use them
 		var category = EventCategory("MUSIC")
-		if strings.Contains(strings.ToLower(event.Type), "theatre") {
-			category = EventCategory("THEATRE")
-		} else if strings.Contains(strings.ToLower(event.Type), "cirque") {
-			category = EventCategory("THEATRE")
-		} else if strings.Contains(strings.ToLower(event.Type), "théâtre") {
-			category = EventCategory("THEATRE")
-		} else if strings.Contains(strings.ToLower(event.Type), "humour") {
-			category = EventCategory("COMEDY")
+		if slices.Contains(EventTypeStrings, event.Type) {
+			category = EventCategory(event.Type)
 		}
 
+		// set up the query vars
 		variables := map[string]interface{}{
 			"organizerActorId": graphql.ID(*opts.ActorID),
 			"attributedToId":   graphql.ID(*opts.GroupID),
