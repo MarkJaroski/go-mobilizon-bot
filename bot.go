@@ -269,6 +269,8 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 
 	for _, event := range responseObject.Event {
 
+		// log.Println(fmt.Sprintf("Searching for: %s", event.Location))
+
 		// if we already have the don't bother with the query
 		_, ok := addrs[event.Location]
 		if ok {
@@ -276,11 +278,14 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 			continue
 		}
 
+		query := fetchOSMAddr(event)
+		// log.Println("Query from OSM:", query)
+
 		var s struct {
 			SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
 		}
 		vars := map[string]interface{}{
-			"query": event.Location + " " + event.City,
+			"query": query,
 		}
 		err := Client.Query(context.Background(), &s, vars)
 		if err != nil {
@@ -290,68 +295,65 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		}
 
 		if len(s.SearchAddress) == 0 {
-			log.Println(fmt.Sprintf("Mobilizòn Place Not found: %s", event.Location))
-		}
-
-		if len(s.SearchAddress) == 0 {
+			log.Println(fmt.Sprintf("Not found: %s", event.Location))
+		} else if len(s.SearchAddress) == 1 {
 			a := s.SearchAddress[0]
-			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Locality)
+			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality)
 			addrs[event.Location] = a
-		}
-		for _, a := range s.SearchAddress {
-			if a.Description == event.Location && a.Locality == event.City {
-				// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Locality)
-				addrs[event.Location] = a
-			}
+			continue
 		}
 
+		for _, a := range s.SearchAddress {
+			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
+			if a.Description == event.Location && a.Locality == event.City {
+				addrs[event.Location] = a
+				break
+			}
+			addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
+		}
 	}
 
 	return addrs
 }
 
-func fetchOSMAddrs(responseObject Response) map[string]Place {
-	var addrs = make(map[string]Place)
+func fetchOSMAddr(event Event) string {
 
-	for _, event := range responseObject.Event {
+	var addr Place
 
-		_, ok := addrs[event.Location]
+	// log.Println("Doing lookup in OpenStreetMap")
+	var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
+		url.QueryEscape(event.Location),
+		url.QueryEscape(event.City))
+	var nurl = fmt.Sprintf("%s?%s", NominatumBaseURL, querystring)
+	nresp, err := http.Get(nurl)
 
-		if !ok {
-			// log.Println("Doing lookup in OpenStreetMap")
-			var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
-				url.QueryEscape(event.Location),
-				url.QueryEscape(event.City))
-			var nurl = fmt.Sprintf("%s?%s", NominatumBaseURL, querystring)
-			nresp, err := http.Get(nurl)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 
-			if err != nil {
-				log.Fatal(err.Error())
-			}
+	addrData, err := io.ReadAll(nresp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var addrObject NominatumResponse
+	json.Unmarshal(addrData, &addrObject)
 
-			addrData, err := io.ReadAll(nresp.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-			var addrObject NominatumResponse
-			json.Unmarshal(addrData, &addrObject)
-
-			if len(addrObject) == 0 {
-				log.Println(fmt.Sprintf("OSM Place Not found: %s", event.Location))
-				addrs[event.Location] = Place{}
-			} else if len(addrObject) == 1 {
-				addrs[event.Location] = addrObject[0]
-			} else {
-				for _, p := range addrObject {
-					if p.Type == "nightclub" {
-						addrs[event.Location] = p
-					}
-				}
+	if len(addrObject) == 0 {
+		log.Println(fmt.Sprintf("OSM Place Not found: %s", event.Location))
+		return ""
+	} else if len(addrObject) == 1 {
+		addr = addrObject[0]
+	} else {
+		for _, p := range addrObject {
+			if p.Type == "nightclub" || p.Type == "bar" || p.Type == "restaurant" || p.Type == "theatre" || p.Type == "cinema" || p.Type == "arts_centre" {
+				// log.Println("Addr Type:", p.Type)
+				addr = p
+				break
 			}
 		}
 	}
 
-	return addrs
+	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
 func createEvents(r Response, addrs map[string]AddressInput) {
@@ -839,7 +841,7 @@ func eventExists(e Event) bool {
 		} `graphql:"searchEvents(term: $term, beginsOn: $beginsOn)"`
 	}
 	vars := map[string]interface{}{
-		"term":     e.Title + " " + e.Location,
+		"term":     e.Title,
 		"beginsOn": DateTime(e.Date.Format(time.RFC3339)),
 	}
 	err := Client.Query(context.Background(), &s, vars)
@@ -860,7 +862,7 @@ func eventExists(e Event) bool {
 	// loop through the events and return true if we have a real match
 	for _, el := range s.SearchEvents.Elements {
 		// include beginsOn in conditional
-		// log.Println("Mobilizòn returned: '" + el.Title + "' " + el.BeginsOn)
+		// log.Println("Mobilizòn event search returned: '" + el.Title + "' " + el.BeginsOn)
 		if el.Title == e.Title && el.BeginsOn == e.Date.Format(time.RFC3339) {
 			// log.Println("Found: " + el.Title + " " + el.BeginsOn)
 			return true
