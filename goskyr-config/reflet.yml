@@ -25,6 +25,19 @@ scrapers:
         type: text
         location:
           - selector: a > div.content-row.top > span
+        transform:
+          - type: regex-replace
+            regex: ".*(T|t)héâtre.*"
+            replace: THEATRE
+          - type: regex-replace
+            regex: Humour
+            replace: COMEDY
+          - type: regex-replace
+            regex: Cirque
+            replace: PERFORMING_VISUAL_ARTS
+          - type: regex-replace
+            regex: Danse
+            replace: PERFORMING_VISUAL_ARTS
       - name: imageUrl
         type: url
         location:

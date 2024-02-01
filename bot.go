@@ -33,20 +33,22 @@ const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.l
 const MAX_IMG_SIZE = 1000000
 
 type Options struct {
-	City      *string
-	Country   *string
-	Limit     *string
-	Page      *string
-	Radius    *string
-	Date      *string
-	File      *string
-	ActorID   *string
-	GroupID   *string
-	Timezone  *string
-	NoOp      *bool
-	Register  *bool
-	Authorize *bool
-	Draft     *bool
+	City       *string
+	Country    *string
+	Limit      *string
+	Page       *string
+	Radius     *string
+	Date       *string
+	File       *string
+	AuthConfig *string
+	Config     *string
+	ActorID    *string
+	GroupID    *string
+	Timezone   *string
+	NoOp       *bool
+	Register   *bool
+	Authorize  *bool
+	Draft      *bool
 }
 
 var opts Options
@@ -230,6 +232,20 @@ type EventOptionsInput struct {
 	Timezone          Timezone               `json:"timezone"`
 }
 
+// For authorization and reauthorization. Becomes the structure of the auth
+// config file
+type AuthConfig struct {
+	AccessToken           string `json:"access_token"`
+	ExpiresIn             string `json:"expires_in"`
+	RefreshToken          string `json:"refresh_token"`
+	RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
+	Scopes                string `json:"scopes"`
+	TokenType             string `json:"token_type"`
+}
+
+// make this a global var so we don't have to read the file more than once
+var auth AuthConfig
+
 var actorID *string
 var groupID *string
 var timezone *string
@@ -238,6 +254,16 @@ var HttpClient *http.Client
 var Client *graphql.Client
 
 func main() {
+	// set up our config dir if it's not already there
+	confdir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = os.Mkdir(confdir+"/mobilizon", 700)
+	if err != nil && !errors.Is(err, fs.ErrExist) {
+		log.Fatal(err)
+	}
+
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
@@ -248,6 +274,8 @@ func main() {
 	opts.ActorID = pflag.String("actor", "", "The Mobilizon actor ID to use as the event organizer.")
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
 	opts.Timezone = pflag.String("timezone", "Europe/Zurich", "The timezone to use for the event attribution.")
+	opts.AuthConfig = pflag.String("authconfig", confdir+"/mobilizon/auth.json", "Use this file for authorization tokens.")
+	opts.Config = pflag.String("config", confdir+"/mobilizon/config.json", "Use this file for general configuration.")
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
 	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
@@ -260,11 +288,14 @@ func main() {
 		return
 	}
 
+	// do the authorization regardless ...
+	authorizeApp()
+	// and if that's all there is to do exit
 	if *opts.Authorize {
-		authorizeApp()
 		return
 	}
 
+	// set up the ContentCloud query
 	ccQuery := ""
 	if *opts.City != "X" && *opts.City != "" {
 		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*opts.City))
@@ -284,6 +315,12 @@ func main() {
 	if *opts.Date != "" {
 		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*opts.Date))
 	}
+
+	src := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: auth.AccessToken},
+	)
+	HttpClient = oauth2.NewClient(context.Background(), src)
+	Client = graphql.NewClient("https://mobilisons.ch/api", HttpClient)
 
 	// this will hold our json object whether local or from ConcertCloud
 	var responseObject Response
@@ -311,12 +348,6 @@ func main() {
 
 		json.Unmarshal(responseData, &responseObject)
 	}
-
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("MOBILIZON_ACCESS_TOKEN")},
-	)
-	HttpClient = oauth2.NewClient(context.Background(), src)
-	Client = graphql.NewClient("https://mobilisons.ch/api", HttpClient)
 
 	var addrs = fetchAddrs(responseObject)
 
@@ -354,7 +385,7 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		}
 
 		if len(s.SearchAddress) == 0 {
-			log.Println(fmt.Sprintf("Not found: %s", event.Location))
+			log.Println(fmt.Sprintf("Not found: %s", query))
 		} else if len(s.SearchAddress) == 1 {
 			a := s.SearchAddress[0]
 			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality)
@@ -398,8 +429,8 @@ func fetchOSMAddr(event Event) string {
 	json.Unmarshal(addrData, &addrObject)
 
 	if len(addrObject) == 0 {
-		log.Println(fmt.Sprintf("OSM Place Not found: %s", event.Location))
-		return ""
+		log.Println(fmt.Sprintf("OSM Place Not found: %s, %s", event.Location, event.City))
+		return event.Location + " " + event.City
 	} else if len(addrObject) == 1 {
 		addr = addrObject[0]
 	} else {
@@ -432,11 +463,11 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 
 	for _, event := range r.Event {
 
-		// do not upload events from bejazz.ch. They don't like us.
+		// Do not upload events from bejazz.ch. They don't like us.
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)
 		if match {
-			log.Println("Skipping bejazz.")
+			log.Println("Skipping BeJazz.")
 			continue
 		}
 
@@ -621,10 +652,15 @@ func registerApp() {
 }
 
 func authorizeApp() {
-	var posturl = "https://mobilisons.ch/login/device/code"
+	// Let's first check for a valid refreshToken in our config
+	// If that doesn't work then we need to authorize interactively
+	err := refreshAuthorization()
+	if err == nil {
+		return
+	}
 
+	var posturl = "https://mobilisons.ch/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
-	// clientSecret := os.Getenv("GRAPHQL_CLIENT_SECRET")
 
 	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:media:upload")
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
@@ -673,7 +709,6 @@ func authorizeApp() {
 	}
 
 	tokreq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
 	tokres, err := c.Do(tokreq)
 
 	resData, err = io.ReadAll(tokres.Body)
@@ -681,23 +716,7 @@ func authorizeApp() {
 		log.Fatal(err)
 	}
 
-	type TokenResponse struct {
-		AccessToken           string `json:"access_token"`
-		ExpiresIn             string `json:"expires_in"`
-		RefreshToken          string `json:"refresh_token"`
-		RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
-		Scopes                string `json:"scopes"`
-		TokenType             string `json:"token_type"`
-	}
-
-	var tokenResp TokenResponse
-	json.Unmarshal(resData, &tokenResp)
-
-	os.Setenv("MOBILIZON_ACCESS_TOKEN", tokenResp.AccessToken)
-	os.Setenv("MOBILIZON_REFRESH_TOKEN", tokenResp.RefreshToken)
-
-	fmt.Println("export MOBILIZON_ACCESS_TOKEN=" + tokenResp.AccessToken)
-	fmt.Println("export MOBILIZON_REFRESH_TOKEN=" + tokenResp.RefreshToken)
+	err = os.WriteFile(*opts.AuthConfig, resData, 0600)
 
 }
 
@@ -924,6 +943,52 @@ func eventExists(e Event) bool {
 		}
 	}
 
-	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339))
+	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
 	return false
+}
+
+func refreshAuthorization() error {
+	// Note that the graphql RefreshToken mutation replies with a very
+	// differrent kind of object than the authorization does
+	var m struct {
+		RefreshToken struct {
+			AccessToken  string
+			RefreshToken string
+		} `graphql:"refreshToken(refreshToken: $rt)"`
+	}
+
+	// Read the local file, if it exists. We can trap errors here
+	// since we can just recreate the file if necessary.
+	dat, err := os.ReadFile(*opts.AuthConfig)
+	if err != nil {
+		log.Println(err)
+	}
+	err = json.Unmarshal(dat, &auth)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// log.Println("Using refresh token: " + auth.RefreshToken)
+	variables := map[string]interface{}{
+		"rt": auth.RefreshToken,
+	}
+
+	// run the refresh token query. We need to resturn any errors from here
+	// down because they mean that the refresh has failed and so we'll need
+	// to do the regular authorization
+	c := graphql.NewClient("https://mobilisons.ch/api", nil)
+	err = c.Mutate(context.Background(), &m, variables)
+	if err != nil {
+		log.Println("Failed auth token renewal")
+		return err
+	}
+	auth.AccessToken = m.RefreshToken.AccessToken
+	auth.RefreshToken = m.RefreshToken.RefreshToken
+
+	data, err := json.MarshalIndent(auth, "", " ")
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(*opts.AuthConfig, data, 0600)
+	return err
 }
