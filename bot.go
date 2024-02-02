@@ -259,7 +259,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = os.Mkdir(confdir+"/mobilizon", 700)
+	err = os.Mkdir(confdir+"/mobilizon", 0700)
 	if err != nil && !errors.Is(err, fs.ErrExist) {
 		log.Fatal(err)
 	}
