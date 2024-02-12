@@ -239,7 +239,7 @@ type EventOptionsInput struct {
 // config file
 type AuthConfig struct {
 	AccessToken           string `json:"access_token"`
-	ExpiresIn             string `json:"expires_in"`
+	ExpiresIn             int    `json:"expires_in"`
 	RefreshToken          string `json:"refresh_token"`
 	RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
 	Scopes                string `json:"scopes"`
