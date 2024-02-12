@@ -74,6 +74,8 @@ type Event struct {
 	Date      time.Time `json:"date"`
 }
 
+type UUID string
+
 type MediaUpload struct {
 	Id string `json:"id"`
 }
@@ -909,6 +911,7 @@ func eventExists(e Event) bool {
 			Total    int `json:"total"`
 			Elements []struct {
 				Id       graphql.ID `json:"id"`
+				Uuid     string     `json:"uuid"`
 				Title    string     `json:"title"`
 				BeginsOn string     `json:"beginsOn"`
 			}
@@ -920,13 +923,15 @@ func eventExists(e Event) bool {
 	}
 	err := Client.Query(context.Background(), &s, vars)
 	if err != nil {
-		log.Println("eventExists", err)
+		log.Println("Error checking if event exists:", err)
 		//
 		// FIXME
 		//
 		// When the server is loaded the graphql API fails to return
 		// certain events. I haven't been able to identify why, but the
-		// same events always fail which suggest a better approach.
+		// same events always fail which suggests that there must be a
+		// better approach.
+		//
 		// That said, this works for the time being.
 		//
 		time.Sleep(3 * time.Second)
@@ -935,12 +940,27 @@ func eventExists(e Event) bool {
 
 	// loop through the events and return true if we have a real match
 	for _, el := range s.SearchEvents.Elements {
-		// include beginsOn in conditional
-		// log.Println("Mobilizòn event search returned: '" + el.Title + "' " + el.BeginsOn)
-		if el.Title == e.Title && el.BeginsOn == e.Date.Format(time.RFC3339) {
-			// log.Println("Found: " + el.Title + " " + el.BeginsOn)
+		// fetch the onlineAddress
+		var f struct {
+			Event struct {
+				OnlineAddress string `json:"onlineAddress"`
+			} `graphql:"event(uuid: $uuid)"`
+		}
+		fvars := map[string]interface{}{
+			"uuid": UUID(el.Uuid),
+		}
+		err := Client.Query(context.Background(), &f, fvars)
+		if err != nil {
+			log.Println("Failed fetching event by uuid:", el.Uuid, err)
+		}
+
+		if e.URL == f.Event.OnlineAddress {
+			log.Println("Found event matching:", e.URL)
+			// we have a match
+			// FIXME update the title if it has changed
 			return true
 		}
+
 	}
 
 	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
