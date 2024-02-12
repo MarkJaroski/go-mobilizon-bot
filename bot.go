@@ -961,8 +961,13 @@ func eventExists(e Event) bool {
 			// we have a match
 			// FIXME update the title if it has changed
 			return true
+		} else if e.URL+"/" == f.Event.OnlineAddress {
+			log.Println("Found event matching:", e.URL, "but with a trailing /")
+			return true
+		} else if e.URL == f.Event.OnlineAddress+"/" {
+			log.Println("Found event matching:", e.URL, "but this time the trailing / was missing in Mobilizon")
+			return true
 		}
-
 	}
 
 	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
