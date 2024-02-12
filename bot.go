@@ -212,7 +212,8 @@ const (
 type EventJoinOptions string
 
 const (
-	FREE EventJoinOptions = "FREE"
+	FREE     EventJoinOptions = "FREE"
+	EXTERNAL EventJoinOptions = "EXTERNAL"
 )
 
 type DateTime string
@@ -453,14 +454,14 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		CreateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 
 	var m_nopic struct {
 		CreateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
 	}
 
 	for _, event := range r.Event {
@@ -561,20 +562,21 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 
 		// set up the query vars
 		variables := map[string]interface{}{
-			"organizerActorId": graphql.ID(*opts.ActorID),
-			"attributedToId":   graphql.ID(*opts.GroupID),
-			"category":         category,
-			"visibility":       EventVisibility("PUBLIC"),
-			"joinOptions":      EventJoinOptions("FREE"),
-			"title":            event.Title,
-			"description":      event.Comment,
-			"physicalAddress":  addr,
-			"beginsOn":         DateTime(event.Date.Format(time.RFC3339)),
-			"endsOn":           DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
-			"draft":            graphql.Boolean(*opts.Draft),
-			"onlineAddress":    event.URL,
-			"tags":             tags,
-			"options":          options,
+			"organizerActorId":         graphql.ID(*opts.ActorID),
+			"attributedToId":           graphql.ID(*opts.GroupID),
+			"category":                 category,
+			"visibility":               EventVisibility("PUBLIC"),
+			"joinOptions":              EventJoinOptions("EXTERNAL"),
+			"title":                    event.Title,
+			"description":              event.Comment,
+			"physicalAddress":          addr,
+			"beginsOn":                 DateTime(event.Date.Format(time.RFC3339)),
+			"endsOn":                   DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
+			"draft":                    graphql.Boolean(*opts.Draft),
+			"onlineAddress":            event.URL,
+			"externalParticipationUrl": event.URL,
+			"tags":                     tags,
+			"options":                  options,
 		}
 
 		if imageId != "" {
