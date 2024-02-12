@@ -957,7 +957,7 @@ func eventExists(e Event) bool {
 		}
 
 		if e.URL == f.Event.OnlineAddress {
-			log.Println("Found event matching:", e.URL)
+			// log.Println("Found event matching:", e.URL)
 			// we have a match
 			// FIXME update the title if it has changed
 			return true
