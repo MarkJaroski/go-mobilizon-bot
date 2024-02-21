@@ -625,7 +625,7 @@ func registerApp() {
 	}
 
 	var posturl = "https://mobilisons.ch/apps"
-	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
+	body := []byte(`name=Concert%20Cloud%20Test%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal(err)
