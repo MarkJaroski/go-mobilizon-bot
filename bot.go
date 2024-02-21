@@ -124,6 +124,7 @@ type AddressInput struct {
 	Street      string `json:"street"`
 	Country     string `json:"country"`
 	Region      string `json:"region"`
+	Geom        Point  `json:"geom"`
 }
 
 type MediaInput struct {
@@ -489,10 +490,8 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		var addr = addrs[event.Location]
 
 		var tags = []string{
-			"concert",
 			event.Location,
-			event.City + " Concerts",
-			addr.Country + " Concerts/Konzerte",
+			event.City,
 		}
 
 		tz := Timezone(*opts.Timezone)
