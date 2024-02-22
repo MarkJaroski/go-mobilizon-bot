@@ -1,0 +1,3709 @@
+scrapers:
+  - name: Cinéma Le Select
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-select
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Le Select"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Granville"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-select"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Les Bobines de Crémieu
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cremieu
+    item: div.event
+    fields:
+      - name: location
+        value: "Les Bobines de Crémieu"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Crémieu"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cremieu"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Le Patio
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-patio
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Le Patio"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Gex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-patio"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Obernai
+    url: https://festivaldufilmvert.ch/fr/programme/2024/obernai
+    item: div.event
+    fields:
+      - name: location
+        value: "Obernai"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Obernai"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/obernai"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Star
+    url: https://festivaldufilmvert.ch/fr/programme/2024/strasbourg-star
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Star"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Strasbourg"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/strasbourg-star"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Eglise de Kolbsheim
+    url: https://festivaldufilmvert.ch/fr/programme/2024/kolbsheim
+    item: div.event
+    fields:
+      - name: location
+        value: "Eglise de Kolbsheim"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Strasbourg"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/kolbsheim"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Molodoï
+    url: https://festivaldufilmvert.ch/fr/programme/2024/strasbourg-molodoi
+    item: div.event
+    fields:
+      - name: location
+        value: "Molodoï"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Strasbourg"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/strasbourg-molodoi"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Polyvalente
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Polyvalente"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Cernex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle polyvalente
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente-0
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle polyvalente"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Cervens"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente-0"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Vox
+    url: https://festivaldufilmvert.ch/fr/programme/2024/chamonix
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Vox"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Chamonix"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/chamonix"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Otrement
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-otrement
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Otrement"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Chens Sur Léman"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-otrement"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des fêtes Collonges/Salève
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-collongessaleve
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des fêtes Collonges/Salève"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Collonges-sous-Salève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-collongessaleve"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma de Douvaine
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-douvaine
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma de Douvaine"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Douvaine"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-douvaine"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle polyvalente de Feigères
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente-feigeres
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle polyvalente de Feigères"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Feigères"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-polyvalente-feigeres"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Le Grand Soir Cinébus les Houches
+    url: https://festivaldufilmvert.ch/fr/programme/2024/les-houches
+    item: div.event
+    fields:
+      - name: location
+        value: "Le Grand Soir Cinébus les Houches"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Les Houches"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/les-houches"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Mairie de Loisin
+    url: https://festivaldufilmvert.ch/fr/programme/2024/mairie-loisin
+    item: div.event
+    fields:
+      - name: location
+        value: "Mairie de Loisin"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Loisin"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/mairie-loisin"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des fêtes de Massongy
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-massongy
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des fêtes de Massongy"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Massongy"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-massongy"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des fêtes du centre-village
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-du-centre-village
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des fêtes du centre-village"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Messery"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-fetes-du-centre-village"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Neuvecelle
+    url: https://festivaldufilmvert.ch/fr/programme/2024/neuvecelle
+    item: div.event
+    fields:
+      - name: location
+        value: "Neuvecelle"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Neuvecelle"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/neuvecelle"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: L’Arande
+    url: https://festivaldufilmvert.ch/fr/programme/2024/larande
+    item: div.event
+    fields:
+      - name: location
+        value: "L’Arande"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Saint-Julien-en-Genevois"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/larande"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Maison des habitants
+    url: https://festivaldufilmvert.ch/fr/programme/2024/maison-habitants
+    item: div.event
+    fields:
+      - name: location
+        value: "Maison des habitants"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Saint-Julien-en-Genevois"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/maison-habitants"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Centre de l’Etoile
+    url: https://festivaldufilmvert.ch/fr/programme/2024/thonon
+    item: div.event
+    fields:
+      - name: location
+        value: "Centre de l’Etoile"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Thonon"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/thonon"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Espace Albert Fol
+    url: https://festivaldufilmvert.ch/fr/programme/2024/espace-albert-fol
+    item: div.event
+    fields:
+      - name: location
+        value: "Espace Albert Fol"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Valleiry"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/espace-albert-fol"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Le Damier
+    url: https://festivaldufilmvert.ch/fr/programme/2024/veigy-foncenex
+    item: div.event
+    fields:
+      - name: location
+        value: "Le Damier"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Veigy-Foncenex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/veigy-foncenex"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma La Trace
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-trace
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma La Trace"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Villard"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-trace"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: MJC L'ellipse, Salle Polyvalente
+    url: https://festivaldufilmvert.ch/fr/programme/2024/mjc-lellipse-salle-polyvalente
+    item: div.event
+    fields:
+      - name: location
+        value: "MJC L'ellipse, Salle Polyvalente"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Viry"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/mjc-lellipse-salle-polyvalente"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name:  MJC du Vuache
+    url: https://festivaldufilmvert.ch/fr/programme/2024/mjc-du-vuache
+    item: div.event
+    fields:
+      - name: location
+        value: " MJC du Vuache"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Vulbens"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/mjc-du-vuache"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma les Quinsonnets
+    url: https://festivaldufilmvert.ch/fr/programme/2024/les-rousses
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma les Quinsonnets"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Les Rousses"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/les-rousses"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Peymeinade
+    url: https://festivaldufilmvert.ch/fr/programme/2024/peymeinade
+    item: div.event
+    fields:
+      - name: location
+        value: "Peymeinade"
+      - name: country
+        value: "France"
+      - name: city
+        value: "Peymeinade"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/peymeinade"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Filmpodium Biel/Bienne
+    url: https://festivaldufilmvert.ch/fr/programme/2024/biel-bienne
+    item: div.event
+    fields:
+      - name: location
+        value: "Filmpodium Biel/Bienne"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Bienne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/biel-bienne"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Blue Factory, Cinéma Stern
+    url: https://festivaldufilmvert.ch/fr/programme/2024/blue-factory-cinema-stern
+    item: div.event
+    fields:
+      - name: location
+        value: "Blue Factory, Cinéma Stern"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Fribourg"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/blue-factory-cinema-stern"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Rex
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-rex
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Rex"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Fribourg"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-rex"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Moléson du "Carré d'As"
+    url: https://festivaldufilmvert.ch/fr/programme/2024/romont
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Moléson du Carré d'As"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Romont"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/romont"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des Remparts
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-remparts
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des Remparts"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Rue"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-remparts"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Fribourg - Charmey
+    url: https://festivaldufilmvert.ch/fr/programme/2024/fribourg-charmey
+    item: div.event
+    fields:
+      - name: location
+        value: "Fribourg - Charmey"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Val-de-Charmey"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/fribourg-charmey"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Compesières, salle polyvalente
+    url: https://festivaldufilmvert.ch/fr/programme/2024/bardonnex
+    item: div.event
+    fields:
+      - name: location
+        value: "Compesières, salle polyvalente"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Bardonnex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/bardonnex"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Bio
+    url: https://festivaldufilmvert.ch/fr/programme/2024/carouge-bio
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Bio"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Carouge"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/carouge-bio"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Graduate Institute (IHEID)
+    url: https://festivaldufilmvert.ch/fr/programme/2024/iheid
+    item: div.event
+    fields:
+      - name: location
+        value: "Graduate Institute (IHEID)"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Carouge"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/iheid"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinelux
+    url: https://festivaldufilmvert.ch/fr/programme/2024/geneve-cinelux
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinelux"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/geneve-cinelux"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Le City
+    url: https://festivaldufilmvert.ch/fr/programme/2024/geneve-city
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Le City"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/geneve-city"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: HUG - Centre Médical Universitaire (CMU)
+    url: https://festivaldufilmvert.ch/fr/programme/2024/geneve-hug
+    item: div.event
+    fields:
+      - name: location
+        value: "HUG - Centre Médical Universitaire (CMU)"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/geneve-hug"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: MEG
+    url: https://festivaldufilmvert.ch/fr/programme/2024/geneve-meg
+    item: div.event
+    fields:
+      - name: location
+        value: "MEG"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/geneve-meg"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: UniMail
+    url: https://festivaldufilmvert.ch/fr/programme/2024/geneve-unige
+    item: div.event
+    fields:
+      - name: location
+        value: "UniMail"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genève"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/geneve-unige"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle communale des délices
+    url: https://festivaldufilmvert.ch/fr/programme/2024/grand-saconnex
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle communale des délices"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Grand-Saconnex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/grand-saconnex"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle communale du Petit-Lancy
+    url: https://festivaldufilmvert.ch/fr/programme/2024/petit-lancy
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle communale du Petit-Lancy"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lancy"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/petit-lancy"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Ferme de la Touvière
+    url: https://festivaldufilmvert.ch/fr/programme/2024/meinier
+    item: div.event
+    fields:
+      - name: location
+        value: "Ferme de la Touvière"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Meinier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/meinier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Meyrin-Boudines
+    url: https://festivaldufilmvert.ch/fr/programme/2024/meyrin-boudines
+    item: div.event
+    fields:
+      - name: location
+        value: "Meyrin-Boudines"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Meyrin"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/meyrin-boudines"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle de spectacle de l'Auberge des Vergers
+    url: https://festivaldufilmvert.ch/fr/programme/2024/meyrin-vergers
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle de spectacle de l'Auberge des Vergers"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Meyrin"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/meyrin-vergers"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Maison de la Culture de la Julienne
+    url: https://festivaldufilmvert.ch/fr/programme/2024/plan-les-ouates
+    item: div.event
+    fields:
+      - name: location
+        value: "Maison de la Culture de la Julienne"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Plan-les-Ouates"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/plan-les-ouates"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Bibliothèque
+    url: https://festivaldufilmvert.ch/fr/programme/2024/pregny-chambesy
+    item: div.event
+    fields:
+      - name: location
+        value: "Bibliothèque"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Pregny-Chambésy"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/pregny-chambesy"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Ferme du Lignon
+    url: https://festivaldufilmvert.ch/fr/programme/2024/vernier
+    item: div.event
+    fields:
+      - name: location
+        value: "Ferme du Lignon"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Vernier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/vernier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma La Grange
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-grange
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma La Grange"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Delémont"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-grange"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinélucarne
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinelucarne
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinélucarne"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Le Noirmont"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinelucarne"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinémajoie
+    url: https://festivaldufilmvert.ch/fr/programme/2024/porrentruy
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinémajoie"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Porrentruy"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/porrentruy"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Collège de la Fontenelle
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cernier
+    item: div.event
+    fields:
+      - name: location
+        value: "Collège de la Fontenelle"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Cernier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cernier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Théâtre de Colombier
+    url: https://festivaldufilmvert.ch/fr/programme/2024/colombier
+    item: div.event
+    fields:
+      - name: location
+        value: "Théâtre de Colombier"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Colombier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/colombier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: BSP - Salle de la Rebatte
+    url: https://festivaldufilmvert.ch/fr/programme/2024/hauterive
+    item: div.event
+    fields:
+      - name: location
+        value: "BSP - Salle de la Rebatte"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Hauterive"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/hauterive"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Auditorium du Muzoo
+    url: https://festivaldufilmvert.ch/fr/programme/2024/la-chaux-de-fonds
+    item: div.event
+    fields:
+      - name: location
+        value: "Auditorium du Muzoo"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "La Chaux-de-Fonds"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/la-chaux-de-fonds"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Espace Perrier
+    url: https://festivaldufilmvert.ch/fr/programme/2024/la-tene
+    item: div.event
+    fields:
+      - name: location
+        value: "Espace Perrier"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "La Tène"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/la-tene"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Ciné Club du Locle (Ciné Casino)
+    url: https://festivaldufilmvert.ch/fr/programme/2024/le-locle
+    item: div.event
+    fields:
+      - name: location
+        value: "Ciné Club du Locle (Ciné Casino)"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Le Locle"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/le-locle"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Collège de la Promenade
+    url: https://festivaldufilmvert.ch/fr/programme/2024/neuchatel-promenade
+    item: div.event
+    fields:
+      - name: location
+        value: "Collège de la Promenade"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Neuchâtel"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/neuchatel-promenade"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Musée d'Ethnographie MEN
+    url: https://festivaldufilmvert.ch/fr/programme/2024/neuchatel-men
+    item: div.event
+    fields:
+      - name: location
+        value: "Musée d'Ethnographie MEN"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Neuchâtel"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/neuchatel-men"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle de Spectacles de St-Aubin-Sauges
+    url: https://festivaldufilmvert.ch/fr/programme/2024/st-aubin
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle de Spectacles de St-Aubin-Sauges"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "St Aubin"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/st-aubin"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: cinema Rialto
+    url: https://festivaldufilmvert.ch/fr/programme/2024/locarno
+    item: div.event
+    fields:
+      - name: location
+        value: "cinema Rialto"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Locarno"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/locarno"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinema Lux Massagno
+    url: https://festivaldufilmvert.ch/fr/programme/2024/lugano
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinema Lux Massagno"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lugano"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/lugano"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Belle Usine
+    url: https://festivaldufilmvert.ch/fr/programme/2024/fully
+    item: div.event
+    fields:
+      - name: location
+        value: "Belle Usine"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Fully"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/fully"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Le Kremlin
+    url: https://festivaldufilmvert.ch/fr/programme/2024/monthey
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Le Kremlin"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Monthey"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/monthey"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle José Giovanni
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salvan
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle José Giovanni"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Salvan"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salvan"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma du Bourg
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-du-bourg
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma du Bourg"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Sierre"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-du-bourg"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: CinéSion
+    url: https://festivaldufilmvert.ch/fr/programme/2024/sion
+    item: div.event
+    fields:
+      - name: location
+        value: "CinéSion"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Sion"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/sion"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Fondation Opale 
+    url: https://festivaldufilmvert.ch/fr/programme/2024/lens
+    item: div.event
+    fields:
+      - name: location
+        value: "Fondation Opale "
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Sion"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/lens"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle communale
+    url: https://festivaldufilmvert.ch/fr/programme/2024/trient
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle communale"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Trient"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/trient"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des votations de Vernayaz
+    url: https://festivaldufilmvert.ch/fr/programme/2024/vernayaz
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des votations de Vernayaz"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Vernayaz"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/vernayaz"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Grain d'Sel
+    url: https://festivaldufilmvert.ch/fr/programme/2024/bex
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Grain d'Sel"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Bex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/bex"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle communale
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-communale
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle communale"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Burtigny"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-communale"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Eden
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-eden
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Eden"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Château d'Oex"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-eden"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Communale de Crans
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-communale-crans
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Communale de Crans"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Crans"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-communale-crans"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Aula des Trois Sapins
+    url: https://festivaldufilmvert.ch/fr/programme/2024/echallens
+    item: div.event
+    fields:
+      - name: location
+        value: "Aula des Trois Sapins"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Echallens"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/echallens"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle des spectacles
+    url: https://festivaldufilmvert.ch/fr/programme/2024/epalinges-salle-spectacles
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle des spectacles"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Épalinges"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/epalinges-salle-spectacles"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Mellby
+    url: https://festivaldufilmvert.ch/fr/programme/2024/epalinges-mellby
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Mellby"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Épalinges"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/epalinges-mellby"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Ecole de Genolier
+    url: https://festivaldufilmvert.ch/fr/programme/2024/ecole-genolier
+    item: div.event
+    fields:
+      - name: location
+        value: "Ecole de Genolier"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Genolier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/ecole-genolier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Château de la Sarraz
+    url: https://festivaldufilmvert.ch/fr/programme/2024/la-sarraz
+    item: div.event
+    fields:
+      - name: location
+        value: "Château de la Sarraz"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "La Sarraz"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/la-sarraz"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Centre socioculturel de Bellevaux
+    url: https://festivaldufilmvert.ch/fr/programme/2024lausanne-centre-socioculturel-bellevaux
+    item: div.event
+    fields:
+      - name: location
+        value: "Centre socioculturel de Bellevaux"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024lausanne-centre-socioculturel-bellevaux"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Bellevaux
+    url: https://festivaldufilmvert.ch/fr/programme/2024/lausanne-cine-bellevaux
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Bellevaux"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/lausanne-cine-bellevaux"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Espace 44
+    url: https://festivaldufilmvert.ch/fr/programme/2024/espace-44
+    item: div.event
+    fields:
+      - name: location
+        value: "Espace 44"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/espace-44"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: HESAV
+    url: https://festivaldufilmvert.ch/fr/programme/2024/hesav
+    item: div.event
+    fields:
+      - name: location
+        value: "HESAV"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/hesav"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Pathé Galeries
+    url: https://festivaldufilmvert.ch/fr/programme/2024/lausanne-galeries
+    item: div.event
+    fields:
+      - name: location
+        value: "Pathé Galeries"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/lausanne-galeries"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Terrain d'Aventure de Malley
+    url: https://festivaldufilmvert.ch/fr/programme/2024/terrain-daventure-malley
+    item: div.event
+    fields:
+      - name: location
+        value: "Terrain d'Aventure de Malley"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/terrain-daventure-malley"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma La Bobine
+    url: https://festivaldufilmvert.ch/fr/programme/2024/le-sentier
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma La Bobine"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Le Sentier"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/le-sentier"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle du Mont-Blanc
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-du-mont-blanc
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle du Mont-Blanc"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Le Vaud"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-du-mont-blanc"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Le Mont-sur-Lausanne
+    url: https://festivaldufilmvert.ch/fr/programme/2024/mont-sur-lausanne
+    item: div.event
+    fields:
+      - name: location
+        value: "Le Mont-sur-Lausanne"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Le-Mont-sur-Lausanne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/mont-sur-lausanne"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Hollywood
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-hollywood
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Hollywood"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Montreux"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-hollywood"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle Communale de Nyon
+    url: https://festivaldufilmvert.ch/fr/programme/2024/salle-communale-nyon
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle Communale de Nyon"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Nyon"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/salle-communale-nyon"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Théâtre de la Tournelle
+    url: https://festivaldufilmvert.ch/fr/programme/2024/orbe
+    item: div.event
+    fields:
+      - name: location
+        value: "Théâtre de la Tournelle"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Orbe"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/orbe"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Guillermaux
+    url: https://festivaldufilmvert.ch/fr/programme/2024/broye
+    item: div.event
+    fields:
+      - name: location
+        value: "Guillermaux"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Payerne"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/broye"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Maison de Commune
+    url: https://festivaldufilmvert.ch/fr/programme/2024/preverenges
+    item: div.event
+    fields:
+      - name: location
+        value: "Maison de Commune"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Préverenges"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/preverenges"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Salle de spectacle
+    url: https://festivaldufilmvert.ch/fr/programme/2024/renens
+    item: div.event
+    fields:
+      - name: location
+        value: "Salle de spectacle"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Renens"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/renens"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Casino Théâtre
+    url: https://festivaldufilmvert.ch/fr/programme/2024/rolle
+    item: div.event
+    fields:
+      - name: location
+        value: "Casino Théâtre"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Rolle"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/rolle"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Savigny
+    url: https://festivaldufilmvert.ch/fr/programme/2024/savigny
+    item: div.event
+    fields:
+      - name: location
+        value: "Savigny"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Savigny"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/savigny"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Maison de la Rivière
+    url: https://festivaldufilmvert.ch/fr/programme/2024/maison-riviere
+    item: div.event
+    fields:
+      - name: location
+        value: "Maison de la Rivière"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Tolochenaz"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/maison-riviere"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Cinéma Rex
+    url: https://festivaldufilmvert.ch/fr/programme/2024/cinema-rex-0
+    item: div.event
+    fields:
+      - name: location
+        value: "Cinéma Rex"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Vevey"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/cinema-rex-0"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Champ-Pittet  
+    url: https://festivaldufilmvert.ch/fr/programme/2024/champ-pittet
+    item: div.event
+    fields:
+      - name: location
+        value: "Champ-Pittet  "
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Yverdon-les-Bains"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/champ-pittet"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
+  - name: Forum Collège de Brit
+    url: https://festivaldufilmvert.ch/fr/programme/2024/forum-college-brit
+    item: div.event
+    fields:
+      - name: location
+        value: "Forum Collège de Brit"
+      - name: country
+        value: "Suisse"
+      - name: city
+        value: "Yvonand"
+      - name: url
+        type: url
+        value: "https://festivaldufilmvert.ch/fr/programme/2024/forum-college-brit"
+      - name: title
+        type: text
+        location:
+          - selector: span.title
+      - name: date
+        type: text
+        location:
+          - selector: span.date > span
+            attr: content
+      - name: comment
+        type: text
+        location:
+          - selector: div.body
+            entire_subtree: true
+        can_be_empty: true
+      - name: imageUrl
+        type: url
+        location:
+          - selector: div.field-name-field-image > img
+            attr: src
+
+
+
