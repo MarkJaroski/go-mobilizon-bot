@@ -279,7 +279,7 @@ func main() {
 	opts.GroupID = pflag.String("group", "", "The Mobilizon group ID to use for the event attribution.")
 	opts.Timezone = pflag.String("timezone", "Europe/Zurich", "The timezone to use for the event attribution.")
 	opts.AuthConfig = pflag.String("authconfig", confdir+"/mobilizon/auth.json", "Use this file for authorization tokens.")
-	opts.Config = pflag.String("config", confdir+"/mobilizon/config.json", "Use this file for general configuration.")
+	opts.Config = pflag.String("config", confdir+"/mobilizon", "Use this directory for configuration.")
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
 	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
@@ -361,6 +361,19 @@ func main() {
 func fetchAddrs(responseObject Response) map[string]AddressInput {
 	var addrs = make(map[string]AddressInput)
 
+	addrsfile := *opts.Config + "/addrs.json"
+
+	// Read the local file, if it exists. We can trap errors here
+	// since we can just recreate the file if necessary.
+	dat, err := os.ReadFile(addrsfile)
+	if err != nil {
+		log.Println(err)
+	}
+	err = json.Unmarshal(dat, &addrs)
+	if err != nil {
+		log.Println(err)
+	}
+
 	for _, event := range responseObject.Event {
 
 		// log.Println(fmt.Sprintf("Searching for: %s", event.Location))
@@ -405,6 +418,15 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 			}
 			addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 		}
+	}
+
+	data, err := json.MarshalIndent(&addrs, "", " ")
+	if err != nil {
+		log.Println(err)
+	}
+	err = os.WriteFile(addrsfile, data, 0600)
+	if err != nil {
+		log.Println(err)
 	}
 
 	return addrs
