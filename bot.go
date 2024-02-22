@@ -369,6 +369,8 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 	if err != nil {
 		log.Println(err)
 	}
+	// FIXME: this should be a real json format just dumping the map is not
+	// good json
 	err = json.Unmarshal(dat, &addrs)
 	if err != nil {
 		log.Println(err)
@@ -420,6 +422,8 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		}
 	}
 
+	// FIXME: this should be a real json format just dumping the map is not
+	// good json
 	data, err := json.MarshalIndent(&addrs, "", " ")
 	if err != nil {
 		log.Println(err)
@@ -647,7 +651,7 @@ func registerApp() {
 	}
 
 	var posturl = "https://mobilisons.ch/apps"
-	body := []byte(`name=Concert%20Cloud%20Test%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
+	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		log.Fatal(err)
