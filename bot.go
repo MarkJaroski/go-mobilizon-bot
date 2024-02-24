@@ -530,7 +530,7 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		}
 
 		// add a plug for ConcertCloud
-		event.Comment = event.Comment + " <br/><br/> " + CC_PLUG
+		event.Comment = event.Comment + " <p/><p> " + CC_PLUG
 
 		// get the event image
 		var imageURL = event.ImageUrl
