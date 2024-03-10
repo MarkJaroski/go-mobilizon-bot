@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -261,7 +260,6 @@ var Client *graphql.Client
 var Log hclog.Logger
 
 func init() {
-	// FIXME switch to the leveled logger generally
 	Log = hclog.New(&hclog.LoggerOptions{
 		Name:  "my-app",
 		Level: hclog.LevelFromString("INFO"),
@@ -272,11 +270,13 @@ func main() {
 	// set up our config dir if it's not already there
 	confdir, err := os.UserConfigDir()
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("User config dir not found", err)
+		os.Exit(1)
 	}
 	err = os.Mkdir(confdir+"/mobilizon", 0700)
 	if err != nil && !errors.Is(err, fs.ErrExist) {
-		log.Fatal(err)
+		Log.Error("Error creating directory", err)
+		os.Exit(1)
 	}
 
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
@@ -350,10 +350,11 @@ func main() {
 	var responseObject Response
 
 	if *opts.File != "" {
-		log.Println("using local file:", *opts.File)
+		Log.Info("using local file:", *opts.File)
 		dat, err := os.ReadFile(*opts.File)
 		if err != nil {
-			log.Fatal(err)
+			Log.Error("error", err)
+			os.Exit(1)
 		}
 		json.Unmarshal(dat, &responseObject)
 	} else {
@@ -361,13 +362,14 @@ func main() {
 		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
 		response, err := http.Get(fetchUrl)
 		if err != nil {
-			log.Println(err)
+			Log.Error("error", err)
 			os.Exit(1)
 		}
 
 		responseData, err := io.ReadAll(response.Body)
 		if err != nil {
-			log.Fatal(err)
+			Log.Error("", err)
+			os.Exit(1)
 		}
 
 		json.Unmarshal(responseData, &responseObject)
@@ -387,28 +389,28 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(addrsfile)
 	if err != nil {
-		log.Println(err)
+		Log.Error(err.Error())
 	}
 	// FIXME: this should be a real json format just dumping the map is not
 	// good json
 	err = json.Unmarshal(dat, &addrs)
 	if err != nil {
-		log.Println(err)
+		Log.Error(err.Error())
 	}
 
 	for _, event := range responseObject.Event {
 
-		// log.Println(fmt.Sprintf("Searching for: %s", event.Location))
+		Log.Debug("Searching for: ", event.Location)
 
 		// if we already have the don't bother with the query
 		_, ok := addrs[event.Location]
 		if ok {
-			// log.Println("Skipping " + event.Location)
+			Log.Debug("Skipping", event.Location, "- already cached")
 			continue
 		}
 
 		query := fetchOSMAddr(event)
-		// log.Println("Query from OSM:", query)
+		Log.Debug("Query from OSM:", query)
 
 		var s struct {
 			SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
@@ -418,22 +420,22 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		}
 		err := Client.Query(context.Background(), &s, vars)
 		if err != nil {
-			log.Println("fetchAddrs", err)
+			Log.Error("fetchAddrs", err)
 			time.Sleep(3 * time.Second)
 			Client.Query(context.Background(), &s, vars)
 		}
 
 		if len(s.SearchAddress) == 0 {
-			log.Println(fmt.Sprintf("Not found: %s", query))
+			Log.Info("Address not found: ", query)
 		} else if len(s.SearchAddress) == 1 {
 			a := s.SearchAddress[0]
-			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality)
+			Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality)
 			addrs[event.Location] = a
 			continue
 		}
 
 		for _, a := range s.SearchAddress {
-			// log.Println("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
+			Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
 			if a.Description == event.Location && a.Locality == event.City {
 				addrs[event.Location] = a
 				break
@@ -446,11 +448,11 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 	// good json
 	data, err := json.MarshalIndent(&addrs, "", " ")
 	if err != nil {
-		log.Println(err)
+		Log.Error(err.Error())
 	}
 	err = os.WriteFile(addrsfile, data, 0600)
 	if err != nil {
-		log.Println(err)
+		Log.Error(err.Error())
 	}
 
 	return addrs
@@ -460,7 +462,7 @@ func fetchOSMAddr(event Event) string {
 
 	var addr Place
 
-	// log.Println("Doing lookup in OpenStreetMap")
+	Log.Debug("Doing lookup in OpenStreetMap")
 	var querystring = fmt.Sprintf("amenity=%s&city=%s&format=json&addressdetails=1",
 		url.QueryEscape(event.Location),
 		url.QueryEscape(event.City))
@@ -468,25 +470,27 @@ func fetchOSMAddr(event Event) string {
 	nresp, err := http.Get(nurl)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		Log.Debug(err.Error())
+		os.Exit(1)
 	}
 
 	addrData, err := io.ReadAll(nresp.Body)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 	var addrObject NominatumResponse
 	json.Unmarshal(addrData, &addrObject)
 
 	if len(addrObject) == 0 {
-		log.Println(fmt.Sprintf("OSM Place Not found: %s, %s", event.Location, event.City))
+		Log.Debug(fmt.Sprintf("OSM Place Not found: %s, %s", event.Location, event.City))
 		return event.Location + " " + event.City
 	} else if len(addrObject) == 1 {
 		addr = addrObject[0]
 	} else {
 		for _, p := range addrObject {
 			if p.Type == "nightclub" || p.Type == "bar" || p.Type == "restaurant" || p.Type == "theatre" || p.Type == "cinema" || p.Type == "arts_centre" {
-				// log.Println("Addr Type:", p.Type)
+				Log.Debug("Addr Type:", p.Type)
 				addr = p
 				break
 			}
@@ -517,7 +521,7 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)
 		if match {
-			log.Println("Skipping BeJazz.")
+			Log.Info("Skipping BeJazz.")
 			continue
 		}
 
@@ -566,7 +570,7 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		}
 
 		if imageURL == "" {
-			log.Println("No image found for " + event.URL)
+			Log.Info("No image found for " + event.URL)
 		}
 
 		var imageId string = ""
@@ -574,23 +578,24 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 		if imageURL != "" {
 			path, err := downloadFile(imageURL)
 			if err != nil {
-				log.Println(err)
+				Log.Error("Image download failed", err)
 			} else if *opts.NoOp {
-				// log.Println("NoOp: Skipping the media upload too.")
+				Log.Debug("NoOp: Skipping the media upload too.")
 			} else {
 				// upload the image
 				multi, err := newfileUploadRequest(path)
 				if err != nil {
-					log.Println(event.Title, " ", err)
+					Log.Error(event.Title, " ", err)
 				} else {
-					// log.Println("Uploading the image")
+					Log.Debug("Uploading the image")
 					response, err := HttpClient.Do(multi)
 					if err != nil {
-						log.Println(err)
+						Log.Error("Error uploading image", err)
 					}
 					responseData, err := io.ReadAll(response.Body)
 					if err != nil {
-						log.Fatal(err)
+						Log.Error("Error uploading image", err)
+						os.Exit(1)
 					}
 					var mediaObject MediaResponse
 					json.Unmarshal(responseData, &mediaObject)
@@ -641,20 +646,23 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 				// run the mutation against the Mobilizon instance
 				err := Client.Mutate(context.Background(), &m_nopic, variables)
 				if err != nil {
-					log.Fatal(err)
+					Log.Error("", err)
+					os.Exit(1)
 				}
 			} else {
 				// run the mutation against the Mobilizon instance
 				err := Client.Mutate(context.Background(), &m, variables)
 				if err != nil {
-					log.Fatal(err)
+					Log.Error("", err)
+					os.Exit(1)
 				}
 			}
 
 			// calculate a hash of the event
 			hash, err := rxhash.HashStruct(event)
 			if err != nil {
-				log.Fatal(err)
+				Log.Error("", err)
+				os.Exit(1)
 			}
 
 			// output the hash and event ID to be stored somehwere
@@ -674,7 +682,8 @@ func registerApp() {
 	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -682,12 +691,14 @@ func registerApp() {
 	c := &http.Client{}
 	res, err := c.Do(r)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	resData, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	var reg Registration
@@ -714,7 +725,8 @@ func authorizeApp() {
 	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:media:upload")
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -722,12 +734,14 @@ func authorizeApp() {
 	c := &http.Client{}
 	res, err := c.Do(r)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	resData, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	type DeviceCodeGrant struct {
@@ -754,7 +768,8 @@ func authorizeApp() {
 	token_body := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
 	tokreq, err := http.NewRequest("POST", token_url, bytes.NewBuffer(token_body))
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	tokreq.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -762,7 +777,8 @@ func authorizeApp() {
 
 	resData, err = io.ReadAll(tokres.Body)
 	if err != nil {
-		log.Fatal(err)
+		Log.Error("", err)
+		os.Exit(1)
 	}
 
 	err = os.WriteFile(*opts.AuthConfig, resData, 0600)
@@ -776,7 +792,7 @@ func fetchOGImage(url string) string {
 	// get the ogp object
 	ogp, err := opengraph.Fetch(url)
 	if err != nil {
-		log.Println("fetchOGImage", err)
+		Log.Error("fetchOGImage", err)
 	}
 
 	// convert URLs to absolute
@@ -787,7 +803,7 @@ func fetchOGImage(url string) string {
 		// but check that it works first
 		res, err := http.Head(ogp.Image[0].URL)
 		if err != nil {
-			log.Println("fetchOGImage", err)
+			Log.Error("fetchOGImage", err)
 			return ""
 		}
 		if res.StatusCode == 200 {
@@ -805,7 +821,7 @@ func fetchOGImage(url string) string {
 // this should try harder to find the best image
 func fetchEventImage(url string) string {
 
-	// log.Println("Fetching an image URL from " + url)
+	Log.Debug("Fetching an image URL from " + url)
 	var srcs []string
 
 	c := colly.NewCollector()
@@ -825,7 +841,7 @@ func fetchEventImage(url string) string {
 		var best = 0
 		var size int64 = 0
 		for i, src := range srcs {
-			// log.Println(src)
+			Log.Debug(src)
 			// occassionally we get an inline image
 			if strings.HasPrefix(src, "data:") {
 				continue
@@ -836,14 +852,14 @@ func fetchEventImage(url string) string {
 			}
 			res, err := http.Head(src)
 			if err != nil {
-				log.Println("fetchEventImage", err)
+				Log.Error("fetchEventImage", err)
 			}
 			cl := res.ContentLength
 			if cl > size && cl < MAX_IMG_SIZE {
 				best = i
 				size = cl
 			}
-			// log.Printf("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
+			Log.Error("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
 		}
 		return srcs[best]
 	} else {
@@ -856,7 +872,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	var fileContents []byte
 	var fi fs.FileInfo
 	if strings.HasPrefix(path, "data:") {
-		// log.Println(path)
+		Log.Debug("newFileUploadRequest", path)
 		dataURL, err := dataurl.DecodeString(path)
 		if err != nil {
 			return nil, err
@@ -953,7 +969,7 @@ func downloadFile(URL string) (string, error) {
 
 func eventExists(e Event) bool {
 
-	// log.Println("Searching for '" + e.Title + "' " + e.Date.Format(time.RFC3339))
+	Log.Debug("Searching for '" + e.Title + "' " + e.Date.Format(time.RFC3339))
 	var s struct {
 		SearchEvents struct {
 			Total    int `json:"total"`
@@ -971,7 +987,7 @@ func eventExists(e Event) bool {
 	}
 	err := Client.Query(context.Background(), &s, vars)
 	if err != nil {
-		log.Println("Error checking if event exists:", err)
+		Log.Error("Error checking if event exists:", err)
 		//
 		// FIXME
 		//
@@ -999,24 +1015,24 @@ func eventExists(e Event) bool {
 		}
 		err := Client.Query(context.Background(), &f, fvars)
 		if err != nil {
-			log.Println("Failed fetching event by uuid:", el.Uuid, err)
+			Log.Debug("Failed fetching event by uuid:", el.Uuid, err)
 		}
 
 		if e.URL == f.Event.OnlineAddress {
-			// log.Println("Found event matching:", e.URL)
+			Log.Debug("Found event matching:", e.URL)
 			// we have a match
 			// FIXME update the title if it has changed
 			return true
 		} else if e.URL+"/" == f.Event.OnlineAddress {
-			// log.Println("Found event matching:", e.URL, "but with a trailing /")
+			Log.Debug("Found event matching:", e.URL, "but with a trailing /")
 			return true
 		} else if e.URL == f.Event.OnlineAddress+"/" {
-			// log.Println("Found event matching:", e.URL, "but this time the trailing / was missing in Mobilizon")
+			Log.Debug("Found event matching:", e.URL, "but this time the trailing / was missing in Mobilizon")
 			return true
 		}
 	}
 
-	log.Println("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
+	Log.Info("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
 	return false
 }
 
@@ -1034,14 +1050,14 @@ func refreshAuthorization() error {
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(*opts.AuthConfig)
 	if err != nil {
-		log.Println(err)
+		Log.Error("Error reading auth file:", err)
 	}
 	err = json.Unmarshal(dat, &auth)
 	if err != nil {
-		log.Println(err)
+		Log.Error("Error unmarshaling json:", err)
 	}
 
-	// log.Println("Using refresh token: " + auth.RefreshToken)
+	Log.Debug("Using refresh token: " + auth.RefreshToken)
 	variables := map[string]interface{}{
 		"rt": auth.RefreshToken,
 	}
@@ -1052,7 +1068,7 @@ func refreshAuthorization() error {
 	c := graphql.NewClient("https://mobilisons.ch/api", nil)
 	err = c.Mutate(context.Background(), &m, variables)
 	if err != nil {
-		log.Println("Failed auth token renewal")
+		Log.Error("Failed auth token renewal")
 		return err
 	}
 	auth.AccessToken = m.RefreshToken.AccessToken
