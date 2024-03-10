@@ -49,6 +49,7 @@ type Options struct {
 	Register   *bool
 	Authorize  *bool
 	Draft      *bool
+	Debug      *bool
 }
 
 var opts Options
@@ -295,6 +296,7 @@ func main() {
 	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
 	opts.Draft = pflag.Bool("draft", false, "Create events in draft mode.")
+	opts.Debug = pflag.Bool("debug", false, "Debug mode.")
 
 	pflag.Parse()
 
@@ -329,6 +331,9 @@ func main() {
 	}
 	if *opts.Date != "" {
 		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*opts.Date))
+	}
+	if *opts.Debug {
+		Log.SetLevel(hclog.LevelFromString("DEBUG"))
 	}
 
 	// set up an HTTPClient with automated retries
