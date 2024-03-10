@@ -262,7 +262,7 @@ var Log hclog.Logger
 
 func init() {
 	Log = hclog.New(&hclog.LoggerOptions{
-		Name:  "my-app",
+		Name:  "Mobilizon bot",
 		Level: hclog.LevelFromString("INFO"),
 	})
 }
@@ -1024,15 +1024,15 @@ func eventExists(e Event) bool {
 		}
 
 		if e.URL == f.Event.OnlineAddress {
-			Log.Debug("Found event matching:", e.URL)
+			Log.Debug("Found event matching", "url", e.URL)
 			// we have a match
 			// FIXME update the title if it has changed
 			return true
 		} else if e.URL+"/" == f.Event.OnlineAddress {
-			Log.Debug("Found event matching:", e.URL, "but with a trailing /")
+			Log.Debug("Found event matching", "url", e.URL, "issue", "no trailing slash")
 			return true
 		} else if e.URL == f.Event.OnlineAddress+"/" {
-			Log.Debug("Found event matching:", e.URL, "but this time the trailing / was missing in Mobilizon")
+			Log.Debug("Found event matching", "url", e.URL, "issue", "trailing slash")
 			return true
 		}
 	}
