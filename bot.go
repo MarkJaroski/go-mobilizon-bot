@@ -992,7 +992,7 @@ func eventExists(e Event) bool {
 	}
 	err := Client.Query(context.Background(), &s, vars)
 	if err != nil {
-		Log.Error("Error checking if event exists:", err)
+		Log.Error("Error checking if event exists", "error", err)
 		//
 		// FIXME
 		//
