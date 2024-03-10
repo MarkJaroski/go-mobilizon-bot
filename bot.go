@@ -350,7 +350,7 @@ func main() {
 	var responseObject Response
 
 	if *opts.File != "" {
-		Log.Info("using local file:", *opts.File)
+		Log.Info("using local file:", "file", *opts.File)
 		dat, err := os.ReadFile(*opts.File)
 		if err != nil {
 			Log.Error("error", err)
@@ -400,12 +400,12 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 
 	for _, event := range responseObject.Event {
 
-		Log.Debug("Searching for: ", event.Location)
+		Log.Debug("Searching for: ", "location", event.Location)
 
 		// if we already have the don't bother with the query
 		_, ok := addrs[event.Location]
 		if ok {
-			Log.Debug("Skipping", event.Location, "- already cached")
+			Log.Debug("Skipping cached location", "location", event.Location)
 			continue
 		}
 
@@ -429,7 +429,7 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 			Log.Info("Address not found: ", query)
 		} else if len(s.SearchAddress) == 1 {
 			a := s.SearchAddress[0]
-			Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality)
+			Log.Debug("Mobilizòn returned:", "description", a.Description, "street", a.Street, "locality", a.Locality)
 			addrs[event.Location] = a
 			continue
 		}
@@ -483,7 +483,7 @@ func fetchOSMAddr(event Event) string {
 	json.Unmarshal(addrData, &addrObject)
 
 	if len(addrObject) == 0 {
-		Log.Debug(fmt.Sprintf("OSM Place Not found: %s, %s", event.Location, event.City))
+		Log.Debug("OSM Place Not found:", "location", event.Location, "city", event.City)
 		return event.Location + " " + event.City
 	} else if len(addrObject) == 1 {
 		addr = addrObject[0]
