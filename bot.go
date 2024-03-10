@@ -24,8 +24,9 @@ import (
 	"github.com/otiai10/opengraph"
 	"github.com/rxwycdh/rxhash"
 	"github.com/vincent-petithory/dataurl"
-	"golang.org/x/oauth2"
 
+	"github.com/hashicorp/go-hclog"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/pflag"
 )
 
@@ -257,6 +258,16 @@ var timezone *string
 var HttpClient *http.Client
 var Client *graphql.Client
 
+var Log hclog.Logger
+
+func init() {
+	// FIXME switch to the leveled logger generally
+	Log = hclog.New(&hclog.LoggerOptions{
+		Name:  "my-app",
+		Level: hclog.LevelFromString("INFO"),
+	})
+}
+
 func main() {
 	// set up our config dir if it's not already there
 	confdir, err := os.UserConfigDir()
@@ -320,11 +331,20 @@ func main() {
 		ccQuery = fmt.Sprintf("%s&date=%s", ccQuery, url.QueryEscape(*opts.Date))
 	}
 
-	src := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: auth.AccessToken},
-	)
-	HttpClient = oauth2.NewClient(context.Background(), src)
+	// set up an HTTPClient with automated retries
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryWaitMin = 3 * 60  // wait 3 minutes before retrying
+	retryClient.RetryWaitMax = 10 * 60 // give up after 10 minutes
+	retryClient.RetryMax = 50          // or 50 tries
+
+	retryClient.Logger = Log
+
+	HttpClient = retryClient.StandardClient()
+
 	Client = graphql.NewClient("https://mobilisons.ch/api", HttpClient)
+	Client = Client.WithRequestModifier(func(r *http.Request) {
+		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
+	})
 
 	// this will hold our json object whether local or from ConcertCloud
 	var responseObject Response
@@ -341,7 +361,7 @@ func main() {
 		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
 		response, err := http.Get(fetchUrl)
 		if err != nil {
-			fmt.Print(err.Error())
+			log.Println(err)
 			os.Exit(1)
 		}
 
@@ -888,6 +908,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 
 	r, err := http.NewRequest("POST", "https://mobilisons.ch/api", body)
 	r.Header.Add("Content-Type", writer.FormDataContentType())
+	r.Header.Add("Authorization", "Bearer "+auth.AccessToken)
 
 	return r, err
 }
