@@ -1,4 +1,4 @@
-module github.com/markjaroski/ConcertCloudMobilizonBot
+module github.com/markjaroski/go-mobilizon-bot
 
 go 1.21.3
 
