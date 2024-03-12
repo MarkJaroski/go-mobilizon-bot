@@ -651,14 +651,14 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 				// run the mutation against the Mobilizon instance
 				err := Client.Mutate(context.Background(), &m_nopic, variables)
 				if err != nil {
-					Log.Error("", err)
+					Log.Error("Error creating event without an image", "error", err)
 					os.Exit(1)
 				}
 			} else {
 				// run the mutation against the Mobilizon instance
 				err := Client.Mutate(context.Background(), &m, variables)
 				if err != nil {
-					Log.Error("", err)
+					Log.Error("Error creating event with an image", "error", err)
 					os.Exit(1)
 				}
 			}
@@ -864,7 +864,7 @@ func fetchEventImage(url string) string {
 				best = i
 				size = cl
 			}
-			Log.Error("i: %d - size: %d cl: %d best: %d", i, size, cl, best)
+			Log.Debug("Choosing image by size", "i", i, "size", size, "cl", cl, "best", best)
 		}
 		return srcs[best]
 	} else {
