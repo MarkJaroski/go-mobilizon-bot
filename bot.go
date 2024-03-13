@@ -516,110 +516,43 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 			continue
 		}
 
+		// trim the title to produce better matches
 		event.Title = strings.TrimSpace(event.Title)
-		// fmt.Println(event.Title)
 
-		// hack to fix short titles
+		// titles must be at least 3 characters long in Mobilizòn
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
 
+		// guard clause
 		if eventExists(event) {
 			continue
-		}
-
-		var addr = addrs[event.Location]
-
-		var tags = []string{
-			event.Location,
-			event.City,
-		}
-
-		tz := Timezone(*opts.Timezone)
-
-		options := EventOptionsInput{
-			CommentModeration: EventCommentModeration("ALLOW_ALL"),
-			ShowStartTime:     graphql.Boolean(true),
-			ShowEndTime:       graphql.Boolean(false),
-			Timezone:          tz,
 		}
 
 		// add a plug for ConcertCloud
 		event.Comment = event.Comment + " <p/><p> " + CC_PLUG
 
-		// get the event image
-		var imageURL = event.ImageUrl
-
-		// fetch the opengraph image for the event if there is no event image
-		if imageURL == "" {
-			imageURL = fetchOGImage(event.URL)
-		}
-
-		// fetch a backup image if we don't already have something
-		if imageURL == "" {
-			imageURL = fetchEventImage(event.URL)
-		}
-
-		if imageURL == "" {
-			Log.Info("No image found for " + event.URL)
-		}
-
-		var imageId string = ""
-		// download the image
-		if imageURL != "" {
-			path, err := downloadFile(imageURL)
-			if err != nil {
-				Log.Error("Image download failed", err)
-			} else if *opts.NoOp {
-				Log.Debug("NoOp: Skipping the media upload too.")
-			} else {
-				// upload the image
-				multi, err := newfileUploadRequest(path)
-				if err != nil {
-					Log.Error(event.Title, " ", err)
-				} else {
-					Log.Debug("Uploading the image")
-					response, err := HttpClient.Do(multi)
-					if err != nil {
-						Log.Error("Error uploading image", err)
-					}
-					responseData, err := io.ReadAll(response.Body)
-					if err != nil {
-						Log.Error("Error uploading image", err)
-						os.Exit(1)
-					}
-					var mediaObject MediaResponse
-					json.Unmarshal(responseData, &mediaObject)
-					imageId = mediaObject.Data.Upload.Id
-				}
-			}
-		}
-
 		// set up the query vars
 		variables := map[string]interface{}{
 			"organizerActorId":         graphql.ID(*opts.ActorID),
 			"attributedToId":           graphql.ID(*opts.GroupID),
-			"category":                 getCategory(event),
+			"category":                 populateCategory(event),
 			"visibility":               EventVisibility("PUBLIC"),
 			"joinOptions":              EventJoinOptions("EXTERNAL"),
 			"title":                    event.Title,
 			"description":              event.Comment,
-			"physicalAddress":          addr,
+			"physicalAddress":          addrs[event.Location],
 			"beginsOn":                 DateTime(event.Date.Format(time.RFC3339)),
 			"endsOn":                   DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
 			"draft":                    graphql.Boolean(*opts.Draft),
 			"onlineAddress":            event.URL,
 			"externalParticipationUrl": event.URL,
-			"tags":                     tags,
-			"options":                  options,
+			"tags":                     populateTags,
+			"options":                  populateEventOptions(),
+			"picture":                  fetchAndUploadImage(event),
 		}
 
-		if imageId != "" {
-			mi := MediaInput{MediaId: graphql.ID(imageId)}
-			variables["picture"] = mi
-		}
-
-		if imageId == "" {
+		if variables["picture"] == "" {
 			createEvent(variables)
 		} else {
 			createEventWithoutImage(variables)
@@ -627,7 +560,73 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 	}
 }
 
-func getCategory(e Event) EventCategory {
+func fetchAndUploadImage(event Event) string {
+	// get the event image
+	var imageURL = event.ImageUrl
+
+	// fetch the opengraph image for the event if there is no event image
+	if imageURL == "" {
+		imageURL = fetchOGImageUrl(event.URL)
+	}
+
+	// fetch a backup image if we don't already have something
+	if imageURL == "" {
+		imageURL = fetchEventImage(event.URL)
+	}
+
+	if imageURL == "" {
+		Log.Info("No image found for " + event.URL)
+		return ""
+	}
+
+	// download the image
+	path, err := downloadFile(imageURL)
+	if err != nil {
+		Log.Error("Image download failed", err)
+	} else if *opts.NoOp {
+		Log.Debug("NoOp: Skipping the media upload too.")
+	} else {
+		// upload the image
+		multi, err := newfileUploadRequest(path)
+		if err != nil {
+			Log.Error(event.Title, " ", err)
+		} else {
+			Log.Debug("Uploading the image")
+			response, err := HttpClient.Do(multi)
+			if err != nil {
+				Log.Error("Error uploading image", err)
+			}
+			responseData, err := io.ReadAll(response.Body)
+			if err != nil {
+				Log.Error("Error uploading image", err)
+				os.Exit(1)
+			}
+			var mediaObject MediaResponse
+			json.Unmarshal(responseData, &mediaObject)
+			return mediaObject.Data.Upload.Id
+		}
+	}
+	return ""
+}
+
+func populateTags(e Event) []string {
+	return []string{
+		e.Location,
+		e.City,
+	}
+}
+
+func populateEventOptions() EventOptionsInput {
+	tz := Timezone(*opts.Timezone)
+	return EventOptionsInput{
+		CommentModeration: EventCommentModeration("ALLOW_ALL"),
+		ShowStartTime:     graphql.Boolean(true),
+		ShowEndTime:       graphql.Boolean(false),
+		Timezone:          tz,
+	}
+}
+
+func populateCategory(e Event) EventCategory {
 	if slices.Contains(EventTypeStrings, e.Type) {
 		return EventCategory(e.Type)
 	}
@@ -784,7 +783,7 @@ func authorizeApp() {
 
 }
 
-func fetchOGImage(url string) string {
+func fetchOGImageUrl(url string) string {
 
 	retUrl := ""
 
