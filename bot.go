@@ -21,7 +21,6 @@ import (
 	"github.com/gocolly/colly"
 	"github.com/hasura/go-graphql-client"
 	"github.com/otiai10/opengraph"
-	"github.com/rxwycdh/rxhash"
 	"github.com/vincent-petithory/dataurl"
 
 	"github.com/hashicorp/go-hclog"
@@ -506,19 +505,6 @@ func fetchOSMAddr(event Event) string {
 }
 
 func createEvents(r Response, addrs map[string]AddressInput) {
-	var m struct {
-		CreateEvent struct {
-			Id   string
-			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
-	}
-
-	var m_nopic struct {
-		CreateEvent struct {
-			Id   string
-			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
-	}
 
 	for _, event := range r.Event {
 
@@ -609,17 +595,11 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 			}
 		}
 
-		// if the goskyr config has Mobilizòn event types use them
-		var category = EventCategory("MUSIC")
-		if slices.Contains(EventTypeStrings, event.Type) {
-			category = EventCategory(event.Type)
-		}
-
 		// set up the query vars
 		variables := map[string]interface{}{
 			"organizerActorId":         graphql.ID(*opts.ActorID),
 			"attributedToId":           graphql.ID(*opts.GroupID),
-			"category":                 category,
+			"category":                 getCategory(event),
 			"visibility":               EventVisibility("PUBLIC"),
 			"joinOptions":              EventJoinOptions("EXTERNAL"),
 			"title":                    event.Title,
@@ -639,41 +619,55 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 			variables["picture"] = mi
 		}
 
-		if *opts.NoOp {
-
-			// if this is a dry run just print some stuff out
-			// spew.Dump(variables)
-			// spew.Dump(imageURL)
-
+		if imageId == "" {
+			createEvent(variables)
 		} else {
-
-			if imageId == "" {
-				// run the mutation against the Mobilizon instance
-				err := Client.Mutate(context.Background(), &m_nopic, variables)
-				if err != nil {
-					Log.Error("Error creating event without an image", "error", err)
-					os.Exit(1)
-				}
-			} else {
-				// run the mutation against the Mobilizon instance
-				err := Client.Mutate(context.Background(), &m, variables)
-				if err != nil {
-					Log.Error("Error creating event with an image", "error", err)
-					os.Exit(1)
-				}
-			}
-
-			// calculate a hash of the event
-			hash, err := rxhash.HashStruct(event)
-			if err != nil {
-				Log.Error("", err)
-				os.Exit(1)
-			}
-
-			// output the hash and event ID to be stored somehwere
-			fmt.Printf("%s %s %s\n", hash, m.CreateEvent.Id, m.CreateEvent.Uuid)
+			createEventWithoutImage(variables)
 		}
 	}
+}
+
+func getCategory(e Event) EventCategory {
+	if slices.Contains(EventTypeStrings, e.Type) {
+		return EventCategory(e.Type)
+	}
+	return EventCategory("MUSIC")
+}
+
+func createEvent(vars map[string]interface{}) {
+	if *opts.NoOp {
+		return
+	}
+	var m struct {
+		CreateEvent struct {
+			Id   string
+			Uuid string
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
+	}
+	err := Client.Mutate(context.Background(), &m, vars)
+	if err != nil {
+		Log.Error("Error creating event with an image", "error", err)
+		os.Exit(1)
+	}
+	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
+}
+
+func createEventWithoutImage(vars map[string]interface{}) {
+	if *opts.NoOp {
+		return
+	}
+	var m struct {
+		CreateEvent struct {
+			Id   string
+			Uuid string
+		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+	}
+	err := Client.Mutate(context.Background(), &m, vars)
+	if err != nil {
+		Log.Error("Error creating event without an image", "error", err)
+		os.Exit(1)
+	}
+	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
 }
 
 func registerApp() {
