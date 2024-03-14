@@ -519,7 +519,10 @@ func createEvents(r Response) {
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
-		vars := populateVariables(event)
+		vars, err := populateVariables(event)
+		if err != nil {
+			continue
+		}
 		// guard clauses
 		if eventExists(event) {
 			updateEvent(vars)
@@ -532,7 +535,7 @@ func createEvents(r Response) {
 	}
 }
 
-func populateVariables(e Event) map[string]interface{} {
+func populateVariables(e Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
 	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
 	vars := map[string]interface{}{
@@ -560,7 +563,7 @@ func populateVariables(e Event) map[string]interface{} {
 		mi.MediaId = id
 		vars["picture"] = mi
 	}
-	return vars
+	return vars, err
 }
 
 func populateImageUrl(e Event) Event {
