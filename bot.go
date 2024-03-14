@@ -521,6 +521,7 @@ func createEvents(r Response) {
 		}
 		vars, err := populateVariables(event)
 		if err != nil {
+			Log.Error("Error populating vars", "vars", spew.Sdump(vars))
 			continue
 		}
 		// guard clauses
