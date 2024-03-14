@@ -3,12 +3,12 @@ module github.com/markjaroski/go-mobilizon-bot
 go 1.21.3
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/gocolly/colly v1.2.0
 	github.com/hashicorp/go-hclog v0.9.2
 	github.com/hashicorp/go-retryablehttp v0.7.5
 	github.com/hasura/go-graphql-client v0.10.0
 	github.com/otiai10/opengraph v1.1.3
-	github.com/rxwycdh/rxhash v0.0.0-20230131062142-10b7a38b400d
 	github.com/spf13/pflag v1.0.5
 	github.com/vincent-petithory/dataurl v1.0.0
 )

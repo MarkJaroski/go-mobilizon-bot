@@ -55,8 +55,6 @@ github.com/otiai10/opengraph v1.1.3/go.mod h1:ZMbPcfiSRSsg3+yrWZCXrgYL6kEK4KpH4G
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
-github.com/rxwycdh/rxhash v0.0.0-20230131062142-10b7a38b400d h1:pVClFYVn4nLE5D8YiihMwOznjoTuM8vA/6Rk6Jrkfe0=
-github.com/rxwycdh/rxhash v0.0.0-20230131062142-10b7a38b400d/go.mod h1:xcKiSuhva83ji3A2u7kkLOvrsruYL//yHjoAJ/u6jzA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d h1:hrujxIzL1woJ7AwssoOcM/tq5JjjG2yYOc8odClEiXA=
 github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=

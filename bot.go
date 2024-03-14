@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gocolly/colly"
 	"github.com/hasura/go-graphql-client"
 	"github.com/otiai10/opengraph"
@@ -29,6 +30,7 @@ import (
 )
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
+const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1000000
 
 type Options struct {
@@ -70,8 +72,8 @@ type Event struct {
 	Comment   string    `json:"comment"`
 	Type      string    `json:"type"`
 	SourceUrl string    `json:"sourceUrl"`
-	ImageUrl  string    `json:"imageUrl"`
 	Date      time.Time `json:"date"`
+	ImageUrl  string    `json:"imageUrl"`
 }
 
 type UUID string
@@ -253,6 +255,7 @@ var auth AuthConfig
 var actorID *string
 var groupID *string
 var timezone *string
+var Addrs map[string]AddressInput
 
 var HttpClient *http.Client
 var Client *graphql.Client
@@ -264,6 +267,7 @@ func init() {
 		Name:  "Mobilizon bot",
 		Level: hclog.LevelFromString("INFO"),
 	})
+	Addrs = make(map[string]AddressInput)
 }
 
 func main() {
@@ -379,14 +383,11 @@ func main() {
 		json.Unmarshal(responseData, &responseObject)
 	}
 
-	var addrs = fetchAddrs(responseObject)
-
-	createEvents(responseObject, addrs)
+	fetchAddrs(responseObject)
+	createEvents(responseObject)
 }
 
-func fetchAddrs(responseObject Response) map[string]AddressInput {
-	var addrs = make(map[string]AddressInput)
-
+func fetchAddrs(responseObject Response) {
 	addrsfile := *opts.Config + "/addrs.json"
 
 	// Read the local file, if it exists. We can trap errors here
@@ -397,7 +398,7 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 	}
 	// FIXME: this should be a real json format just dumping the map is not
 	// good json
-	err = json.Unmarshal(dat, &addrs)
+	err = json.Unmarshal(dat, &Addrs)
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -407,7 +408,7 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		Log.Debug("Searching for: ", "location", event.Location)
 
 		// if we already have the don't bother with the query
-		_, ok := addrs[event.Location]
+		_, ok := Addrs[event.Location]
 		if ok {
 			Log.Debug("Skipping cached location", "location", event.Location)
 			continue
@@ -434,23 +435,23 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		} else if len(s.SearchAddress) == 1 {
 			a := s.SearchAddress[0]
 			Log.Debug("Mobilizòn returned:", "description", a.Description, "street", a.Street, "locality", a.Locality)
-			addrs[event.Location] = a
+			Addrs[event.Location] = a
 			continue
 		}
 
 		for _, a := range s.SearchAddress {
 			Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
 			if a.Description == event.Location && a.Locality == event.City {
-				addrs[event.Location] = a
+				Addrs[event.Location] = a
 				break
 			}
-			addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
+			Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 		}
 	}
 
 	// FIXME: this should be a real json format just dumping the map is not
 	// good json
-	data, err := json.MarshalIndent(&addrs, "", " ")
+	data, err := json.MarshalIndent(&Addrs, "", " ")
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -459,7 +460,6 @@ func fetchAddrs(responseObject Response) map[string]AddressInput {
 		Log.Error(err.Error())
 	}
 
-	return addrs
 }
 
 func fetchOSMAddr(event Event) string {
@@ -504,10 +504,8 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
-func createEvents(r Response, addrs map[string]AddressInput) {
-
+func createEvents(r Response) {
 	for _, event := range r.Event {
-
 		// Do not upload events from bejazz.ch. They don't like us.
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)
@@ -515,98 +513,98 @@ func createEvents(r Response, addrs map[string]AddressInput) {
 			Log.Info("Skipping BeJazz.")
 			continue
 		}
-
 		// trim the title to produce better matches
 		event.Title = strings.TrimSpace(event.Title)
-
 		// titles must be at least 3 characters long in Mobilizòn
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
-
-		// guard clause
+		vars := populateVariables(event)
+		// guard clauses
 		if eventExists(event) {
+			updateEvent(vars)
 			continue
 		}
-
-		// add a plug for ConcertCloud
-		event.Comment = event.Comment + " <p/><p> " + CC_PLUG
-
-		// set up the query vars
-		variables := map[string]interface{}{
-			"organizerActorId":         graphql.ID(*opts.ActorID),
-			"attributedToId":           graphql.ID(*opts.GroupID),
-			"category":                 populateCategory(event),
-			"visibility":               EventVisibility("PUBLIC"),
-			"joinOptions":              EventJoinOptions("EXTERNAL"),
-			"title":                    event.Title,
-			"description":              event.Comment,
-			"physicalAddress":          addrs[event.Location],
-			"beginsOn":                 DateTime(event.Date.Format(time.RFC3339)),
-			"endsOn":                   DateTime(event.Date.Add(time.Hour * 2).Format(time.RFC3339)),
-			"draft":                    graphql.Boolean(*opts.Draft),
-			"onlineAddress":            event.URL,
-			"externalParticipationUrl": event.URL,
-			"tags":                     populateTags,
-			"options":                  populateEventOptions(),
-			"picture":                  fetchAndUploadImage(event),
+		if *opts.NoOp {
+			continue
 		}
-
-		if variables["picture"] == "" {
-			createEvent(variables)
-		} else {
-			createEventWithoutImage(variables)
-		}
+		createEvent(vars)
 	}
 }
 
-func fetchAndUploadImage(event Event) string {
-	// get the event image
-	var imageURL = event.ImageUrl
+func populateVariables(e Event) map[string]interface{} {
+	// add a plug for ConcertCloud
+	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
+	vars := map[string]interface{}{
+		"organizerActorId":         graphql.ID(*opts.ActorID),
+		"attributedToId":           graphql.ID(*opts.GroupID),
+		"category":                 populateCategory(e),
+		"visibility":               EventVisibility("PUBLIC"),
+		"joinOptions":              EventJoinOptions("EXTERNAL"),
+		"title":                    e.Title,
+		"description":              e.Comment,
+		"physicalAddress":          Addrs[e.Location],
+		"beginsOn":                 DateTime(e.Date.Format(time.RFC3339)),
+		"endsOn":                   DateTime(e.Date.Add(time.Hour * 2).Format(time.RFC3339)),
+		"draft":                    graphql.Boolean(*opts.Draft),
+		"onlineAddress":            e.URL,
+		"externalParticipationUrl": e.URL,
+		"tags":                     populateTags(e),
+		"options":                  populateEventOptions(),
+	}
+	e = populateImageUrl(e)
+	path, err := downloadFile(e.ImageUrl)
+	id, err := uploadEventImage(path)
+	if err == nil {
+		mi := new(MediaInput)
+		mi.MediaId = id
+		vars["picture"] = mi
+	}
+	return vars
+}
 
+func populateImageUrl(e Event) Event {
+	if e.ImageUrl != "" {
+		return e
+	}
 	// fetch the opengraph image for the event if there is no event image
-	if imageURL == "" {
-		imageURL = fetchOGImageUrl(event.URL)
+	if e.ImageUrl == "" {
+		e.ImageUrl = fetchOGImageUrl(e.URL)
 	}
 
 	// fetch a backup image if we don't already have something
-	if imageURL == "" {
-		imageURL = fetchEventImage(event.URL)
+	if e.ImageUrl == "" {
+		e.ImageUrl = fetchEventImage(e.URL)
 	}
 
-	if imageURL == "" {
-		Log.Info("No image found for " + event.URL)
-		return ""
+	if e.ImageUrl == DEFAULT_IMAGE_URL {
+		Log.Info("No image found for ", "url", e.Location)
 	}
+	return e
+}
 
-	// download the image
-	path, err := downloadFile(imageURL)
+func uploadEventImage(path string) (graphql.ID, error) {
+	multi, err := newfileUploadRequest(path)
 	if err != nil {
-		Log.Error("Image download failed", err)
-	} else if *opts.NoOp {
-		Log.Debug("NoOp: Skipping the media upload too.")
-	} else {
-		// upload the image
-		multi, err := newfileUploadRequest(path)
-		if err != nil {
-			Log.Error(event.Title, " ", err)
-		} else {
-			Log.Debug("Uploading the image")
-			response, err := HttpClient.Do(multi)
-			if err != nil {
-				Log.Error("Error uploading image", err)
-			}
-			responseData, err := io.ReadAll(response.Body)
-			if err != nil {
-				Log.Error("Error uploading image", err)
-				os.Exit(1)
-			}
-			var mediaObject MediaResponse
-			json.Unmarshal(responseData, &mediaObject)
-			return mediaObject.Data.Upload.Id
-		}
+		Log.Error("Error constructing media request", "path", path, "error", err)
+		return "", err
 	}
-	return ""
+
+	response, err := HttpClient.Do(multi)
+	if err != nil {
+		Log.Error("Error uploading image", "path", path, "error", err)
+		return "", err
+	}
+
+	responseData, err := io.ReadAll(response.Body)
+	if err != nil {
+		Log.Error("Error getting media response", "path", path, "error", err)
+		return "", err
+	}
+
+	var mediaObject MediaResponse
+	json.Unmarshal(responseData, &mediaObject)
+	return (graphql.ID)(mediaObject.Data.Upload.Id), err
 }
 
 func populateTags(e Event) []string {
@@ -634,9 +632,6 @@ func populateCategory(e Event) EventCategory {
 }
 
 func createEvent(vars map[string]interface{}) {
-	if *opts.NoOp {
-		return
-	}
 	var m struct {
 		CreateEvent struct {
 			Id   string
@@ -645,28 +640,25 @@ func createEvent(vars map[string]interface{}) {
 	}
 	err := Client.Mutate(context.Background(), &m, vars)
 	if err != nil {
-		Log.Error("Error creating event with an image", "error", err)
+		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
 		os.Exit(1)
 	}
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
 }
 
-func createEventWithoutImage(vars map[string]interface{}) {
-	if *opts.NoOp {
-		return
-	}
+func updateEvent(vars map[string]interface{}) {
 	var m struct {
-		CreateEvent struct {
+		UpdateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+		} `graphql:"updateEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
 	}
 	err := Client.Mutate(context.Background(), &m, vars)
 	if err != nil {
 		Log.Error("Error creating event without an image", "error", err)
 		os.Exit(1)
 	}
-	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
+	Log.Info("Created Event", "id", m.UpdateEvent.Id, "UUID", m.UpdateEvent.Uuid)
 }
 
 func registerApp() {
@@ -904,8 +896,6 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
-	// writer.SetBoundary("---------------------------164507724316293925132493775707")
-
 	// TODO make this a template string or something to avoid the long line
 	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { id } }")
 	writer.WriteField("variables", "{\"name\":\""+fi.Name()+"\",\"file\":\"image1\"}")
@@ -967,7 +957,7 @@ func downloadFile(URL string) (string, error) {
 
 func eventExists(e Event) bool {
 
-	Log.Debug("Searching for '" + e.Title + "' " + e.Date.Format(time.RFC3339))
+	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
 	var s struct {
 		SearchEvents struct {
 			Total    int `json:"total"`
