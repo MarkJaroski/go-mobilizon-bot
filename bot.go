@@ -430,9 +430,11 @@ func fetchAddr(event Event) {
 		return
 	}
 
+	// get the addr from OpenStreetMap first
 	query := fetchOSMAddr(event)
 	Log.Debug("Query from OSM:", query)
 
+	// now query Mobilizòn to make sure we use the same address object
 	var s struct {
 		SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
 	}
@@ -448,10 +450,6 @@ func fetchAddr(event Event) {
 
 	if len(s.SearchAddress) == 0 {
 		Log.Info("Address not found: ", query)
-	} else if len(s.SearchAddress) == 1 {
-		a := s.SearchAddress[0]
-		Log.Debug("Mobilizòn returned:", "description", a.Description, "street", a.Street, "locality", a.Locality)
-		Addrs[event.Location] = a
 		return
 	}
 
@@ -459,10 +457,12 @@ func fetchAddr(event Event) {
 		Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
 		if a.Description == event.Location && a.Locality == event.City {
 			Addrs[event.Location] = a
-			break
+			return
 		}
-		Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 	}
+
+	// just use the last one
+	Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 }
 
 func fetchOSMAddr(event Event) string {
@@ -963,7 +963,6 @@ func downloadFile(URL string) (string, error) {
 }
 
 func eventExists(e Event) bool {
-
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
 	var s struct {
 		SearchEvents struct {
