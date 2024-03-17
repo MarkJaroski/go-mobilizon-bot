@@ -355,7 +355,7 @@ func main() {
 	})
 
 	// this will hold our json object whether local or from ConcertCloud
-	var responseObject Response
+	var jsonEventInput Response
 
 	if *opts.File != "" {
 		Log.Info("using local file:", "file", *opts.File)
@@ -364,27 +364,27 @@ func main() {
 			Log.Error("error", err)
 			os.Exit(1)
 		}
-		json.Unmarshal(dat, &responseObject)
+		json.Unmarshal(dat, &jsonEventInput)
 	} else {
 		// Fetch some concerts from Concert Cloud
 		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
 		response, err := http.Get(fetchUrl)
 		if err != nil {
 			Log.Error("error", err)
-			os.Exit(1)
+			os.Exit(1) // no point in continuing
 		}
 
 		responseData, err := io.ReadAll(response.Body)
 		if err != nil {
 			Log.Error("", err)
-			os.Exit(1)
+			os.Exit(1) // no point in continuing
 		}
 
-		json.Unmarshal(responseData, &responseObject)
+		json.Unmarshal(responseData, &jsonEventInput)
 	}
 
-	fetchAddrs(responseObject)
-	createEvents(responseObject)
+	fetchAddrs(jsonEventInput)
+	createEvents(jsonEventInput)
 }
 
 func fetchAddrs(responseObject Response) {
@@ -404,49 +404,7 @@ func fetchAddrs(responseObject Response) {
 	}
 
 	for _, event := range responseObject.Event {
-
-		Log.Debug("Searching for: ", "location", event.Location)
-
-		// if we already have the don't bother with the query
-		_, ok := Addrs[event.Location]
-		if ok {
-			Log.Debug("Skipping cached location", "location", event.Location)
-			continue
-		}
-
-		query := fetchOSMAddr(event)
-		Log.Debug("Query from OSM:", query)
-
-		var s struct {
-			SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
-		}
-		vars := map[string]interface{}{
-			"query": query,
-		}
-		err := Client.Query(context.Background(), &s, vars)
-		if err != nil {
-			Log.Error("fetchAddrs", err)
-			time.Sleep(3 * time.Second)
-			Client.Query(context.Background(), &s, vars)
-		}
-
-		if len(s.SearchAddress) == 0 {
-			Log.Info("Address not found: ", query)
-		} else if len(s.SearchAddress) == 1 {
-			a := s.SearchAddress[0]
-			Log.Debug("Mobilizòn returned:", "description", a.Description, "street", a.Street, "locality", a.Locality)
-			Addrs[event.Location] = a
-			continue
-		}
-
-		for _, a := range s.SearchAddress {
-			Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
-			if a.Description == event.Location && a.Locality == event.City {
-				Addrs[event.Location] = a
-				break
-			}
-			Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
-		}
+		fetchAddr(event)
 	}
 
 	// FIXME: this should be a real json format just dumping the map is not
@@ -460,6 +418,51 @@ func fetchAddrs(responseObject Response) {
 		Log.Error(err.Error())
 	}
 
+}
+
+func fetchAddr(event Event) {
+	Log.Debug("Searching for: ", "location", event.Location)
+
+	// if we already have the don't bother with the query
+	_, ok := Addrs[event.Location]
+	if ok {
+		Log.Debug("Skipping cached location", "location", event.Location)
+		return
+	}
+
+	query := fetchOSMAddr(event)
+	Log.Debug("Query from OSM:", query)
+
+	var s struct {
+		SearchAddress []AddressInput `graphql:"searchAddress(query: $query)"`
+	}
+	vars := map[string]interface{}{
+		"query": query,
+	}
+	err := Client.Query(context.Background(), &s, vars)
+	if err != nil {
+		Log.Error("fetchAddrs", err)
+		time.Sleep(3 * time.Second)
+		Client.Query(context.Background(), &s, vars)
+	}
+
+	if len(s.SearchAddress) == 0 {
+		Log.Info("Address not found: ", query)
+	} else if len(s.SearchAddress) == 1 {
+		a := s.SearchAddress[0]
+		Log.Debug("Mobilizòn returned:", "description", a.Description, "street", a.Street, "locality", a.Locality)
+		Addrs[event.Location] = a
+		return
+	}
+
+	for _, a := range s.SearchAddress {
+		Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
+		if a.Description == event.Location && a.Locality == event.City {
+			Addrs[event.Location] = a
+			break
+		}
+		Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
+	}
 }
 
 func fetchOSMAddr(event Event) string {
