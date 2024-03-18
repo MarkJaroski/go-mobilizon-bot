@@ -522,17 +522,17 @@ func createEvents(r Response) {
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
-		vars, err := populateVariables(event)
-		if err != nil {
-			Log.Error("Error populating vars", "vars", spew.Sdump(vars))
-			continue
-		}
 		// guard clauses
 		if eventExists(event) {
-			updateEvent(vars)
+			// updateEvent(vars)
 			continue
 		}
 		if *opts.NoOp {
+			continue
+		}
+		vars, err := populateVariables(event)
+		if err != nil {
+			Log.Error("Error populating vars", "vars", spew.Sdump(vars))
 			continue
 		}
 		createEvent(vars)
@@ -562,11 +562,13 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	e = populateImageUrl(e)
 	path, err := downloadFile(e.ImageUrl)
 	id, err := uploadEventImage(path)
-	if err == nil {
-		mi := new(MediaInput)
-		mi.MediaId = id
-		vars["picture"] = mi
+	if err != nil {
+		Log.Error("Media error", "URL", e.ImageUrl, "path", path, "id", id)
+		return vars, err
 	}
+	mi := new(MediaInput)
+	mi.MediaId = id
+	vars["picture"] = mi
 	return vars, err
 }
 
@@ -575,18 +577,17 @@ func populateImageUrl(e Event) Event {
 		return e
 	}
 	// fetch the opengraph image for the event if there is no event image
-	if e.ImageUrl == "" {
-		e.ImageUrl = fetchOGImageUrl(e.URL)
+	e.ImageUrl = fetchOGImageUrl(e.URL)
+	if strings.HasPrefix(e.ImageUrl, "http") {
+		return e
 	}
-
 	// fetch a backup image if we don't already have something
-	if e.ImageUrl == "" {
-		e.ImageUrl = fetchEventImage(e.URL)
+	e.ImageUrl = fetchEventImage(e.URL)
+	if strings.HasPrefix(e.ImageUrl, "http") {
+		return e
 	}
-
-	if e.ImageUrl == DEFAULT_IMAGE_URL {
-		Log.Info("No image found for ", "url", e.Location)
-	}
+	Log.Info("No image found for", "url", e.URL)
+	e.ImageUrl = DEFAULT_IMAGE_URL
 	return e
 }
 
@@ -654,18 +655,7 @@ func createEvent(vars map[string]interface{}) {
 }
 
 func updateEvent(vars map[string]interface{}) {
-	var m struct {
-		UpdateEvent struct {
-			Id   string
-			Uuid string
-		} `graphql:"updateEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
-	}
-	err := Client.Mutate(context.Background(), &m, vars)
-	if err != nil {
-		Log.Error("Error creating event without an image", "error", err)
-		os.Exit(1)
-	}
-	Log.Info("Created Event", "id", m.UpdateEvent.Id, "UUID", m.UpdateEvent.Uuid)
+	// FIXME : stub
 }
 
 func registerApp() {
@@ -818,7 +808,7 @@ func fetchOGImageUrl(url string) string {
 // this should try harder to find the best image
 func fetchEventImage(url string) string {
 
-	Log.Debug("Fetching an image URL from " + url)
+	Log.Debug("Fetching an image URL from", "url", url)
 	var srcs []string
 
 	c := colly.NewCollector()
@@ -834,11 +824,11 @@ func fetchEventImage(url string) string {
 	c.Wait()
 
 	// Is biggest best? Well maybe not, but that's what we have to work with.
+	// FIXME this will return URLs which will not work
 	if len(srcs) > 0 {
 		var best = 0
 		var size int64 = 0
 		for i, src := range srcs {
-			Log.Debug(src)
 			// occassionally we get an inline image
 			if strings.HasPrefix(src, "data:") {
 				continue
@@ -849,7 +839,7 @@ func fetchEventImage(url string) string {
 			}
 			res, err := http.Head(src)
 			if err != nil {
-				Log.Error("fetchEventImage", err)
+				Log.Error("fetchEventImage", "error", err)
 			}
 			cl := res.ContentLength
 			if cl > size && cl < MAX_IMG_SIZE {
@@ -1026,7 +1016,7 @@ func eventExists(e Event) bool {
 		}
 	}
 
-	Log.Info("Event not found '" + e.Title + "' " + e.Date.Format(time.RFC3339) + " " + e.Location)
+	Log.Info("Event not found", "title", e.Title, "date", e.Date.Format(time.RFC3339), "location", e.Location)
 	return false
 }
 
