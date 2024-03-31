@@ -573,7 +573,7 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 }
 
 func populateImageUrl(e Event) Event {
-	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl {
+	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl && e.ImageUrl != e.SourceUrl+"/" {
 		return e
 	}
 	// fetch the opengraph image for the event if there is no event image
