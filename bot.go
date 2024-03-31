@@ -432,7 +432,7 @@ func fetchAddr(event Event) {
 
 	// get the addr from OpenStreetMap first
 	query := fetchOSMAddr(event)
-	Log.Debug("Query from OSM:", query)
+	Log.Debug("Returned from OSM:", "query", query)
 
 	// now query Mobilizòn to make sure we use the same address object
 	var s struct {
@@ -449,7 +449,7 @@ func fetchAddr(event Event) {
 	}
 
 	if len(s.SearchAddress) == 0 {
-		Log.Info("Address not found: ", query)
+		Log.Info("Address not found: ", "query", query)
 		return
 	}
 
@@ -573,7 +573,7 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 }
 
 func populateImageUrl(e Event) Event {
-	if e.ImageUrl != "" {
+	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl {
 		return e
 	}
 	// fetch the opengraph image for the event if there is no event image
@@ -612,6 +612,9 @@ func uploadEventImage(path string) (graphql.ID, error) {
 
 	var mediaObject MediaResponse
 	json.Unmarshal(responseData, &mediaObject)
+	if mediaObject.Data.Upload.Id == "" {
+		err = errors.New("Image id not found in upload response." + path)
+	}
 	return (graphql.ID)(mediaObject.Data.Upload.Id), err
 }
 
