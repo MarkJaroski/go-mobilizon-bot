@@ -343,7 +343,7 @@ func main() {
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryWaitMin = 3 * 60  // wait 3 minutes before retrying
 	retryClient.RetryWaitMax = 10 * 60 // give up after 10 minutes
-	retryClient.RetryMax = 50          // or 50 tries
+	retryClient.RetryMax = 200
 
 	retryClient.Logger = Log
 
@@ -582,7 +582,7 @@ func populateImageUrl(e Event) Event {
 		return e
 	}
 	// fetch a backup image if we don't already have something
-	e.ImageUrl = fetchEventImage(e.URL)
+	e.ImageUrl = guessEventImage(e.URL)
 	if strings.HasPrefix(e.ImageUrl, "http") {
 		return e
 	}
@@ -809,9 +809,8 @@ func fetchOGImageUrl(url string) string {
 }
 
 // this should try harder to find the best image
-func fetchEventImage(url string) string {
-
-	Log.Debug("Fetching an image URL from", "url", url)
+func guessEventImage(url string) string {
+	Log.Debug("Attempting to guess an image URL for", "url", url)
 	var srcs []string
 
 	c := colly.NewCollector()
@@ -826,35 +825,40 @@ func fetchEventImage(url string) string {
 	c.Visit(url)
 	c.Wait()
 
-	// Is biggest best? Well maybe not, but that's what we have to work with.
-	// FIXME this will return URLs which will not work
-	if len(srcs) > 0 {
-		var best = 0
-		var size int64 = 0
-		for i, src := range srcs {
-			// occassionally we get an inline image
-			if strings.HasPrefix(src, "data:") {
-				continue
-			}
-			// sometimes we don't get the absolute URL
-			if strings.HasPrefix(src, "/") {
-				continue
-			}
-			res, err := http.Head(src)
-			if err != nil {
-				Log.Error("fetchEventImage", "error", err)
-			}
-			cl := res.ContentLength
-			if cl > size && cl < MAX_IMG_SIZE {
-				best = i
-				size = cl
-			}
-			Log.Debug("Choosing image by size", "i", i, "size", size, "cl", cl, "best", best)
-		}
-		return srcs[best]
-	} else {
+	if len(srcs) < 1 {
 		return ""
 	}
+
+	// Is biggest best? Well maybe not, but that's what we have to work with.
+	var best = -1
+	var size int64 = 0
+	for i, src := range srcs {
+		// occassionally we get an inline image
+		if strings.HasPrefix(src, "data:") {
+			continue
+		}
+		// sometimes we don't get the absolute URL
+		if strings.HasPrefix(src, "/") {
+			continue
+		}
+		if strings.HasSuffix(src, ".svg") {
+			continue
+		}
+		res, err := http.Head(src)
+		if err != nil {
+			Log.Error("Could not perform HEAD method for image", "src", src, "error", err)
+		}
+		cl := res.ContentLength
+		if cl > size && cl < MAX_IMG_SIZE {
+			best = i
+			size = cl
+		}
+		Log.Debug("Choosing image by size", "i", i, "size", size, "cl", cl, "best", best)
+	}
+	if best == -1 {
+		return ""
+	}
+	return srcs[best]
 }
 
 func newfileUploadRequest(path string) (*http.Request, error) {
