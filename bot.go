@@ -655,6 +655,8 @@ func populateCategory(e Event) EventCategory {
 	return EventCategory("MUSIC")
 }
 
+// createEvent implements the Mobilizòn graphQL createEvent method, taking
+// a map of strings to objects to populate its variables
 func createEvent(vars map[string]interface{}) {
 	var m struct {
 		CreateEvent struct {
@@ -674,6 +676,9 @@ func updateEvent(vars map[string]interface{}) {
 	// FIXME : stub
 }
 
+// registerApp registers an OAuth2 client called "Concert Cloud Bot" and
+// and exports the resulting environmental variables as well as printing
+// them on the commend line
 func registerApp() {
 
 	type Registration struct {
