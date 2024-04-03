@@ -350,7 +350,9 @@ func main() {
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryWaitMin = 3 * 60  // wait 3 minutes before retrying
 	retryClient.RetryWaitMax = 10 * 60 // give up after 10 minutes
-	retryClient.RetryMax = 200
+	retryClient.RetryMax = 30
+	retryClient.CheckRetry = mobilizònRetryPolicy
+	retryClient.Backoff = mobilizònErrorBackoff
 
 	retryClient.Logger = Log
 
@@ -539,7 +541,7 @@ func createEvents(r Response) {
 		}
 		vars, err := populateVariables(event)
 		if err != nil {
-			Log.Error("Error populating vars", "vars", spew.Sdump(vars))
+			Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
 			continue
 		}
 		createEvent(vars)
@@ -584,7 +586,7 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 }
 
 func populateImageUrl(e Event) Event {
-	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl && e.ImageUrl != e.SourceUrl+"/" {
+	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl && !strings.HasSuffix(e.ImageUrl, "/") {
 		return e
 	}
 	// fetch the opengraph image for the event if there is no event image
@@ -611,7 +613,7 @@ func uploadEventImage(path string) (graphql.ID, error) {
 
 	response, err := HttpClient.Do(multi)
 	if err != nil {
-		Log.Error("Error uploading image", "path", path, "error", err)
+		Log.Error("Error uploading image", "path", path, "status", response.Status, "error", err)
 		return "", err
 	}
 
@@ -793,7 +795,7 @@ func fetchOGImageUrl(url string) string {
 	// get the ogp object
 	ogp, err := opengraph.Fetch(url)
 	if err != nil {
-		Log.Error("fetchOGImage", err)
+		Log.Error("fetchOGImage", "error", err)
 	}
 
 	// convert URLs to absolute
@@ -964,7 +966,7 @@ func downloadFile(URL string) (string, error) {
 
 	//Write the bytes to the file
 	if response.ContentLength > MAX_IMG_SIZE {
-		err = thumbnail(response.Body, file, response.Header.Get("ContentType"), IMAGE_RESIZE_WIDTH)
+		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), IMAGE_RESIZE_WIDTH)
 	} else {
 		_, err = io.Copy(file, response.Body)
 	}
@@ -1103,11 +1105,15 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 		src, err = jpeg.Decode(r)
 	case "image/png":
 		src, err = png.Decode(r)
+	default:
+		err = errors.New("Unknown MIME Type " + mimetype)
 	}
 
 	if err != nil {
 		return err
 	}
+
+	Log.Debug("Resizing image", "MIME Type", mimetype)
 
 	ratio := (float64)(src.Bounds().Max.Y) / (float64)(src.Bounds().Max.X)
 	height := int(math.Round(float64(width) * ratio))
@@ -1122,4 +1128,20 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 	}
 
 	return nil
+}
+
+func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	if resp.Status < "400" {
+		return false, nil
+	}
+	Log.Debug("Retry Policy Event", "", ctx.Value, "http_status", resp.Status, "error", err)
+	if resp.Status >= "405" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func mobilizònErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	Log.Debug("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
+	return 30000
 }
