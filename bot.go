@@ -568,9 +568,13 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	}
 	e = populateImageUrl(e)
 	path, err := downloadFile(e.ImageUrl)
+	if err != nil {
+		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
+		return vars, err
+	}
 	id, err := uploadEventImage(path)
 	if err != nil {
-		Log.Error("Media error", "URL", e.ImageUrl, "path", path, "id", id)
+		Log.Error("Media uploade error", "URL", e.ImageUrl, "path", path, "id", id)
 		return vars, err
 	}
 	mi := new(MediaInput)
