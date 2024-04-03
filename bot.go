@@ -7,8 +7,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"io/fs"
+	"math"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -27,11 +31,14 @@ import (
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/pflag"
+
+	"golang.org/x/image/draw"
 )
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1000000
+const IMAGE_RESIZE_WIDTH = 600
 
 type Options struct {
 	City       *string
@@ -937,6 +944,7 @@ func downloadFile(URL string) (string, error) {
 	if response.StatusCode != 200 {
 		return "", errors.New(fmt.Sprintf("Received response code %d for %s", response.StatusCode, URL))
 	}
+
 	// get tmp filename
 	f, err := os.CreateTemp("", "cc2mob.")
 	if err != nil {
@@ -951,7 +959,11 @@ func downloadFile(URL string) (string, error) {
 	defer file.Close()
 
 	//Write the bytes to the file
-	_, err = io.Copy(file, response.Body)
+	if response.ContentLength > MAX_IMG_SIZE {
+		err = thumbnail(response.Body, file, response.Header.Get("ContentType"), IMAGE_RESIZE_WIDTH)
+	} else {
+		_, err = io.Copy(file, response.Body)
+	}
 	if err != nil {
 		return f.Name(), err
 	}
@@ -1071,4 +1083,39 @@ func refreshAuthorization() error {
 	}
 	err = os.WriteFile(*opts.AuthConfig, data, 0600)
 	return err
+}
+
+// thumbnail creates a resized image from the reader and writes it to
+// the writer. The mimetype determines how the image will be decoded
+// and must be either "image/jpeg" or "image/png". The desired width
+// of the thumbnail is specified in pixels, and the resulting height
+// will be calculated to preserve the aspect ratio.
+func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
+	var src image.Image
+	var err error
+
+	switch mimetype {
+	case "image/jpeg":
+		src, err = jpeg.Decode(r)
+	case "image/png":
+		src, err = png.Decode(r)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	ratio := (float64)(src.Bounds().Max.Y) / (float64)(src.Bounds().Max.X)
+	height := int(math.Round(float64(width) * ratio))
+
+	dst := image.NewRGBA(image.Rect(0, 0, width, height))
+
+	draw.NearestNeighbor.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
+
+	err = jpeg.Encode(w, dst, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
