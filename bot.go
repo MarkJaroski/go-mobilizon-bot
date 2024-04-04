@@ -39,7 +39,9 @@ const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.l
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1000000
 const IMAGE_RESIZE_WIDTH = 600
+const SERVER_CRASH_WAIT_MILLISECONDS = 120 * 1000
 
+// Options represents the full set of command-line options for the bot
 type Options struct {
 	City       *string
 	Country    *string
@@ -62,6 +64,9 @@ type Options struct {
 
 var opts Options
 
+// Response represents the json reponse from https://api.concertcloud.com/
+// and is used to Unmarshal that json
+// FIXME it might be possible to import this from the official repo
 type Response struct {
 	Event    []Event `json:"data"`
 	Page     int     `json:"page"`
@@ -70,6 +75,9 @@ type Response struct {
 	LastPage int     `json:"last_page"`
 }
 
+// Event represents the Event objects which is the main part of the
+// concertcloud response.
+// FIXME it might be possible to import this from the official repo
 type Event struct {
 	Title     string    `json:"title"`
 	Location  string    `json:"location"`
@@ -83,20 +91,29 @@ type Event struct {
 	ImageUrl  string    `json:"imageUrl"`
 }
 
+// UUID represents the GraphQL UUID type
+// FIXME move to a library
 type UUID string
 
+// MediaUpload represents the GraphQL MediaUpload type
+// FIXME move to a library
 type MediaUpload struct {
 	Id string `json:"id"`
 }
 
+// MediaData represents the mediaUpload object of a GraphQL mediaUpload mutation
+// FIXME move to a library
 type MediaData struct {
 	Upload MediaUpload `json:"uploadMedia"`
 }
 
+// MediaData represents the response object of a GraphQL mediaUpload mutation
+// FIXME move to a library
 type MediaResponse struct {
 	Data MediaData `json:"data"`
 }
 
+// Address represents the OpenStreetMap address for a given place
 type Address struct {
 	Amenity       string `json:"amenity"`
 	HouseNumber   string `json:"house_number"`
@@ -111,6 +128,7 @@ type Address struct {
 	CountryCode   string `json:"country_code"`
 }
 
+// Place represents a place as returned by openstreetmap
 type Place struct {
 	PlaceId     int     `json:"place_id"`
 	Name        string  `json:"name"`
@@ -121,10 +139,16 @@ type Place struct {
 	DisplayName string  `json:"display_name"`
 }
 
+// NominatumResponse represents the response returned from OpenStreetMap
 type NominatumResponse []Place
 
+// Point represents the latitude and longitude of a place in Mobilizòn
+// FIXME move to a library
 type Point string
 
+// AddressInput represents address data in Mobilizòn GraphQL mutations like
+// createEvent and updateEvent
+// FIXME move to a library
 type AddressInput struct {
 	Id          int    `json:"id"`
 	Description string `json:"description"`
@@ -136,12 +160,20 @@ type AddressInput struct {
 	Geom        Point  `json:"geom"`
 }
 
+// MediaInput represents media data in Mobilizòn GraphQL mutations like
+// createEvent and updateEvent
 type MediaInput struct {
+	// FIXME move to a library
 	MediaId graphql.ID `json:"mediaId"`
 }
 
+// NominatumBaseURL is the URL we use to call nominatim
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
 
+// EventCategory represents the list of possible event categories present
+// in Mobilizòn. Obviously this list must be maintained here as the list in
+// the Mobilizòn codebase changes.
+// FIXME move to a library
 type EventCategory string
 
 const (
@@ -210,6 +242,8 @@ var EventTypeStrings = []string{
 	"THEATRE",
 }
 
+// EventVisibility represents the EventVisibility Mobilizòn GraphQL type
+// FIXME move to a library
 type EventVisibility string
 
 const (
@@ -219,6 +253,8 @@ const (
 	UNLISTED   EventVisibility = "UNLISTED"
 )
 
+// EventJoinOptions represents the EventJoinOptions Mobilizòn GraphQL type
+// FIXME move to a library
 type EventJoinOptions string
 
 const (
@@ -226,8 +262,13 @@ const (
 	EXTERNAL EventJoinOptions = "EXTERNAL"
 )
 
+// DateTime represents the DateTime Mobilizòn GraphQL type
+// FIXME move to a library
 type DateTime string
 
+// EventCommentModeration represents the EventCommentModeration Mobilizòn
+// GraphQL type
+// FIXME move to a library
 type EventCommentModeration string
 
 const (
@@ -236,8 +277,12 @@ const (
 	MODERATED EventCommentModeration = "MODERATED"
 )
 
+// Timezone represents the cooresponding Mobilizòn GraphQL type
+// FIXME move to a library
 type Timezone string
 
+// EventOptionsInput represents the cooresponding Mobilizòn GraphQL type
+// FIXME move to a library
 type EventOptionsInput struct {
 	CommentModeration EventCommentModeration `json:"commentModeration"`
 	ShowStartTime     graphql.Boolean        `json:"showStartTime"`
@@ -245,8 +290,9 @@ type EventOptionsInput struct {
 	Timezone          Timezone               `json:"timezone"`
 }
 
-// For authorization and reauthorization. Becomes the structure of the auth
-// config file
+// AuthConfig is the OAuth2 response presented by Mobilizòn for
+// authorization and reauthorization. Becomes the structure of the auth
+// FIXME move to a library
 type AuthConfig struct {
 	AccessToken           string `json:"access_token"`
 	ExpiresIn             int    `json:"expires_in"`
@@ -256,27 +302,28 @@ type AuthConfig struct {
 	TokenType             string `json:"token_type"`
 }
 
-// make this a global var so we don't have to read the file more than once
+// local fields
 var auth AuthConfig
-
 var actorID *string
 var groupID *string
 var timezone *string
-var Addrs map[string]AddressInput
+var addrs map[string]AddressInput
+var httpClient *http.Client
+var gqlClient *graphql.Client
 
-var HttpClient *http.Client
-var Client *graphql.Client
-
+// Log is our hclog local instance
 var Log hclog.Logger
 
+// init sets up logging and initializes the addr map
 func init() {
 	Log = hclog.New(&hclog.LoggerOptions{
 		Name:  "Mobilizon bot",
 		Level: hclog.LevelFromString("INFO"),
 	})
-	Addrs = make(map[string]AddressInput)
+	addrs = make(map[string]AddressInput)
 }
 
+// main still does too much of the work FIXME
 func main() {
 	// set up our config dir if it's not already there
 	confdir, err := os.UserConfigDir()
@@ -356,10 +403,10 @@ func main() {
 
 	retryClient.Logger = Log
 
-	HttpClient = retryClient.StandardClient()
+	httpClient = retryClient.StandardClient()
 
-	Client = graphql.NewClient("https://mobilisons.ch/api", HttpClient)
-	Client = Client.WithRequestModifier(func(r *http.Request) {
+	gqlClient = graphql.NewClient("https://mobilisons.ch/api", httpClient)
+	gqlClient = gqlClient.WithRequestModifier(func(r *http.Request) {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
 
@@ -396,6 +443,9 @@ func main() {
 	createEvents(jsonEventInput)
 }
 
+// fetchAddrs loads the local addr.json file cache and then attempts to
+// fetch any missing addresses from OpenStreetMap and Mobilizòn
+// FIXME this still probably does too much for one function
 func fetchAddrs(responseObject Response) {
 	addrsfile := *opts.Config + "/addrs.json"
 
@@ -407,7 +457,7 @@ func fetchAddrs(responseObject Response) {
 	}
 	// FIXME: this should be a real json format just dumping the map is not
 	// good json
-	err = json.Unmarshal(dat, &Addrs)
+	err = json.Unmarshal(dat, &addrs)
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -418,7 +468,7 @@ func fetchAddrs(responseObject Response) {
 
 	// FIXME: this should be a real json format just dumping the map is not
 	// good json
-	data, err := json.MarshalIndent(&Addrs, "", " ")
+	data, err := json.MarshalIndent(&addrs, "", " ")
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -433,7 +483,7 @@ func fetchAddr(event Event) {
 	Log.Debug("Searching for: ", "location", event.Location)
 
 	// if we already have the don't bother with the query
-	_, ok := Addrs[event.Location]
+	_, ok := addrs[event.Location]
 	if ok {
 		Log.Debug("Skipping cached location", "location", event.Location)
 		return
@@ -450,11 +500,11 @@ func fetchAddr(event Event) {
 	vars := map[string]interface{}{
 		"query": query,
 	}
-	err := Client.Query(context.Background(), &s, vars)
+	err := gqlClient.Query(context.Background(), &s, vars)
 	if err != nil {
 		Log.Error("fetchAddrs", err)
 		time.Sleep(3 * time.Second)
-		Client.Query(context.Background(), &s, vars)
+		gqlClient.Query(context.Background(), &s, vars)
 	}
 
 	if len(s.SearchAddress) == 0 {
@@ -465,13 +515,13 @@ func fetchAddr(event Event) {
 	for _, a := range s.SearchAddress {
 		Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + event.Location + " " + event.City)
 		if a.Description == event.Location && a.Locality == event.City {
-			Addrs[event.Location] = a
+			addrs[event.Location] = a
 			return
 		}
 	}
 
 	// just use the last one
-	Addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
+	addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 }
 
 func fetchOSMAddr(event Event) string {
@@ -559,7 +609,7 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 		"joinOptions":              EventJoinOptions("EXTERNAL"),
 		"title":                    e.Title,
 		"description":              e.Comment,
-		"physicalAddress":          Addrs[e.Location],
+		"physicalAddress":          addrs[e.Location],
 		"beginsOn":                 DateTime(e.Date.Format(time.RFC3339)),
 		"endsOn":                   DateTime(e.Date.Add(time.Hour * 2).Format(time.RFC3339)),
 		"draft":                    graphql.Boolean(*opts.Draft),
@@ -611,7 +661,7 @@ func uploadEventImage(path string) (graphql.ID, error) {
 		return "", err
 	}
 
-	response, err := HttpClient.Do(multi)
+	response, err := httpClient.Do(multi)
 	if err != nil {
 		Log.Error("Error uploading image", "path", path, "status", response.Status, "error", err)
 		return "", err
@@ -664,7 +714,7 @@ func createEvent(vars map[string]interface{}) {
 			Uuid string
 		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
-	err := Client.Mutate(context.Background(), &m, vars)
+	err := gqlClient.Mutate(context.Background(), &m, vars)
 	if err != nil {
 		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
 		os.Exit(1)
@@ -999,7 +1049,7 @@ func eventExists(e Event) bool {
 		"term":     e.Title,
 		"beginsOn": DateTime(e.Date.Format(time.RFC3339)),
 	}
-	err := Client.Query(context.Background(), &s, vars)
+	err := gqlClient.Query(context.Background(), &s, vars)
 	if err != nil {
 		Log.Error("Error checking if event exists", "error", err)
 		//
@@ -1013,7 +1063,7 @@ func eventExists(e Event) bool {
 		// That said, this works for the time being.
 		//
 		time.Sleep(3 * time.Second)
-		Client.Query(context.Background(), &s, vars)
+		gqlClient.Query(context.Background(), &s, vars)
 	}
 
 	// loop through the events and return true if we have a real match
@@ -1027,7 +1077,7 @@ func eventExists(e Event) bool {
 		fvars := map[string]interface{}{
 			"uuid": UUID(el.Uuid),
 		}
-		err := Client.Query(context.Background(), &f, fvars)
+		err := gqlClient.Query(context.Background(), &f, fvars)
 		if err != nil {
 			Log.Debug("Failed fetching event by uuid:", el.Uuid, err)
 		}
@@ -1135,6 +1185,9 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 	return nil
 }
 
+// mobilizònRetryPolicy impements the RetryPolicy interface from
+// hashicorp.retryablehttp, which captures the main failure modes cause by
+// an ephemeral crash of the Mobilizòn server process
 func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
 	if resp.Status < "400" {
 		return false, nil
@@ -1146,7 +1199,10 @@ func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) 
 	return false, nil
 }
 
+// mobilizònErrorBackoff implements the Backoff interface from
+// hashicorp.retryablehttp, waiting long enough for Mobilizòn to recover
+// from an activity-pub related crash
 func mobilizònErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	Log.Debug("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
-	return 30000
+	return SERVER_CRASH_WAIT_MILLISECONDS
 }
