@@ -479,6 +479,9 @@ func fetchAddrs(responseObject Response) {
 
 }
 
+// fetchAddr uses OpenStreetMap Nominatim to create a query string which
+// should in almost all cases return the correct location object when run
+// against the Mobilizòn address search.
 func fetchAddr(event Event) {
 	Log.Debug("Searching for: ", "location", event.Location)
 
@@ -524,6 +527,12 @@ func fetchAddr(event Event) {
 	addrs[event.Location] = s.SearchAddress[len(s.SearchAddress)-1]
 }
 
+// fetchOSMAddr takes a single Event object from the json input and returns
+// a query string for Mobilizòn which should return the location object
+// which Mobilizòn has constructed for the event address.
+//
+// Doing it this way improves our chances of getting an exact hit when we
+// run the query against Mobilizòn itself.
 func fetchOSMAddr(event Event) string {
 
 	var addr Place
@@ -566,6 +575,8 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
+// createEvents loops through all of the events in the json input, sets up
+// their variables map, and runs createEvents on them
 func createEvents(r Response) {
 	for _, event := range r.Event {
 		// Do not upload events from bejazz.ch. They don't like us.
@@ -705,8 +716,9 @@ func populateCategory(e Event) EventCategory {
 	return EventCategory("MUSIC")
 }
 
-// createEvent implements the Mobilizòn graphQL createEvent method, taking
-// a map of strings to objects to populate its variables
+// createEvent implements the Mobilizòn graphQL createEvent mutation 
+// taking a map of strings to objects to populate its variables
+// FIXME split this out to a library
 func createEvent(vars map[string]interface{}) {
 	var m struct {
 		CreateEvent struct {
@@ -722,6 +734,9 @@ func createEvent(vars map[string]interface{}) {
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
 }
 
+// updateEvent is a stub which will eventually implement the updateEvent
+// Mobilizòn GraphQL mutation
+// FIXME split this out to a library
 func updateEvent(vars map[string]interface{}) {
 	// FIXME : stub
 }
@@ -769,6 +784,9 @@ func registerApp() {
 	fmt.Println("export GRAPHQL_CLIENT_SECRET=" + reg.ClientSecret)
 }
 
+// authorizeApp does the OAuth2 authorization handshake using the device
+// flow, which seems to work best for Mobilizòn, and nicely avoids the
+// problem of having to copy URLs back and forth
 func authorizeApp() {
 	// Let's first check for a valid refreshToken in our config
 	// If that doesn't work then we need to authorize interactively
@@ -1032,6 +1050,13 @@ func downloadFile(URL string) (string, error) {
 	return f.Name(), nil
 }
 
+// eventExists searches Mobilizòn by event title and date, and then checks
+// for a matching event URL. This is usually enough to prevent duplicates,
+// however it doesn't work for those venues which do not have unique URLs
+// per event.
+//
+// FIXME A local event cache would help speed this up and reduce traffic
+// over the wire.
 func eventExists(e Event) bool {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
 	var s struct {
