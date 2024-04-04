@@ -609,6 +609,9 @@ func createEvents(r Response) {
 	}
 }
 
+// populateVariables takes an Event object from the json input and returns
+// a map which can be used as the variables input for the Mobilizòn GraphQL
+// mutations createEvent or updateEvent
 func populateVariables(e Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
 	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
@@ -1150,6 +1153,8 @@ func eventExists(e Event) bool {
 	return false
 }
 
+// refreshAuthorization attempts to use the refresh token from the stored
+// auth.json file to obtain a new authorization token
 func refreshAuthorization() error {
 	// Note that the graphql RefreshToken mutation replies with a very
 	// differrent kind of object than the authorization does
