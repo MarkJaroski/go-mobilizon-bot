@@ -646,6 +646,9 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	return vars, err
 }
 
+// populateImageUrl validates the imageUrl of an event object from the json
+// input and if necessary finds one from the event URL. It updates the
+// ImageUrl field of the Event object in place.
 func populateImageUrl(e Event) Event {
 	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl && !strings.HasSuffix(e.ImageUrl, "/") {
 		return e
@@ -665,6 +668,8 @@ func populateImageUrl(e Event) Event {
 	return e
 }
 
+// uploadEventImage uploads the file at the given path, and returns its
+// mobilison IT and any error which occurs in the process
 func uploadEventImage(path string) (graphql.ID, error) {
 	multi, err := newfileUploadRequest(path)
 	if err != nil {
@@ -692,6 +697,7 @@ func uploadEventImage(path string) (graphql.ID, error) {
 	return (graphql.ID)(mediaObject.Data.Upload.Id), err
 }
 
+// populateTags constructs an eventTags object for the createEvent mutation
 func populateTags(e Event) []string {
 	return []string{
 		e.Location,
@@ -699,6 +705,8 @@ func populateTags(e Event) []string {
 	}
 }
 
+// populateEventOptions creates a default eventOptionsInput object
+// FIXME should od this in init()
 func populateEventOptions() EventOptionsInput {
 	tz := Timezone(*opts.Timezone)
 	return EventOptionsInput{
@@ -709,6 +717,10 @@ func populateEventOptions() EventOptionsInput {
 	}
 }
 
+// populateCategory takes an event and returns either the event's own
+// category if it is found in the list of Mobilizòn's event categories or
+// the default category
+// FIXME refactor this as an Event object method. Make the default a constant.
 func populateCategory(e Event) EventCategory {
 	if slices.Contains(EventTypeStrings, e.Type) {
 		return EventCategory(e.Type)
@@ -861,6 +873,9 @@ func authorizeApp() {
 
 }
 
+// fetchOGImageUrl finds takes the URL of a specific event and returns the
+// Open Ggraph image URL found there, if one exists.
+// See https://ogp.me/
 func fetchOGImageUrl(url string) string {
 
 	retUrl := ""
@@ -894,7 +909,12 @@ func fetchOGImageUrl(url string) string {
 	return retUrl
 }
 
-// this should try harder to find the best image
+// guessEventImage tries to find a reasonable image on the page found at an
+// event URL. If it succeeds it returns the image URL otherwise it returns
+// ""
+//
+// The best image is so far defined as the largest image in a src attribute
+// on the page. This is far from ideal, but it's a fallback.
 func guessEventImage(url string) string {
 	Log.Debug("Attempting to guess an image URL for", "url", url)
 	var srcs []string
@@ -947,6 +967,9 @@ func guessEventImage(url string) string {
 	return srcs[best]
 }
 
+// newfileUploadRequest constructs an http request object for Mobilizòn
+// file uploads when given a local file path. It returns the request object
+// and an error object.
 func newfileUploadRequest(path string) (*http.Request, error) {
 
 	var fileContents []byte
@@ -1007,6 +1030,8 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	return r, err
 }
 
+// downloadFile downloads a file from a given URL and returns the local
+// file path or "" and an error or nil
 func downloadFile(URL string) (string, error) {
 	// if this is a data URL just return it. The uplaod function will deal.
 	if strings.HasPrefix(URL, "data:") {
