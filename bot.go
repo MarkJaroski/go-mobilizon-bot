@@ -682,7 +682,7 @@ func uploadEventImage(path string) (graphql.ID, error) {
 
 	response, err := httpClient.Do(multi)
 	if err != nil {
-		Log.Error("Error uploading image", "path", path, "status", response.Status, "error", err)
+		Log.Error("Error uploading image", "path", path, "error", err)
 		return "", err
 	}
 
