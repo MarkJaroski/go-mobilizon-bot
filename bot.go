@@ -395,8 +395,8 @@ func main() {
 
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
-	retryClient.RetryWaitMin = 3 * 60  // wait 3 minutes before retrying
-	retryClient.RetryWaitMax = 10 * 60 // give up after 10 minutes
+	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_MILLISECONDS
+	retryClient.RetryWaitMax = SERVER_CRASH_WAIT_MILLISECONDS + 1000
 	retryClient.RetryMax = 120
 	retryClient.CheckRetry = mobilizònRetryPolicy
 	retryClient.Backoff = mobilizònErrorBackoff
