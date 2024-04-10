@@ -1258,6 +1258,6 @@ func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) 
 // hashicorp.retryablehttp, waiting long enough for Mobilizòn to recover
 // from an activity-pub related crash
 func mobilizònErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
-	Log.Debug("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
-	return SERVER_CRASH_WAIT_MILLISECONDS
+	Log.Error("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
+	return time.Duration(int64(SERVER_CRASH_WAIT_MILLISECONDS))
 }
