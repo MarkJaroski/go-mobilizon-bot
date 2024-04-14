@@ -39,7 +39,7 @@ const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.l
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1024 * 1024 * 10 // ten megabytes
 const IMAGE_RESIZE_WIDTH = 600
-const SERVER_CRASH_WAIT_TIME = time.Duration(3 * time.Minute)
+const SERVER_CRASH_WAIT_TIME = time.Duration(3 * int64(time.Minute))
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
@@ -396,7 +396,7 @@ func main() {
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_TIME
-	retryClient.RetryWaitMax = time.Duration(10 * time.Minute)
+	retryClient.RetryWaitMax = time.Duration(10 * int64(time.Minute))
 	retryClient.RetryMax = 120
 	retryClient.CheckRetry = mobilizònRetryPolicy
 	retryClient.Backoff = mobilizònErrorBackoff
