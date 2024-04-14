@@ -39,7 +39,7 @@ const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.l
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1024 * 1024 * 10 // ten megabytes
 const IMAGE_RESIZE_WIDTH = 600
-const SERVER_CRASH_WAIT_MILLISECONDS = 5 * 60 * 1000
+const SERVER_CRASH_WAIT_TIME = time.Duration(3 * time.Minute)
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
@@ -395,8 +395,8 @@ func main() {
 
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
-	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_MILLISECONDS
-	retryClient.RetryWaitMax = SERVER_CRASH_WAIT_MILLISECONDS + 1000
+	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_TIME
+	retryClient.RetryWaitMax = time.Duration(10 * time.Minute)
 	retryClient.RetryMax = 120
 	retryClient.CheckRetry = mobilizònRetryPolicy
 	retryClient.Backoff = mobilizònErrorBackoff
@@ -1259,5 +1259,5 @@ func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) 
 // from an activity-pub related crash
 func mobilizònErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
 	Log.Error("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
-	return time.Duration(int64(SERVER_CRASH_WAIT_MILLISECONDS))
+	return SERVER_CRASH_WAIT_TIME
 }
