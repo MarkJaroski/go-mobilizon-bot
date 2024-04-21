@@ -1246,7 +1246,7 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
 	if resp.Status == "401" {
 		refreshAuthorization()
-		return false, nil
+		return true, nil
 	}
 	if resp.Status < "400" {
 		return false, nil
