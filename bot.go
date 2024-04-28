@@ -896,8 +896,8 @@ func fetchOGImageUrl(url string) string {
 	// convert URLs to absolute
 	ogp.ToAbsURL()
 
-	if url == ogp.Image[0].URL || url == ogp.Image[0].URL+"/" {
-		Log.Debug("Opengraph image URL was the base URL")
+	if strings.Contains(url, ogp.Image[0].URL) {
+		Log.Debug("Opengraph image URL is a substring of the base URL")
 		return ""
 	}
 
