@@ -882,35 +882,37 @@ func authorizeApp() {
 func fetchOGImageUrl(url string) string {
 	Log.Debug("Fetching opengraph image url.")
 
-	retUrl := ""
-
 	// get the ogp object
 	ogp, err := opengraph.Fetch(url)
 	if err != nil {
 		Log.Error("fetchOGImage", "error", err)
 	}
 
+	if len(ogp.Image) == 0 {
+		Log.Debug("No opengraph image found")
+		return ""
+	}
+
 	// convert URLs to absolute
 	ogp.ToAbsURL()
 
-	// if we have a URL return it
-	if len(ogp.Image) > 0 && url != ogp.Image[0].URL+"/" {
-		// but check that it works first
-		res, err := http.Head(ogp.Image[0].URL)
-		if err != nil {
-			Log.Error("fetchOGImage", "error", err)
-			return ""
-		}
-		if res.StatusCode == 200 {
-			retUrl = ogp.Image[0].URL
-		}
-		// some venues put the full size image in the metadata
-		if res.ContentLength > MAX_IMG_SIZE {
-			retUrl = ""
-		}
+	if url == ogp.Image[0].URL || url == ogp.Image[0].URL+"/" {
+		Log.Debug("Opengraph image URL was the base URL")
+		return ""
 	}
 
-	return retUrl
+	//but check that it works first
+	res, err := http.Head(ogp.Image[0].URL)
+	if err != nil {
+		Log.Error("fetchOGImage", "error", err)
+		return ""
+	}
+	if res.StatusCode != 200 {
+		Log.Error("fetchOGImage", "status", res.StatusCode)
+		return ""
+	}
+
+	return ogp.Image[0].URL
 }
 
 // guessEventImage tries to find a reasonable image on the page found at an
