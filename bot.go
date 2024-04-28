@@ -907,11 +907,13 @@ func fetchOGImageUrl(url string) string {
 		Log.Error("fetchOGImage", "error", err)
 		return ""
 	}
+
 	if res.StatusCode != 200 {
 		Log.Error("fetchOGImage", "status", res.StatusCode)
 		return ""
 	}
 
+	Log.Debug("Returning first opengraph image URL", "url", ogp.Image[0].URL)
 	return ogp.Image[0].URL
 }
 
