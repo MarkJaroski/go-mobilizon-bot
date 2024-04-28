@@ -695,7 +695,7 @@ func uploadEventImage(path string) (graphql.ID, error) {
 	var mediaObject MediaResponse
 	json.Unmarshal(responseData, &mediaObject)
 	if mediaObject.Data.Upload.Id == "" {
-		err = errors.New("Image id not found in upload response." + path)
+		err = errors.New("Image id not found in upload response. " + path)
 	}
 	return (graphql.ID)(mediaObject.Data.Upload.Id), err
 }
@@ -880,6 +880,7 @@ func authorizeApp() {
 // Open Ggraph image URL found there, if one exists.
 // See https://ogp.me/
 func fetchOGImageUrl(url string) string {
+	Log.Debug("Fetching opengraph image url.")
 
 	retUrl := ""
 
@@ -897,7 +898,7 @@ func fetchOGImageUrl(url string) string {
 		// but check that it works first
 		res, err := http.Head(ogp.Image[0].URL)
 		if err != nil {
-			Log.Error("fetchOGImage", err)
+			Log.Error("fetchOGImage", "error", err)
 			return ""
 		}
 		if res.StatusCode == 200 {
