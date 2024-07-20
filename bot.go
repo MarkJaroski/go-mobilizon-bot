@@ -744,7 +744,7 @@ func createEvent(vars map[string]interface{}) {
 	err := gqlClient.Mutate(context.Background(), &m, vars)
 	if err != nil {
 		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
-		os.Exit(1)
+		return
 	}
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
 }
