@@ -844,7 +844,10 @@ func authorizeApp() {
 	}
 
 	var resp DeviceCodeGrant
-	json.Unmarshal(resData, &resp)
+	err = json.Unmarshal(resData, &resp)
+	if err != nil {
+		Log.Error("Error unmarshaling json:", err.Error())
+	}
 
 	fmt.Println("Please visit this URL and enter the code below " + resp.VerificationURI)
 	fmt.Println()
