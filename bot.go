@@ -841,12 +841,16 @@ func authorizeApp() {
 		Interval        int    `json:"interval"`
 		UserCode        string `json:"user_code"`
 		VerificationURI string `json:"verification_uri"`
+		Error           string `json:"error"`
 	}
 
 	var resp DeviceCodeGrant
 	err = json.Unmarshal(resData, &resp)
 	if err != nil {
 		Log.Error("Error unmarshaling json:", err.Error())
+	}
+	if resp.Error != "" {
+		Log.Error(resp.Error)
 	}
 
 	fmt.Println("Please visit this URL and enter the code below " + resp.VerificationURI)
