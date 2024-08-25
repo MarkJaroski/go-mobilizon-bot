@@ -297,7 +297,7 @@ type AuthConfig struct {
 	AccessToken           string `json:"access_token"`
 	ExpiresIn             int    `json:"expires_in"`
 	RefreshToken          string `json:"refresh_token"`
-	RefreshTokenExpiresIn string `json:"refresh_token_expires_in"`
+	RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
 	Scopes                string `json:"scopes"`
 	TokenType             string `json:"token_type"`
 }
@@ -1174,11 +1174,11 @@ func refreshAuthorization() error {
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(*opts.AuthConfig)
 	if err != nil {
-		Log.Error("Error reading auth file:", err)
+		Log.Error("Error reading auth file:", err.Error())
 	}
 	err = json.Unmarshal(dat, &auth)
 	if err != nil {
-		Log.Error("Error unmarshaling json:", err)
+		Log.Error("Error unmarshaling json:", err.Error())
 	}
 
 	Log.Debug("Using refresh token: " + auth.RefreshToken)
