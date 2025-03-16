@@ -39,7 +39,7 @@ const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.l
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1024 * 1024 * 10 // ten megabytes
 const IMAGE_RESIZE_WIDTH = 600
-const SERVER_CRASH_WAIT_TIME = time.Duration(3 * int64(time.Minute))
+const SERVER_CRASH_WAIT_TIME = time.Duration(1 * int64(time.Minute))
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
