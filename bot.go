@@ -1117,6 +1117,9 @@ func eventExists(e Event) bool {
 	err := gqlClient.Query(context.Background(), &s, vars)
 	if err != nil {
 		Log.Error("Error checking if event exists", "error", err)
+		if strings.Contains(err.Error(), "token_expired") {
+			authorizeApp()
+		}
 		//
 		// FIXME
 		//
