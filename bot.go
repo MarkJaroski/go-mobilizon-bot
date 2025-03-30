@@ -38,7 +38,7 @@ import (
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
-const MAX_IMG_SIZE = 1024 * 1024 * 10 // ten megabytes
+const MAX_IMG_SIZE = 1024 * 800 // 800kb
 const IMAGE_RESIZE_WIDTH = 600
 const SERVER_CRASH_WAIT_TIME = time.Duration(1 * int64(time.Minute))
 const ADDR_FILE = "addrs.json"
@@ -689,7 +689,8 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	path, err := downloadFile(e.ImageUrl)
 	if err != nil {
 		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
-		return vars, err
+		e.ImageUrl = DEFAULT_IMAGE_URL
+		return vars, nil
 	}
 	id, err := uploadEventImage(path)
 	if err != nil {
