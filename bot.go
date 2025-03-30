@@ -1134,7 +1134,7 @@ func downloadFile(URL string) (string, error) {
 	defer file.Close()
 
 	//Write the bytes to the file
-	if response.ContentLength > MAX_IMG_SIZE {
+	if response.ContentLength > MAX_IMG_SIZE || strings.HasSuffix(URL, ".avif") {
 		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), IMAGE_RESIZE_WIDTH)
 	} else {
 		_, err = io.Copy(file, response.Body)
