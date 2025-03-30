@@ -904,7 +904,7 @@ func authorizeApp() {
 		Log.Error("Error unmarshaling json:", err.Error())
 	}
 	if resp.Error != "" {
-		Log.Error(resp.Error)
+		Log.Error("Error getting verification URI", resp.Error)
 	}
 
 	fmt.Println("Please visit this URL and enter the code below " + resp.VerificationURI)
