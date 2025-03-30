@@ -361,7 +361,7 @@ func main() {
 	opts.AuthConfig = pflag.String("authconfig", confdir+"/mobilizon/auth.json", "Use this file for authorization tokens.")
 	opts.Config = pflag.String("config", confdir+"/mobilizon", "Use this directory for configuration.")
 	opts.NoOp = pflag.Bool("noop", false, "Gather all required information and report on it, but do not create events in Mobilizòn.")
-	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id and client secret will be output.")
+	opts.Register = pflag.Bool("register", false, "Register this bot and quit. A client id will be output.")
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
 	opts.Draft = pflag.Bool("draft", false, "Create events in draft mode.")
 	opts.Debug = pflag.Bool("debug", false, "Debug mode.")
@@ -847,10 +847,10 @@ func registerApp() {
 	json.Unmarshal(resData, &reg)
 
 	os.Setenv("GRAPHQL_CLIENT_ID", reg.ClientID)
-	os.Setenv("GRAPHQL_CLIENT_SECRET", reg.ClientSecret)
+	// os.Setenv("GRAPHQL_CLIENT_SECRET", reg.ClientSecret)
 
 	fmt.Println("export GRAPHQL_CLIENT_ID=" + reg.ClientID)
-	fmt.Println("export GRAPHQL_CLIENT_SECRET=" + reg.ClientSecret)
+	// fmt.Println("export GRAPHQL_CLIENT_SECRET=" + reg.ClientSecret)
 }
 
 // authorizeApp does the OAuth2 authorization handshake using the device
@@ -902,9 +902,11 @@ func authorizeApp() {
 	err = json.Unmarshal(resData, &resp)
 	if err != nil {
 		Log.Error("Error unmarshaling json:", err.Error())
+		os.Exit(1)
 	}
 	if resp.Error != "" {
 		Log.Error("Error getting verification URI", resp.Error)
+		os.Exit(1)
 	}
 
 	fmt.Println("Please visit this URL and enter the code below " + resp.VerificationURI)
