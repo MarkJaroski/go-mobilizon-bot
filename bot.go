@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/gen2brain/avif"
 	"github.com/gocolly/colly"
 	"github.com/hasura/go-graphql-client"
 	"github.com/otiai10/opengraph"
@@ -1287,6 +1288,8 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 		src, err = jpeg.Decode(r)
 	case "image/png":
 		src, err = png.Decode(r)
+	case "image/avif":
+		src, err = avif.Decode(r)
 	default:
 		err = errors.New("Unknown MIME Type " + mimetype)
 	}
