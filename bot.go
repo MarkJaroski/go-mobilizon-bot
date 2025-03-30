@@ -690,8 +690,7 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	path, err := downloadFile(e.ImageUrl)
 	if err != nil {
 		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
-		e.ImageUrl = DEFAULT_IMAGE_URL
-		return vars, nil
+		path, _ = downloadFile(DEFAULT_IMAGE_URL)
 	}
 	id, err := uploadEventImage(path)
 	if err != nil {
