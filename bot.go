@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"regexp"
 	"slices"
 	"strings"
@@ -40,6 +41,8 @@ const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
 const MAX_IMG_SIZE = 1024 * 1024 * 10 // ten megabytes
 const IMAGE_RESIZE_WIDTH = 600
 const SERVER_CRASH_WAIT_TIME = time.Duration(1 * int64(time.Minute))
+const ADDR_FILE = "addrs.json"
+const EXISTS_FILE = "exists.json"
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
@@ -60,6 +63,8 @@ type Options struct {
 	Authorize  *bool
 	Draft      *bool
 	Debug      *bool
+	AddrsFile  *string
+	ExistsFile *string
 }
 
 var opts Options
@@ -308,8 +313,12 @@ var actorID *string
 var groupID *string
 var timezone *string
 var addrs map[string]AddressInput
+var exists map[string]Event
+var created map[string]Event
 var httpClient *http.Client
 var gqlClient *graphql.Client
+var addrsFile string
+var existsFile string
 
 // Log is our hclog local instance
 var Log hclog.Logger
@@ -321,6 +330,8 @@ func init() {
 		Level: hclog.LevelFromString("INFO"),
 	})
 	addrs = make(map[string]AddressInput)
+	exists = make(map[string]Event)
+	created = make(map[string]Event)
 }
 
 // main still does too much of the work FIXME
@@ -393,6 +404,9 @@ func main() {
 		Log.SetLevel(hclog.LevelFromString("DEBUG"))
 	}
 
+	addrsFile = *opts.Config + "/" + ADDR_FILE
+	existsFile = *opts.Config + "/" + EXISTS_FILE
+
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_TIME
@@ -445,18 +459,13 @@ func main() {
 
 // fetchAddrs loads the local addr.json file cache and then attempts to
 // fetch any missing addresses from OpenStreetMap and Mobilizòn
-// FIXME this still probably does too much for one function
 func fetchAddrs(responseObject Response) {
-	addrsfile := *opts.Config + "/addrs.json"
-
 	// Read the local file, if it exists. We can trap errors here
 	// since we can just recreate the file if necessary.
-	dat, err := os.ReadFile(addrsfile)
+	dat, err := os.ReadFile(addrsFile)
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	// FIXME: this should be a real json format just dumping the map is not
-	// good json
 	err = json.Unmarshal(dat, &addrs)
 	if err != nil {
 		Log.Error(err.Error())
@@ -466,17 +475,37 @@ func fetchAddrs(responseObject Response) {
 		fetchAddr(event)
 	}
 
-	// FIXME: this should be a real json format just dumping the map is not
-	// good json
 	data, err := json.MarshalIndent(&addrs, "", " ")
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	err = os.WriteFile(addrsfile, data, 0600)
+	err = os.WriteFile(addrsFile, data, 0600)
 	if err != nil {
 		Log.Error(err.Error())
 	}
 
+}
+
+func loadExistingEvents() {
+	dat, err := os.ReadFile(existsFile)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	err = json.Unmarshal(dat, &exists)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+}
+
+func saveExistingEvents() {
+	data, err := json.MarshalIndent(&created, "", " ")
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	err = os.WriteFile(existsFile, data, 0600)
+	if err != nil {
+		Log.Error(err.Error())
+	}
 }
 
 // fetchAddr uses OpenStreetMap Nominatim to create a query string which
@@ -575,9 +604,24 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
+func differentiateUrl(e Event) Event {
+	if e.SourceUrl != e.URL {
+		return e // event already differs from venue URL
+	}
+	match, _ := regexp.MatchString("#", e.URL)
+	if match {
+		e.URL = e.URL + ":"
+	} else {
+		e.URL = e.URL + "#"
+	}
+	e.URL = e.URL + e.Date.Format(time.RFC3339)
+	return e
+}
+
 // createEvents loops through all of the events in the json input, sets up
 // their variables map, and runs createEvents on them
 func createEvents(r Response) {
+	loadExistingEvents()
 	for _, event := range r.Event {
 		// Do not upload events from bejazz.ch. They don't like us.
 		// opt out FIXME this should be loaded from a file or something
@@ -592,9 +636,14 @@ func createEvents(r Response) {
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
+		// cannonisize the URL
+		event = differentiateUrl(event)
 		// guard clauses
 		if eventExists(event) {
-			// updateEvent(vars)
+			if !reflect.DeepEqual(event, exists[event.URL]) {
+				updateEvent(event)
+			}
+			created[event.URL] = event
 			continue
 		}
 		if *opts.NoOp {
@@ -605,8 +654,12 @@ func createEvents(r Response) {
 			Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
 			continue
 		}
-		createEvent(vars)
+		err = createEvent(vars)
+		if err == nil {
+			created[event.URL] = event
+		}
 	}
+	saveExistingEvents()
 }
 
 // populateVariables takes an Event object from the json input and returns
@@ -734,7 +787,7 @@ func populateCategory(e Event) EventCategory {
 // createEvent implements the Mobilizòn graphQL createEvent mutation 
 // taking a map of strings to objects to populate its variables
 // FIXME split this out to a library
-func createEvent(vars map[string]interface{}) {
+func createEvent(vars map[string]interface{}) error {
 	var m struct {
 		CreateEvent struct {
 			Id   string
@@ -744,15 +797,15 @@ func createEvent(vars map[string]interface{}) {
 	err := gqlClient.Mutate(context.Background(), &m, vars)
 	if err != nil {
 		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
-		return
+		return err
 	}
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
+	return err
 }
 
 // updateEvent is a stub which will eventually implement the updateEvent
 // Mobilizòn GraphQL mutation
-// FIXME split this out to a library
-func updateEvent(vars map[string]interface{}) {
+func updateEvent(e Event) {
 	// FIXME : stub
 }
 
@@ -1094,11 +1147,11 @@ func downloadFile(URL string) (string, error) {
 // for a matching event URL. This is usually enough to prevent duplicates,
 // however it doesn't work for those venues which do not have unique URLs
 // per event.
-//
-// FIXME A local event cache would help speed this up and reduce traffic
-// over the wire.
 func eventExists(e Event) bool {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
+	if _, ok := exists[e.URL]; ok {
+		return true
+	}
 	var s struct {
 		SearchEvents struct {
 			Total    int `json:"total"`
@@ -1150,6 +1203,7 @@ func eventExists(e Event) bool {
 			Log.Debug("Failed fetching event by uuid:", el.Uuid, err)
 		}
 
+		Log.Debug("Checking URL for a match", "url", e.URL)
 		if e.URL == f.Event.OnlineAddress {
 			Log.Debug("Found event matching", "url", e.URL)
 			// we have a match
