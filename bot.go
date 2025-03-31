@@ -807,7 +807,7 @@ func createEvent(vars map[string]interface{}) error {
 // updateEvent is a stub which will eventually implement the updateEvent
 // Mobilizòn GraphQL mutation
 func updateEvent(e Event) {
-	Log.Info("Called Update on event", e.Title, e.Location)
+	Log.Info("Called Update on event", "title", e.Title, "location", e.Location)
 	// FIXME : stub
 }
 
