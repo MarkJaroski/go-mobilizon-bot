@@ -605,18 +605,16 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
-func differentiateUrl(e Event) Event {
-	if e.SourceUrl != e.URL {
-		return e // event already differs from venue URL
-	}
+func getEventKey(e Event) string {
+	var url = e.URL
 	match, _ := regexp.MatchString("#", e.URL)
 	if match {
-		e.URL = e.URL + ":"
+		url = url + ":"
 	} else {
-		e.URL = e.URL + "#"
+		url = url + "#"
 	}
-	e.URL = e.URL + e.Date.Format(time.RFC3339)
-	return e
+	url = url + e.Date.Format(time.RFC3339)
+	return url
 }
 
 // createEvents loops through all of the events in the json input, sets up
@@ -637,14 +635,12 @@ func createEvents(r Response) {
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
-		// cannonisize the URL
-		event = differentiateUrl(event)
 		// guard clauses
 		if eventExists(event) {
-			if !reflect.DeepEqual(event, exists[event.URL]) {
+			if !reflect.DeepEqual(event, exists[getEventKey(event)]) {
 				updateEvent(event)
 			}
-			created[event.URL] = event
+			created[getEventKey(event)] = event
 			continue
 		}
 		if *opts.NoOp {
@@ -657,7 +653,7 @@ func createEvents(r Response) {
 		}
 		err = createEvent(vars)
 		if err == nil {
-			created[event.URL] = event
+			created[getEventKey(event)] = event
 		}
 	}
 	saveExistingEvents()
@@ -1153,7 +1149,7 @@ func downloadFile(URL string) (string, error) {
 // per event.
 func eventExists(e Event) bool {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
-	if _, ok := exists[e.URL]; ok {
+	if _, ok := exists[getEventKey(e)]; ok {
 		return true
 	}
 	var s struct {
