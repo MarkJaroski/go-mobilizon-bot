@@ -314,7 +314,7 @@ var actorID *string
 var groupID *string
 var timezone *string
 var addrs map[string]AddressInput
-var exists map[string]Event
+var existing map[string]Event
 var created map[string]Event
 var httpClient *http.Client
 var gqlClient *graphql.Client
@@ -331,7 +331,7 @@ func init() {
 		Level: hclog.LevelFromString("INFO"),
 	})
 	addrs = make(map[string]AddressInput)
-	exists = make(map[string]Event)
+	existing = make(map[string]Event)
 	created = make(map[string]Event)
 }
 
@@ -492,7 +492,7 @@ func loadExistingEvents() {
 	if err != nil {
 		Log.Error(err.Error())
 	}
-	err = json.Unmarshal(dat, &exists)
+	err = json.Unmarshal(dat, &existing)
 	if err != nil {
 		Log.Error(err.Error())
 	}
@@ -637,7 +637,7 @@ func createEvents(r Response) {
 		}
 		// guard clauses
 		if eventExists(event) {
-			if !reflect.DeepEqual(event, exists[getEventKey(event)]) {
+			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
 				updateEvent(event)
 			}
 			created[getEventKey(event)] = event
@@ -1149,7 +1149,7 @@ func downloadFile(URL string) (string, error) {
 // per event.
 func eventExists(e Event) bool {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
-	if _, ok := exists[getEventKey(e)]; ok {
+	if _, ok := existing[getEventKey(e)]; ok {
 		return true
 	}
 	var s struct {
@@ -1173,18 +1173,9 @@ func eventExists(e Event) bool {
 		if strings.Contains(err.Error(), "token_expired") {
 			authorizeApp()
 		}
-		//
-		// FIXME
-		//
-		// When the server is loaded the graphql API fails to return
-		// certain events. I haven't been able to identify why, but the
-		// same events always fail which suggests that there must be a
-		// better approach.
-		//
-		// That said, this works for the time being.
-		//
-		time.Sleep(3 * time.Second)
-		gqlClient.Query(context.Background(), &s, vars)
+		if strings.Contains(err.Error(), "401") {
+			authorizeApp()
+		}
 	}
 
 	// loop through the events and return true if we have a real match
