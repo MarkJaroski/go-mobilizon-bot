@@ -806,7 +806,7 @@ func updateEvent(e Event) {
 	// FIXME : stub
 	// until the actual update code is here it's better to keep the old
 	// event in the local store
-	created[getEventKey(e)] = existing[getEventKey(e)]
+	created[getEventKey(e)] = e
 }
 
 // registerApp registers an OAuth2 client called "Concert Cloud Bot" and
