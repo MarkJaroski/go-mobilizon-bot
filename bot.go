@@ -640,10 +640,12 @@ func createEvents(r Response) {
 			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(event)]), "event", spew.Sdump(event))
 				updateEvent(event)
+				created[getEventKey(event)] = event
 			}
 			continue
 		}
 		if eventExists(event) {
+			created[getEventKey(event)] = event
 			continue
 		}
 		if *opts.NoOp {
@@ -810,7 +812,6 @@ func updateEvent(e Event) {
 	// FIXME : stub
 	// until the actual update code is here it's better to keep the old
 	// event in the local store
-	created[getEventKey(e)] = e
 }
 
 // registerApp registers an OAuth2 client called "Concert Cloud Bot" and
