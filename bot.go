@@ -636,11 +636,14 @@ func createEvents(r Response) {
 			event.Title = event.Title + " ..."
 		}
 		// guard clauses
-		if eventExists(event) {
+		if _, ok := existing[getEventKey(e)]; ok {
 			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(e)]), "event", spew.Sdump(event))
 				updateEvent(event)
 			}
+			continue
+		}
+		if eventExists(event) {
 			continue
 		}
 		if *opts.NoOp {
@@ -1152,9 +1155,6 @@ func downloadFile(URL string) (string, error) {
 // per event.
 func eventExists(e Event) bool {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
-	if _, ok := existing[getEventKey(e)]; ok {
-		return true
-	}
 	var s struct {
 		SearchEvents struct {
 			Total    int `json:"total"`
