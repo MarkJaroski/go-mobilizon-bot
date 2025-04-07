@@ -636,9 +636,9 @@ func createEvents(r Response) {
 			event.Title = event.Title + " ..."
 		}
 		// guard clauses
-		if _, ok := existing[getEventKey(e)]; ok {
+		if _, ok := existing[getEventKey(event)]; ok {
 			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
-				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(e)]), "event", spew.Sdump(event))
+				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(event)]), "event", spew.Sdump(event))
 				updateEvent(event)
 			}
 			continue
