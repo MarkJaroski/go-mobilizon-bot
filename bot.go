@@ -95,6 +95,7 @@ type Event struct {
 	SourceUrl string    `json:"sourceUrl"`
 	Date      time.Time `json:"date"`
 	ImageUrl  string    `json:"imageUrl"`
+	MobUUID   string    `json:"mobilizonUuid"`
 }
 
 // UUID represents the GraphQL UUID type
@@ -644,7 +645,8 @@ func createEvents(r Response) {
 			}
 			continue
 		}
-		if eventExists(event) {
+		if ok, uuid := eventExists(event); ok {
+			event.MobUUID = uuid
 			created[getEventKey(event)] = event
 			continue
 		}
@@ -656,8 +658,9 @@ func createEvents(r Response) {
 			Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
 			continue
 		}
-		err = createEvent(vars)
+		uuid, err := createEvent(vars)
 		if err == nil {
+			event.MobUUID = uuid
 			created[getEventKey(event)] = event
 		}
 	}
@@ -789,7 +792,7 @@ func populateCategory(e Event) EventCategory {
 // createEvent implements the Mobilizòn graphQL createEvent mutation 
 // taking a map of strings to objects to populate its variables
 // FIXME split this out to a library
-func createEvent(vars map[string]interface{}) error {
+func createEvent(vars map[string]interface{}) (string, error) {
 	var m struct {
 		CreateEvent struct {
 			Id   string
@@ -799,10 +802,10 @@ func createEvent(vars map[string]interface{}) error {
 	err := gqlClient.Mutate(context.Background(), &m, vars)
 	if err != nil {
 		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
-		return err
+		return "", err
 	}
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
-	return err
+	return m.CreateEvent.Id, err
 }
 
 // updateEvent is a stub which will eventually implement the updateEvent
@@ -1154,7 +1157,7 @@ func downloadFile(URL string) (string, error) {
 // for a matching event URL. This is usually enough to prevent duplicates,
 // however it doesn't work for those venues which do not have unique URLs
 // per event.
-func eventExists(e Event) bool {
+func eventExists(e Event) (bool, string) {
 	Log.Debug("Searching for existing events", "title", e.Title, "date", e.Date.Format(time.RFC3339))
 	var s struct {
 		SearchEvents struct {
@@ -1201,20 +1204,18 @@ func eventExists(e Event) bool {
 		Log.Debug("Checking URL for a match", "url", e.URL)
 		if e.URL == f.Event.OnlineAddress {
 			Log.Debug("Found event matching", "url", e.URL)
-			// we have a match
-			// FIXME update the title if it has changed
-			return true
+			return true, el.Uuid
 		} else if e.URL+"/" == f.Event.OnlineAddress {
 			Log.Debug("Found event matching", "url", e.URL, "issue", "no trailing slash")
-			return true
+			return true, el.Uuid
 		} else if e.URL == f.Event.OnlineAddress+"/" {
 			Log.Debug("Found event matching", "url", e.URL, "issue", "trailing slash")
-			return true
+			return true, el.Uuid
 		}
 	}
 
 	Log.Info("Event not found", "title", e.Title, "date", e.Date.Format(time.RFC3339), "location", e.Location)
-	return false
+	return false, ""
 }
 
 // refreshAuthorization attempts to use the refresh token from the stored
