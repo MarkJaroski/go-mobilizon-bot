@@ -26,3 +26,4 @@ go-mobilizon-bot
 
 # Storage
 hashes.txt
+*.json
