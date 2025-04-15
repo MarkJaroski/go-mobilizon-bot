@@ -638,10 +638,19 @@ func createEvents(r Response) {
 		}
 		// guard clauses
 		if _, ok := existing[getEventKey(event)]; ok {
+			event.MobUUID = existing[getEventKey(event)].MobUUID
 			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(event)]), "event", spew.Sdump(event))
-				updateEvent(event)
+				if *opts.NoOp {
+					continue
+				}
 				created[getEventKey(event)] = event
+				vars, err := populateVariables(event)
+				if err != nil {
+					Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
+					continue
+				}
+				updateEvent(vars)
 			}
 			continue
 		}
@@ -810,11 +819,12 @@ func createEvent(vars map[string]interface{}) (string, error) {
 
 // updateEvent is a stub which will eventually implement the updateEvent
 // Mobilizòn GraphQL mutation
-func updateEvent(e Event) {
-	Log.Info("Called Update on event", "title", e.Title, "location", e.Location)
+// FIXME split this out to a library
+func updateEvent(vars map[string]interface{}) (string, error) {
 	// FIXME : stub
 	// until the actual update code is here it's better to keep the old
 	// event in the local store
+	return "", nil
 }
 
 // registerApp registers an OAuth2 client called "Concert Cloud Bot" and
