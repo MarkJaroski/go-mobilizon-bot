@@ -95,7 +95,9 @@ type Event struct {
 	SourceUrl string    `json:"sourceUrl"`
 	Date      time.Time `json:"date"`
 	ImageUrl  string    `json:"imageUrl"`
-	MobUUID   string    `json:"mobilizonUuid"`
+	// FIXME this really needs to be in a different structure alongside
+	// Event rather than in it
+	MobUUID string `json:"mobilizonUuid"`
 }
 
 // UUID represents the GraphQL UUID type
@@ -370,6 +372,10 @@ func main() {
 
 	pflag.Parse()
 
+	if *opts.Config != confdir+"/mobilizon" {
+		*opts.AuthConfig = *opts.Config + "/auth.json"
+	}
+
 	if *opts.Register {
 		registerApp()
 		return
@@ -636,9 +642,12 @@ func createEvents(r Response) {
 		if len(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
+		Log.Debug("Checking for existing events", "eventKey", getEventKey(event))
 		// guard clauses
 		if _, ok := existing[getEventKey(event)]; ok {
-			event.MobUUID = existing[getEventKey(event)].MobUUID
+			Log.Debug("Found a cached event")
+			event.MobUUID = existing[getEventKey(event)].MobUUID // events never come in with a MobUUID
+			created[getEventKey(event)] = existing[getEventKey(event)]
 			if !reflect.DeepEqual(event, existing[getEventKey(event)]) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[getEventKey(event)]), "event", spew.Sdump(event))
 				if *opts.NoOp {
@@ -699,7 +708,17 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 		"tags":                     populateTags(e),
 		"options":                  populateEventOptions(),
 	}
+	// if we have a UUID fetch the corresponding eventId and use it
 	e = populateImageUrl(e)
+	if e.MobUUID != "" {
+		eventId, err := fetchEventId(e.MobUUID)
+		if err != nil {
+			return vars, err
+		}
+		vars["id"] = eventId
+		// skip the image upload for updates
+		return vars, err
+	}
 	path, err := downloadFile(e.ImageUrl)
 	if err != nil {
 		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
@@ -817,14 +836,43 @@ func createEvent(vars map[string]interface{}) (string, error) {
 	return m.CreateEvent.Id, err
 }
 
-// updateEvent is a stub which will eventually implement the updateEvent
-// Mobilizòn GraphQL mutation
+// updateEvent implements the Mobilizòn GraphQL updateEvent mutation
 // FIXME split this out to a library
 func updateEvent(vars map[string]interface{}) (string, error) {
-	// FIXME : stub
-	// until the actual update code is here it's better to keep the old
-	// event in the local store
-	return "", nil
+	var m struct {
+		UpdateEvent struct {
+			Id   string
+			Uuid string
+		} `graphql:"updateEvent(eventId: $id, organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+	}
+	err := gqlClient.Mutate(context.Background(), &m, vars)
+	if err != nil {
+		Log.Error("Error updating event", "error", err, "vars", spew.Sdump(vars))
+		return "", err
+	}
+	Log.Info("Updated Event", "id", m.UpdateEvent.Id, "UUID", m.UpdateEvent.Uuid)
+	return m.UpdateEvent.Id, err
+}
+
+// FIXME split this out to a library
+func fetchEventId(uuid string) (graphql.ID, error) {
+	Log.Debug("Attempting to fetch event by uuid", "uuid", uuid)
+	var q struct {
+		Event struct {
+			Id graphql.ID `json:"id"`
+		} `graphql:"event(uuid: $uuid)"`
+	}
+	type UUID string
+	vars := map[string]interface{}{
+		"uuid": UUID(uuid),
+	}
+	err := gqlClient.Query(context.Background(), &q, vars)
+	if err != nil {
+		Log.Error("Error fetching event", "error", err, "vars", spew.Sdump(vars))
+		return "", err
+	}
+	Log.Debug("Got ID", "id", q.Event.Id)
+	return q.Event.Id, nil
 }
 
 // registerApp registers an OAuth2 client called "Concert Cloud Bot" and
@@ -838,7 +886,7 @@ func registerApp() {
 	}
 
 	var posturl = "https://mobilisons.ch/apps"
-	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
+	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:event:update%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		Log.Error("", err)
@@ -884,7 +932,7 @@ func authorizeApp() {
 	var posturl = "https://mobilisons.ch/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 
-	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:media:upload")
+	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:event:update%20write:media:upload")
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
 		Log.Error("", err)
