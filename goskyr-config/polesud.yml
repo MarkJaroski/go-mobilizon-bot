@@ -1,3 +1,7 @@
+writer:
+  type: file
+  filepath: json/polesud.json
+
 scrapers:
   - name: PoleSud
     url: https://polesud.ch/evenements-a-venir/
@@ -35,6 +39,12 @@ scrapers:
           - type: regex-replace
             regex: Concert
             replace: MUSIC
+          - type: regex-replace
+            regex: Conférence
+            replace: MEETING
+          - type: regex-replace
+            regex: Activité régulière
+            replace: COMMUNITY
           - type: regex-replace
             regex: "Cours et atelier"
             replace: FAMILY_EDUCATION
