@@ -711,13 +711,13 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	// if we have a UUID fetch the corresponding eventId and use it
 	e = populateImageUrl(e)
 	if e.MobUUID != "" {
-		eventId, err := fetchEventId(e.MobUUID)
+		eventId, err := fetchEvent(e.MobUUID)
 		if err != nil {
 			return vars, err
 		}
 		vars["id"] = eventId
 		// skip the image upload for updates
-		return vars, err
+		// return vars, err
 	}
 	path, err := downloadFile(e.ImageUrl)
 	if err != nil {
@@ -843,7 +843,7 @@ func updateEvent(vars map[string]interface{}) (string, error) {
 		UpdateEvent struct {
 			Id   string
 			Uuid string
-		} `graphql:"updateEvent(eventId: $id, organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options)"`
+		} `graphql:"updateEvent(eventId: $id, organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 	err := gqlClient.Mutate(context.Background(), &m, vars)
 	if err != nil {
@@ -855,7 +855,7 @@ func updateEvent(vars map[string]interface{}) (string, error) {
 }
 
 // FIXME split this out to a library
-func fetchEventId(uuid string) (graphql.ID, error) {
+func fetchEvent(uuid string) (graphql.ID, error) {
 	Log.Debug("Attempting to fetch event by uuid", "uuid", uuid)
 	var q struct {
 		Event struct {
