@@ -427,7 +427,7 @@ func main() {
 	})
 
 	// this will hold our json object whether local or from ConcertCloud
-	var jsonEventInput Response
+	var events []Event
 
 	if *opts.File != "" {
 		Log.Info("using local file:", "file", *opts.File)
@@ -436,7 +436,8 @@ func main() {
 			Log.Error("error", err)
 			os.Exit(1)
 		}
-		json.Unmarshal(dat, &jsonEventInput)
+		// goskyr file output produces a simple json array of Event objects
+		json.Unmarshal(dat, &events)
 	} else {
 		// Fetch some concerts from Concert Cloud
 		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
@@ -452,16 +453,18 @@ func main() {
 			os.Exit(1) // no point in continuing
 		}
 
+		var jsonEventInput Response
 		json.Unmarshal(responseData, &jsonEventInput)
+		events = jsonEventInput.Event
 	}
 
-	fetchAddrs(jsonEventInput)
-	createEvents(jsonEventInput)
+	fetchAddrs(events)
+	createEvents(events)
 }
 
 // fetchAddrs loads the local addr.json file cache and then attempts to
 // fetch any missing addresses from OpenStreetMap and Mobilizòn
-func fetchAddrs(responseObject Response) {
+func fetchAddrs(events []Event) {
 	// Read the local file, if it exists. We can trap errors here
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(addrsFile)
@@ -473,8 +476,8 @@ func fetchAddrs(responseObject Response) {
 		Log.Error(err.Error())
 	}
 
-	for _, event := range responseObject.Event {
-		fetchAddr(event)
+	for i := 0; i < len(events); i++ {
+		fetchAddr(events[i])
 	}
 
 	data, err := json.MarshalIndent(&addrs, "", " ")
@@ -620,9 +623,10 @@ func getEventKey(e Event) string {
 
 // createEvents loops through all of the events in the json input, sets up
 // their variables map, and runs createEvents on them
-func createEvents(r Response) {
+func createEvents(events []Event) {
 	loadExistingEvents()
-	for _, event := range r.Event {
+	for i := 0; i < len(events); i++ {
+		event := events[i]
 		// Do not upload events from bejazz.ch. They don't like us.
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)

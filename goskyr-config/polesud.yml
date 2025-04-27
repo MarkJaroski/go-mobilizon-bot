@@ -1,6 +1,6 @@
 writer:
   type: file
-  filepath: json/polesud.json
+  filepath: goskyr-config/json/polesud.json
 
 scrapers:
   - name: PoleSud
