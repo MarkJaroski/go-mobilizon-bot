@@ -43,7 +43,7 @@ Once you've built the bot you'll need to register it.
 
 ```bash
 
-./go/bin/go-mobilizon-bot --mobilizonurl --register
+./go/bin/go-mobilizon-bot --mobilizonurl <your-mobilizon-instance> --register
 
 ```
 
@@ -54,8 +54,20 @@ environment for the next step: authorization.
 
 export GRAPHQL_CLIENT_ID=<your id>
 
-./go/bin/go-mobilizon-bot --mobilizonurl --authorize
+./go/bin/go-mobilizon-bot --mobilizonurl <your-mobilizon-instance> --authorize
 
+```
+
+Unless there is an HTTP error this should result in the device code
+handshake, which should be familiar to anybody who has set up a streaming
+service on a "smart" TV:
+
+```
+Please visit this URL and enter the code below https://mobilisons.ch/login/device
+
+XXXX-XXXX
+
+Then press any key to continue.
 ```
 
 

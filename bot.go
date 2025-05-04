@@ -887,6 +887,8 @@ func authorizeApp() {
 		return
 	}
 
+	Log.Debug("Performing OAuth2 handshake.")
+
 	var posturl = *opts.MobilizonUrl + "/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 
@@ -1250,6 +1252,9 @@ func refreshAuthorization() error {
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(*opts.AuthConfig)
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "no such file or directory") {
+			return err
+		}
 		Log.Error("Error reading auth file:", err.Error())
 	}
 	err = json.Unmarshal(dat, &auth)
