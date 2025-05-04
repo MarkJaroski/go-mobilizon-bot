@@ -58,6 +58,7 @@ export GRAPHQL_CLIENT_ID=<your id>
 
 ```
 
+![image](https://github.com/user-attachments/assets/b96fee14-8a64-4b02-b60a-a929cb6ec78d)
 
 
 
