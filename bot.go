@@ -351,7 +351,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch/api", "Your Mobilizon graphQl API endpoint")
+	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
@@ -423,7 +423,7 @@ func main() {
 
 	httpClient = retryClient.StandardClient()
 
-	gqlClient = graphql.NewClient(*opts.MobilizonUrl, httpClient)
+	gqlClient = graphql.NewClient(*opts.MobilizonUrl+"/api", httpClient)
 	gqlClient = gqlClient.WithRequestModifier(func(r *http.Request) {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
@@ -843,7 +843,7 @@ func registerApp() {
 		ClientSecret string `json:"client_secret"`
 	}
 
-	var posturl = "https://mobilisons.ch/apps"
+	var posturl = *opts.MobilizonUrl + "/apps"
 	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {

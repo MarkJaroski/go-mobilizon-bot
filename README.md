@@ -30,7 +30,7 @@ Usage of ./go-mobilizon-bot:
       --file string           Instead of fetching from concertcloud, use local file.
       --group string          The Mobilizon group ID to use for the event attribution.
       --limit string          The concertcloud API param 'limit'
-      --mobilizonurl string   Your Mobilizon graphQl API endpoint (default "https://mobilisons.ch/api")
+      --mobilizonurl string   Your Mobilizon base URL (default "https://mobilisons.ch")
       --noop                  Gather all required information and report on it, but do not create events in Mobilizòn.
       --page string           The concertcloud API param 'page'
       --radius string         The concertcloud API param 'radius'
