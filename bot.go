@@ -887,7 +887,7 @@ func authorizeApp() {
 		return
 	}
 
-	var posturl = "https://mobilisons.ch/login/device/code"
+	var posturl = *opts.MobilizonUrl + "/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 
 	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:media:upload")
@@ -941,7 +941,7 @@ func authorizeApp() {
 	// wait for input
 	fmt.Scanln()
 
-	var token_url = "https://mobilisons.ch/oauth/token"
+	var token_url = *opts.MobilizonUrl + "/oauth/token"
 	token_body := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
 	tokreq, err := http.NewRequest("POST", token_url, bytes.NewBuffer(token_body))
 	if err != nil {
@@ -1117,7 +1117,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 		return nil, err
 	}
 
-	r, err := http.NewRequest("POST", "https://mobilisons.ch/api", body)
+	r, err := http.NewRequest("POST", *opts.MobilizonUrl+"/api", body)
 	r.Header.Add("Content-Type", writer.FormDataContentType())
 	r.Header.Add("Authorization", "Bearer "+auth.AccessToken)
 
@@ -1265,7 +1265,7 @@ func refreshAuthorization() error {
 	// run the refresh token query. We need to resturn any errors from here
 	// down because they mean that the refresh has failed and so we'll need
 	// to do the regular authorization
-	c := graphql.NewClient("https://mobilisons.ch/api", nil)
+	c := graphql.NewClient(*opts.MobilizonUrl+"/api", nil)
 	err = c.Mutate(context.Background(), &m, variables)
 	if err != nil {
 		Log.Error("Failed auth token renewal")

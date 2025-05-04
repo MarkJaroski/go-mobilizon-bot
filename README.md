@@ -37,6 +37,29 @@ Usage of ./go-mobilizon-bot:
       --register              Register this bot and quit. A client id will be output.
       --timezone string       The timezone to use for the event attribution. (default "Europe/Zurich")
 ```
+## Setup
+
+Once you've built the bot you'll need to register it. 
+
+```bash
+
+./go/bin/go-mobilizon-bot --mobilizonurl --register
+
+```
+
+This will output a line which you can run in bash or zsh to set up your
+environment for the next step: authorization.
+
+```bash
+
+export GRAPHQL_CLIENT_ID=<your id>
+
+./go/bin/go-mobilizon-bot --mobilizonurl --authorize
+
+```
+
+
+
 
 ## Examples
 
