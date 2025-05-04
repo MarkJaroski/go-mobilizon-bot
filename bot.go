@@ -47,25 +47,26 @@ const EXISTS_FILE = "exists.json"
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
-	City       *string
-	Country    *string
-	Limit      *string
-	Page       *string
-	Radius     *string
-	Date       *string
-	File       *string
-	AuthConfig *string
-	Config     *string
-	ActorID    *string
-	GroupID    *string
-	Timezone   *string
-	NoOp       *bool
-	Register   *bool
-	Authorize  *bool
-	Draft      *bool
-	Debug      *bool
-	AddrsFile  *string
-	ExistsFile *string
+	MobilizonUrl *string
+	City         *string
+	Country      *string
+	Limit        *string
+	Page         *string
+	Radius       *string
+	Date         *string
+	File         *string
+	AuthConfig   *string
+	Config       *string
+	ActorID      *string
+	GroupID      *string
+	Timezone     *string
+	NoOp         *bool
+	Register     *bool
+	Authorize    *bool
+	Draft        *bool
+	Debug        *bool
+	AddrsFile    *string
+	ExistsFile   *string
 }
 
 var opts Options
@@ -350,6 +351,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch/api", "Your Mobilizon graphQl API endpoint")
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
@@ -421,7 +423,7 @@ func main() {
 
 	httpClient = retryClient.StandardClient()
 
-	gqlClient = graphql.NewClient("https://mobilisons.ch/api", httpClient)
+	gqlClient = graphql.NewClient(*opts.MobilizonUrl, httpClient)
 	gqlClient = gqlClient.WithRequestModifier(func(r *http.Request) {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
