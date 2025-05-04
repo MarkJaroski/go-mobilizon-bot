@@ -1,0 +1,10 @@
+[Unit]
+Requires=mobilizon-bot.service
+
+[Timer]
+Unit=mobilizon-bot.service
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
+

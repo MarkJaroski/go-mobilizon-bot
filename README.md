@@ -52,7 +52,7 @@ environment for the next step: authorization.
 
 ```bash
 
-export GRAPHQL_CLIENT_ID=<your id>
+export GRAPHQL_CLIENT_ID=<your-id>
 
 ./go/bin/go-mobilizon-bot --mobilizonurl <your-mobilizon-instance> --authorize
 
@@ -83,4 +83,36 @@ and on your Mobilizon instance at the path:
 
 ## Examples
 
-TODO
+First, you'll need to obtain the actorid and groupid you want to post as.
+So far the best way to do this is using your browser's developer tools, and
+grabbing the values from a GraphQL query.
+
+See #8
+
+Then, if your goal is to upload events from ConcertCloud you just need a
+city name, and a download limit, unless you are ready for the whole events
+list
+
+```
+./go/bin/go-mobilizon-bot --city=Lausanne --actor=<actorid> --group=<groupid> --limit=1024
+```
+
+Or a country name:
+
+```
+/go-mobilizon-bot --country=Switzerland --actor=<actorid> --group=<groupid> --limit=2000
+```
+
+
+Or if you prefer generate a local goskyr config and upload from the
+resulting events json you can something like this:
+
+```
+./go-mobilizon-bot --file goskyr-config/json/polesud.json --actor=<actorid> --group=<groupid>
+```
+
+There are systemd unit files in the `/examples` directory which should help
+you set up your mobilizon upload job.
+
+
+
