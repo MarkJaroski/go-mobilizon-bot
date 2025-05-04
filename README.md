@@ -58,6 +58,7 @@ export GRAPHQL_CLIENT_ID=<your id>
 
 ```
 
+<<<<<<< HEAD
 Unless there is an HTTP error this should result in the device code
 handshake, which should be familiar to anybody who has set up a streaming
 service on a "smart" TV:
@@ -70,6 +71,9 @@ XXXX-XXXX
 Then press any key to continue.
 ```
 
+=======
+![image](https://github.com/user-attachments/assets/b96fee14-8a64-4b02-b60a-a929cb6ec78d)
+>>>>>>> 41b56ed52949fd198eb819845f67a56bba435e0f
 
 
 
