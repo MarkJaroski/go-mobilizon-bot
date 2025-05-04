@@ -70,6 +70,8 @@ XXXX-XXXX
 Then press any key to continue.
 ```
 
+![image](https://github.com/user-attachments/assets/0d18d89d-1306-4d95-953b-b0b7df8379d1)
+
 You can check the results on the bot server at 
 
 `~/.config/mobilizon/auth.json`
