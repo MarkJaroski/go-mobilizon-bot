@@ -5,8 +5,8 @@ Wants=mobilisons-bot.timer
 [Service]
 Type=oneshot
 ExecStart=/home/mobilizon/go/bin/go-mobilizon-bot --country=Switzerland --actor=65691 --group=73091 --limit=2000
-User=mark
-Group=mark
+User=mobilizon
+Group=mobilizon
 WorkingDirectory=/home/mobilizon
 
 [Install]
