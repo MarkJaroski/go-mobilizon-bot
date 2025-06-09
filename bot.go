@@ -108,7 +108,7 @@ type UUID string
 // MediaUpload represents the GraphQL MediaUpload type
 // FIXME move to a library
 type MediaUpload struct {
-	Id string `json:"id"`
+	Uuid UUID `json:"uuid"`
 }
 
 // MediaData represents the mediaUpload object of a GraphQL mediaUpload mutation
@@ -174,7 +174,7 @@ type AddressInput struct {
 // createEvent and updateEvent
 type MediaInput struct {
 	// FIXME move to a library
-	MediaId graphql.ID `json:"mediaId"`
+	MediaUuid UUID `json:"mediaUuid"`
 }
 
 // NominatumBaseURL is the URL we use to call nominatim
@@ -736,13 +736,13 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
 		path, _ = downloadFile(DEFAULT_IMAGE_URL)
 	}
-	id, err := uploadEventImage(path)
+	uuid, err := uploadEventImage(path)
 	if err != nil {
-		Log.Error("Media uploade error", "URL", e.ImageUrl, "path", path, "id", id)
+		Log.Error("Media uploade error", "URL", e.ImageUrl, "path", path, "uuid", uuid)
 		return vars, err
 	}
 	mi := new(MediaInput)
-	mi.MediaId = id
+	mi.MediaUuid = uuid
 	vars["picture"] = mi
 	return vars, err
 }
@@ -771,7 +771,7 @@ func populateImageUrl(e Event) Event {
 
 // uploadEventImage uploads the file at the given path, and returns its
 // mobilison IT and any error which occurs in the process
-func uploadEventImage(path string) (graphql.ID, error) {
+func uploadEventImage(path string) (UUID, error) {
 	multi, err := newfileUploadRequest(path)
 	if err != nil {
 		Log.Error("Error constructing media request", "path", path, "error", err)
@@ -792,10 +792,10 @@ func uploadEventImage(path string) (graphql.ID, error) {
 
 	var mediaObject MediaResponse
 	json.Unmarshal(responseData, &mediaObject)
-	if mediaObject.Data.Upload.Id == "" {
+	if mediaObject.Data.Upload.Uuid == "" {
 		err = errors.New("Image id not found in upload response. " + path)
 	}
-	return (graphql.ID)(mediaObject.Data.Upload.Id), err
+	return (UUID)(mediaObject.Data.Upload.Uuid), err
 }
 
 // populateTags constructs an eventTags object for the createEvent mutation
@@ -1160,7 +1160,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 	writer := multipart.NewWriter(body)
 
 	// TODO make this a template string or something to avoid the long line
-	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { id } }")
+	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { uuid } }")
 	writer.WriteField("variables", "{\"name\":\""+fi.Name()+"\",\"file\":\"image1\"}")
 
 	part, err := writer.CreateFormFile("image1", fi.Name())
