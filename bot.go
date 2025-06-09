@@ -47,25 +47,26 @@ const EXISTS_FILE = "exists.json"
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
-	City       *string
-	Country    *string
-	Limit      *string
-	Page       *string
-	Radius     *string
-	Date       *string
-	File       *string
-	AuthConfig *string
-	Config     *string
-	ActorID    *string
-	GroupID    *string
-	Timezone   *string
-	NoOp       *bool
-	Register   *bool
-	Authorize  *bool
-	Draft      *bool
-	Debug      *bool
-	AddrsFile  *string
-	ExistsFile *string
+	MobilizonUrl *string
+	City         *string
+	Country      *string
+	Limit        *string
+	Page         *string
+	Radius       *string
+	Date         *string
+	File         *string
+	AuthConfig   *string
+	Config       *string
+	ActorID      *string
+	GroupID      *string
+	Timezone     *string
+	NoOp         *bool
+	Register     *bool
+	Authorize    *bool
+	Draft        *bool
+	Debug        *bool
+	AddrsFile    *string
+	ExistsFile   *string
 }
 
 var opts Options
@@ -313,8 +314,8 @@ type AuthConfig struct {
 
 // local fields
 var auth AuthConfig
-var actorID *string
-var groupID *string
+var actorID string
+var groupID string
 var timezone *string
 var addrs map[string]AddressInput
 var existing map[string]Event
@@ -323,6 +324,7 @@ var httpClient *http.Client
 var gqlClient *graphql.Client
 var addrsFile string
 var existsFile string
+var authFile string
 
 // Log is our hclog local instance
 var Log hclog.Logger
@@ -352,6 +354,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
@@ -412,6 +415,9 @@ func main() {
 		Log.SetLevel(hclog.LevelFromString("DEBUG"))
 	}
 
+	actorID = *opts.ActorID
+	groupID = *opts.GroupID
+
 	addrsFile = *opts.Config + "/" + ADDR_FILE
 	existsFile = *opts.Config + "/" + EXISTS_FILE
 
@@ -427,13 +433,13 @@ func main() {
 
 	httpClient = retryClient.StandardClient()
 
-	gqlClient = graphql.NewClient("https://mobilisons.ch/api", httpClient)
+	gqlClient = graphql.NewClient(*opts.MobilizonUrl+"/api", httpClient)
 	gqlClient = gqlClient.WithRequestModifier(func(r *http.Request) {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
 
 	// this will hold our json object whether local or from ConcertCloud
-	var jsonEventInput Response
+	var events []Event
 
 	if *opts.File != "" {
 		Log.Info("using local file:", "file", *opts.File)
@@ -442,7 +448,8 @@ func main() {
 			Log.Error("error", err)
 			os.Exit(1)
 		}
-		json.Unmarshal(dat, &jsonEventInput)
+		// goskyr file output produces a simple json array of Event objects
+		json.Unmarshal(dat, &events)
 	} else {
 		// Fetch some concerts from Concert Cloud
 		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
@@ -458,16 +465,18 @@ func main() {
 			os.Exit(1) // no point in continuing
 		}
 
+		var jsonEventInput Response
 		json.Unmarshal(responseData, &jsonEventInput)
+		events = jsonEventInput.Event
 	}
 
-	fetchAddrs(jsonEventInput)
-	createEvents(jsonEventInput)
+	fetchAddrs(events)
+	createEvents(events)
 }
 
 // fetchAddrs loads the local addr.json file cache and then attempts to
 // fetch any missing addresses from OpenStreetMap and Mobilizòn
-func fetchAddrs(responseObject Response) {
+func fetchAddrs(events []Event) {
 	// Read the local file, if it exists. We can trap errors here
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(addrsFile)
@@ -479,8 +488,8 @@ func fetchAddrs(responseObject Response) {
 		Log.Error(err.Error())
 	}
 
-	for _, event := range responseObject.Event {
-		fetchAddr(event)
+	for i := 0; i < len(events); i++ {
+		fetchAddr(events[i])
 	}
 
 	data, err := json.MarshalIndent(&addrs, "", " ")
@@ -612,6 +621,8 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
+// disambiguates the URI for a given event, just in case the venue does not
+// differentiate.
 func getEventKey(e Event) string {
 	var url = e.URL
 	match, _ := regexp.MatchString("#", e.URL)
@@ -626,9 +637,10 @@ func getEventKey(e Event) string {
 
 // createEvents loops through all of the events in the json input, sets up
 // their variables map, and runs createEvents on them
-func createEvents(r Response) {
+func createEvents(events []Event) {
 	loadExistingEvents()
-	for _, event := range r.Event {
+	for i := 0; i < len(events); i++ {
+		event := events[i]
 		// Do not upload events from bejazz.ch. They don't like us.
 		// opt out FIXME this should be loaded from a file or something
 		match, _ := regexp.MatchString("bejazz.ch", event.URL)
@@ -692,8 +704,8 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
 	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
 	vars := map[string]interface{}{
-		"organizerActorId":         graphql.ID(*opts.ActorID),
-		"attributedToId":           graphql.ID(*opts.GroupID),
+		"organizerActorId":         graphql.ID(actorID),
+		"attributedToId":           graphql.ID(groupID),
 		"category":                 populateCategory(e),
 		"visibility":               EventVisibility("PUBLIC"),
 		"joinOptions":              EventJoinOptions("EXTERNAL"),
@@ -885,7 +897,7 @@ func registerApp() {
 		ClientSecret string `json:"client_secret"`
 	}
 
-	var posturl = "https://mobilisons.ch/apps"
+	var posturl = *opts.MobilizonUrl + "/apps"
 	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:event:update%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
@@ -929,7 +941,9 @@ func authorizeApp() {
 		return
 	}
 
-	var posturl = "https://mobilisons.ch/login/device/code"
+	Log.Debug("Performing OAuth2 handshake.")
+
+	var posturl = *opts.MobilizonUrl + "/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 
 	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:event:update%20write:media:upload")
@@ -983,7 +997,7 @@ func authorizeApp() {
 	// wait for input
 	fmt.Scanln()
 
-	var token_url = "https://mobilisons.ch/oauth/token"
+	var token_url = *opts.MobilizonUrl + "/oauth/token"
 	token_body := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
 	tokreq, err := http.NewRequest("POST", token_url, bytes.NewBuffer(token_body))
 	if err != nil {
@@ -1159,7 +1173,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 		return nil, err
 	}
 
-	r, err := http.NewRequest("POST", "https://mobilisons.ch/api", body)
+	r, err := http.NewRequest("POST", *opts.MobilizonUrl+"/api", body)
 	r.Header.Add("Content-Type", writer.FormDataContentType())
 	r.Header.Add("Authorization", "Bearer "+auth.AccessToken)
 
@@ -1292,6 +1306,9 @@ func refreshAuthorization() error {
 	// since we can just recreate the file if necessary.
 	dat, err := os.ReadFile(*opts.AuthConfig)
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "no such file or directory") {
+			return err
+		}
 		Log.Error("Error reading auth file:", err.Error())
 	}
 	err = json.Unmarshal(dat, &auth)
@@ -1307,7 +1324,7 @@ func refreshAuthorization() error {
 	// run the refresh token query. We need to resturn any errors from here
 	// down because they mean that the refresh has failed and so we'll need
 	// to do the regular authorization
-	c := graphql.NewClient("https://mobilisons.ch/api", nil)
+	c := graphql.NewClient(*opts.MobilizonUrl+"/api", nil)
 	err = c.Mutate(context.Background(), &m, variables)
 	if err != nil {
 		Log.Error("Failed auth token renewal")

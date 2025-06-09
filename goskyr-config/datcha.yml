@@ -1,0 +1,59 @@
+writer:
+  type: file
+  filepath: goskyr-config/json/datcha.json
+
+scrapers:
+  - name: Datcha
+    url: https://la-datcha.ch/programmation/
+    item: li.hentry
+    fields:
+      - name: "location"
+        value: "La Datcha"
+      - name: "city"
+        value: "Lausanne"
+      - name: "country"
+        value: "Switzerland"
+      - name: "type"
+        value: "concert"
+      - name: "sourceUrl"
+        value: "https://la-datcha.ch/"
+      - name: url
+        type: url
+        location:
+          selector: div > div > h2 > a
+      - name: imageUrl
+        type: url
+        location:
+          selector: figure > img
+          attr: src
+      - name: title
+        type: text
+        location:
+          selector: div > div > h2 > a
+      - name: comment
+        type: text
+        on_subpage: url
+        location: 
+          selector: main > div > div.entry-content
+          entire_subtree: true
+        can_be_empty: true
+      - name: date
+        type: date
+        components:
+          - covers:
+              day: true
+              month: true
+            location:
+              selector: div > div > h2 > a
+              regex_extract:
+                exp: "^[A-z]+ [0-9]{1,2} [A-z]+"
+            layout: ["Monday 2 January", "Monday 2 Jan"]
+          - covers:
+              time: true
+            location:
+              default: 20h
+            layout: ["15h04", "15h"]
+        date_language: fr_FR
+        date_location: CET
+        guess_year: true
+

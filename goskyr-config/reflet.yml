@@ -1,3 +1,7 @@
+writer:
+  type: file
+  filepath: goskyr-config/json/reflet.json
+
 scrapers:
   - name: LeReflet
     url: https://www.lereflet.ch/saison-actuelle
