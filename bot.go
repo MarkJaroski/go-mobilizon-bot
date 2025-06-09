@@ -96,9 +96,7 @@ type Event struct {
 	SourceUrl string    `json:"sourceUrl"`
 	Date      time.Time `json:"date"`
 	ImageUrl  string    `json:"imageUrl"`
-	// FIXME this really needs to be in a different structure alongside
-	// Event rather than in it
-	MobUUID string `json:"mobilizonUuid"`
+	MobUUID   string    `json:"mobilizonUuid"`
 }
 
 // UUID represents the GraphQL UUID type
@@ -845,7 +843,7 @@ func createEvent(vars map[string]interface{}) (string, error) {
 		return "", err
 	}
 	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
-	return m.CreateEvent.Id, err
+	return m.CreateEvent.Uuid, err
 }
 
 // updateEvent implements the Mobilizòn GraphQL updateEvent mutation
