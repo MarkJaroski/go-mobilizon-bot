@@ -312,8 +312,8 @@ type AuthConfig struct {
 
 // local fields
 var auth AuthConfig
-var actorID *string
-var groupID *string
+var actorID string
+var groupID string
 var timezone *string
 var addrs map[string]AddressInput
 var existing map[string]Event
@@ -322,6 +322,7 @@ var httpClient *http.Client
 var gqlClient *graphql.Client
 var addrsFile string
 var existsFile string
+var authFile string
 
 // Log is our hclog local instance
 var Log hclog.Logger
@@ -407,6 +408,9 @@ func main() {
 	if *opts.Debug {
 		Log.SetLevel(hclog.LevelFromString("DEBUG"))
 	}
+
+	actorID = *opts.ActorID
+	groupID = *opts.GroupID
 
 	addrsFile = *opts.Config + "/" + ADDR_FILE
 	existsFile = *opts.Config + "/" + EXISTS_FILE
@@ -611,6 +615,8 @@ func fetchOSMAddr(event Event) string {
 	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
 }
 
+// disambiguates the URI for a given event, just in case the venue does not
+// differentiate.
 func getEventKey(e Event) string {
 	var url = e.URL
 	match, _ := regexp.MatchString("#", e.URL)
@@ -689,8 +695,8 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
 	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
 	vars := map[string]interface{}{
-		"organizerActorId":         graphql.ID(*opts.ActorID),
-		"attributedToId":           graphql.ID(*opts.GroupID),
+		"organizerActorId":         graphql.ID(actorID),
+		"attributedToId":           graphql.ID(groupID),
 		"category":                 populateCategory(e),
 		"visibility":               EventVisibility("PUBLIC"),
 		"joinOptions":              EventJoinOptions("EXTERNAL"),
