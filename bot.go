@@ -669,7 +669,8 @@ func createEvents(events []Event) {
 					Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
 					continue
 				}
-				updateEvent(vars)
+				// FIXME still needs work
+				// updateEvent(vars)
 			}
 			continue
 		}
