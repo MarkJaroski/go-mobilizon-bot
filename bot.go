@@ -22,6 +22,7 @@ import (
 	"slices"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gen2brain/avif"
@@ -649,7 +650,7 @@ func createEvents(events []Event) {
 		// trim the title to produce better matches
 		event.Title = strings.TrimSpace(event.Title)
 		// titles must be at least 3 characters long in Mobilizòn
-		if len(event.Title) < 5 {
+		if utf8.RuneCountInString(event.Title) < 3 {
 			event.Title = event.Title + " ..."
 		}
 		Log.Debug("Checking for existing events", "eventKey", getEventKey(event))
