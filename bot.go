@@ -649,7 +649,7 @@ func createEvents(events []Event) {
 		// trim the title to produce better matches
 		event.Title = strings.TrimSpace(event.Title)
 		// titles must be at least 3 characters long in Mobilizòn
-		if len(event.Title) < 3 {
+		if len(event.Title) < 5 {
 			event.Title = event.Title + " ..."
 		}
 		Log.Debug("Checking for existing events", "eventKey", getEventKey(event))
