@@ -829,7 +829,7 @@ func populateCategory(e Event) EventCategory {
 	return EventCategory("MUSIC")
 }
 
-// createEvent implements the Mobilizòn graphQL createEvent mutation 
+// createEvent implements the Mobilizòn graphQL createEvent mutation
 // taking a map of strings to objects to populate its variables
 // FIXME split this out to a library
 func createEvent(vars map[string]interface{}) (string, error) {
