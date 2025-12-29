@@ -1,3 +1,5 @@
+// an event importer bot for Mobilizòn, primarily for importing events from
+// ConcertCloud.live
 package main
 
 import (
@@ -38,17 +40,19 @@ import (
 	"golang.org/x/image/draw"
 )
 
-const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
-const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
-const MAX_IMG_SIZE = 1024 * 800 // 800kb
-const IMAGE_RESIZE_WIDTH = 600
-const SERVER_CRASH_WAIT_TIME = time.Duration(1 * int64(time.Minute))
-const ADDR_FILE = "addrs.json"
-const EXISTS_FILE = "exists.json"
+const (
+	ccPlug              = "Help promote your favourite venues with: https://concertcloud.live/contribute"
+	defaultImageURL     = "https://mobilisons.ch/img/mobilizon_default_card.png"
+	maxImageSize        = 1024 * 800 // 800kb
+	imageResizeWidth    = 600
+	serverCrashWaitTime = time.Duration(1 * int64(time.Minute))
+	addrFile            = "addrs.json"
+	existsFile          = "exists.json"
+)
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
-	MobilizonUrl *string
+	MobilizonURL *string
 	City         *string
 	Country      *string
 	Limit        *string
@@ -94,9 +98,9 @@ type Event struct {
 	URL       string    `json:"url"`
 	Comment   string    `json:"comment"`
 	Type      string    `json:"type"`
-	SourceUrl string    `json:"sourceUrl"`
+	SourceURL string    `json:"sourceUrl"`
 	Date      time.Time `json:"date"`
-	ImageUrl  string    `json:"imageUrl"`
+	ImageURL  string    `json:"imageUrl"`
 	MobUUID   string    `json:"mobilizonUuid"`
 }
 
@@ -107,7 +111,7 @@ type UUID string
 // MediaUpload represents the GraphQL MediaUpload type
 // FIXME move to a library
 type MediaUpload struct {
-	Uuid UUID `json:"uuid"`
+	UUID UUID `json:"uuid"`
 }
 
 // MediaData represents the mediaUpload object of a GraphQL mediaUpload mutation
@@ -116,7 +120,7 @@ type MediaData struct {
 	Upload MediaUpload `json:"uploadMedia"`
 }
 
-// MediaData represents the response object of a GraphQL mediaUpload mutation
+// MediaResponse represents the response object of a GraphQL mediaUpload mutation
 // FIXME move to a library
 type MediaResponse struct {
 	Data MediaData `json:"data"`
@@ -139,7 +143,7 @@ type Address struct {
 
 // Place represents a place as returned by openstreetmap
 type Place struct {
-	PlaceId     int     `json:"place_id"`
+	PlaceID     int     `json:"place_id"`
 	Name        string  `json:"name"`
 	Lat         string  `json:"lat"`
 	Lon         string  `json:"lon"`
@@ -159,7 +163,7 @@ type Point string
 // createEvent and updateEvent
 // FIXME move to a library
 type AddressInput struct {
-	Id          int    `json:"id"`
+	ID          int    `json:"id"`
 	Description string `json:"description"`
 	Locality    string `json:"locality"`
 	PostalCode  string `json:"postalCode"`
@@ -173,7 +177,7 @@ type AddressInput struct {
 // createEvent and updateEvent
 type MediaInput struct {
 	// FIXME move to a library
-	MediaUuid UUID `json:"mediaUuid"`
+	MediaUUID UUID `json:"mediaUuid"`
 }
 
 // NominatumBaseURL is the URL we use to call nominatim
@@ -185,39 +189,41 @@ var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
 // FIXME move to a library
 type EventCategory string
 
+// Arts ... event Categories
 const (
-	ARTS                          EventCategory = "ARTS"
-	AUTO_BOAT_AIR                 EventCategory = "AUTO_BOAT_AIR"
-	BOOK_CLUBS                    EventCategory = "BOOK_CLUBS"
-	BUSINESS                      EventCategory = "BUSINESS"
-	CAUSES                        EventCategory = "CAUSES"
-	COMEDY                        EventCategory = "COMEDY"
-	COMMUNITY                     EventCategory = "COMMUNITY"
-	CRAFTS                        EventCategory = "CRAFTS"
-	FAMILY_EDUCATION              EventCategory = "FAMILY_EDUCATION"
-	FASHION_BEAUTY                EventCategory = "FASHION_BEAUTY"
-	FILM_MEDIA                    EventCategory = "FILM_MEDIA"
-	FOOD_DRINK                    EventCategory = "FOOD_DRINK"
-	GAMES                         EventCategory = "GAMES"
-	HEALTH                        EventCategory = "HEALTH"
-	LANGUAGE_CULTURE              EventCategory = "LANGUAGE_CULTURE"
-	LEARNING                      EventCategory = "LEARNING"
-	LGBTQ                         EventCategory = "LGBTQ"
-	MEETING                       EventCategory = "MEETING"
-	MOVEMENTS_POLITICS            EventCategory = "MOVEMENTS_POLITICS"
-	MUSIC                         EventCategory = "MUSIC"
-	NETWORKING                    EventCategory = "NETWORKING"
-	OUTDOORS_ADVENTURE            EventCategory = "OUTDOORS_ADVENTURE"
-	PARTY                         EventCategory = "PARTY"
-	PERFORMING_VISUAL_ARTS        EventCategory = "PERFORMING_VISUAL_ARTS"
-	PETS                          EventCategory = "PETS"
-	PHOTOGRAPHY                   EventCategory = "PHOTOGRAPHY"
-	SCIENCE_TECH                  EventCategory = "SCIENCE_TECH"
-	SPIRITUALITY_RELIGION_BELIEFS EventCategory = "SPIRITUALITY_RELIGION_BELIEFS"
-	SPORTS                        EventCategory = "SPORTS"
-	THEATRE                       EventCategory = "THEATRE"
+	Arts                        EventCategory = "ARTS"
+	AutoBoatAir                 EventCategory = "AUTO_BOAT_AIR"
+	BookClubs                   EventCategory = "BOOK_CLUBS"
+	Business                    EventCategory = "BUSINESS"
+	Causes                      EventCategory = "CAUSES"
+	Comedy                      EventCategory = "COMEDY"
+	Community                   EventCategory = "COMMUNITY"
+	Crafts                      EventCategory = "CRAFTS"
+	FamilyEducation             EventCategory = "FAMILY_EDUCATION"
+	FashionBeauty               EventCategory = "FASHION_BEAUTY"
+	FilmMedia                   EventCategory = "FILM_MEDIA"
+	FoodDrink                   EventCategory = "FOOD_DRINK"
+	Games                       EventCategory = "GAMES"
+	Health                      EventCategory = "HEALTH"
+	LanguageCulture             EventCategory = "LANGUAGE_CULTURE"
+	Learning                    EventCategory = "LEARNING"
+	Lgbtq                       EventCategory = "LGBTQ"
+	Meeting                     EventCategory = "MEETING"
+	MovementsPolitics           EventCategory = "MOVEMENTS_POLITICS"
+	Music                       EventCategory = "MUSIC"
+	Networking                  EventCategory = "NETWORKING"
+	OutdoorsAdventure           EventCategory = "OUTDOORS_ADVENTURE"
+	Party                       EventCategory = "PARTY"
+	PerformingVisualArts        EventCategory = "PERFORMING_VISUAL_ARTS"
+	Pets                        EventCategory = "PETS"
+	Photography                 EventCategory = "PHOTOGRAPHY"
+	ScienceTech                 EventCategory = "SCIENCE_TECH"
+	SpiritualityReligionBeliefs EventCategory = "SPIRITUALITY_RELIGION_BELIEFS"
+	Sports                      EventCategory = "SPORTS"
+	Theatre                     EventCategory = "THEATRE"
 )
 
+// EventTypeStrings are the strings accepted by the GraphQL interface
 var EventTypeStrings = []string{
 	"ARTS",
 	"AUTO_BOAT_AIR",
@@ -255,20 +261,23 @@ var EventTypeStrings = []string{
 // FIXME move to a library
 type EventVisibility string
 
+// Private, etc, are the enumerated EventVisibility types
 const (
-	PRIVATE    EventVisibility = "PRIVATE"
-	PUBLIC     EventVisibility = "PUBLIC"
-	RESTRICTED EventVisibility = "RESTRICTED"
-	UNLISTED   EventVisibility = "UNLISTED"
+	Private    EventVisibility = "PRIVATE"
+	Public     EventVisibility = "PUBLIC"
+	Restricted EventVisibility = "RESTRICTED"
+	Unlisted   EventVisibility = "UNLISTED"
 )
 
 // EventJoinOptions represents the EventJoinOptions Mobilizòn GraphQL type
 // FIXME move to a library
 type EventJoinOptions string
 
+// Free: represents unrestricted joining
+// External: represents an event managed outside of Mobilizòn
 const (
-	FREE     EventJoinOptions = "FREE"
-	EXTERNAL EventJoinOptions = "EXTERNAL"
+	Free     EventJoinOptions = "FREE"
+	External EventJoinOptions = "EXTERNAL"
 )
 
 // DateTime represents the DateTime Mobilizòn GraphQL type
@@ -280,10 +289,13 @@ type DateTime string
 // FIXME move to a library
 type EventCommentModeration string
 
+// AllowAll: anyone may register for the event
+// Closed: no one may Register
+// Moderated: anyone may register, subject to approval
 const (
-	ALLOW_ALL EventCommentModeration = "ALLOW_ALL"
-	CLOSED    EventCommentModeration = "CLOSED"
-	MODERATED EventCommentModeration = "MODERATED"
+	AllowAll  EventCommentModeration = "ALLOW_ALL"
+	Closed    EventCommentModeration = "CLOSED"
+	Moderated EventCommentModeration = "MODERATED"
 )
 
 // Timezone represents the cooresponding Mobilizòn GraphQL type
@@ -353,7 +365,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
+	opts.MobilizonURL = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.City = pflag.String("city", "X", "The concertcloud API param 'city'") // defaults to X to avoid accidental flooding
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.String("limit", "", "The concertcloud API param 'limit'")
@@ -417,12 +429,12 @@ func main() {
 	actorID = *opts.ActorID
 	groupID = *opts.GroupID
 
-	addrsFile = *opts.Config + "/" + ADDR_FILE
-	existsFile = *opts.Config + "/" + EXISTS_FILE
+	addrsFile = *opts.Config + "/" + addrFile
+	existsFile = *opts.Config + "/" + existsFile
 
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
-	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_TIME
+	retryClient.RetryWaitMin = serverCrashWaitTime
 	retryClient.RetryWaitMax = time.Duration(10 * int64(time.Minute))
 	retryClient.RetryMax = 120
 	retryClient.CheckRetry = mobilizònRetryPolicy
@@ -432,7 +444,7 @@ func main() {
 
 	httpClient = retryClient.StandardClient()
 
-	gqlClient = graphql.NewClient(*opts.MobilizonUrl+"/api", httpClient)
+	gqlClient = graphql.NewClient(*opts.MobilizonURL+"/api", httpClient)
 	gqlClient = gqlClient.WithRequestModifier(func(r *http.Request) {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
@@ -451,8 +463,8 @@ func main() {
 		json.Unmarshal(dat, &events)
 	} else {
 		// Fetch some concerts from Concert Cloud
-		fetchUrl := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
-		response, err := http.Get(fetchUrl)
+		fetchURL := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
+		response, err := http.Get(fetchURL)
 		if err != nil {
 			Log.Error("error", err)
 			os.Exit(1) // no point in continuing
@@ -702,7 +714,7 @@ func createEvents(events []Event) {
 // mutations createEvent or updateEvent
 func populateVariables(e Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
-	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
+	e.Comment = e.Comment + " <p/><p> " + ccPlug
 	vars := map[string]interface{}{
 		"organizerActorId":         graphql.ID(actorID),
 		"attributedToId":           graphql.ID(groupID),
@@ -721,51 +733,51 @@ func populateVariables(e Event) (map[string]interface{}, error) {
 		"options":                  populateEventOptions(),
 	}
 	// if we have a UUID fetch the corresponding eventId and use it
-	e = populateImageUrl(e)
+	e = populateImageURL(e)
 	if e.MobUUID != "" {
-		eventId, err := fetchEvent(e.MobUUID)
+		eventID, err := fetchEvent(e.MobUUID)
 		if err != nil {
 			return vars, err
 		}
-		vars["id"] = eventId
+		vars["id"] = eventID
 		// skip the image upload for updates
 		// return vars, err
 	}
-	path, err := downloadFile(e.ImageUrl)
+	path, err := downloadFile(e.ImageURL)
 	if err != nil {
-		Log.Error("Media download error", "URL", e.ImageUrl, "path", path)
-		path, _ = downloadFile(DEFAULT_IMAGE_URL)
+		Log.Error("Media download error", "URL", e.ImageURL, "path", path)
+		path, _ = downloadFile(defaultImageURL)
 	}
 	uuid, err := uploadEventImage(path)
 	if err != nil {
-		Log.Error("Media uploade error", "URL", e.ImageUrl, "path", path, "uuid", uuid)
+		Log.Error("Media uploade error", "URL", e.ImageURL, "path", path, "uuid", uuid)
 		return vars, err
 	}
 	mi := new(MediaInput)
-	mi.MediaUuid = uuid
+	mi.MediaUUID = uuid
 	vars["picture"] = mi
 	return vars, err
 }
 
-// populateImageUrl validates the imageUrl of an event object from the json
+// populateImageURL validates the imageUrl of an event object from the json
 // input and if necessary finds one from the event URL. It updates the
 // ImageUrl field of the Event object in place.
-func populateImageUrl(e Event) Event {
-	if e.ImageUrl != "" && e.ImageUrl != e.SourceUrl && !strings.HasSuffix(e.ImageUrl, "/") {
+func populateImageURL(e Event) Event {
+	if e.ImageURL != "" && e.ImageURL != e.SourceURL && !strings.HasSuffix(e.ImageURL, "/") {
 		return e
 	}
 	// fetch the opengraph image for the event if there is no event image
-	e.ImageUrl = fetchOGImageUrl(e.URL)
-	if strings.HasPrefix(e.ImageUrl, "http") {
+	e.ImageURL = fetchOGImageURL(e.URL)
+	if strings.HasPrefix(e.ImageURL, "http") {
 		return e
 	}
 	// fetch a backup image if we don't already have something
-	e.ImageUrl = guessEventImage(e.URL)
-	if strings.HasPrefix(e.ImageUrl, "http") {
+	e.ImageURL = guessEventImage(e.URL)
+	if strings.HasPrefix(e.ImageURL, "http") {
 		return e
 	}
 	Log.Info("No image found for", "url", e.URL)
-	e.ImageUrl = DEFAULT_IMAGE_URL
+	e.ImageURL = defaultImageURL
 	return e
 }
 
@@ -792,10 +804,10 @@ func uploadEventImage(path string) (UUID, error) {
 
 	var mediaObject MediaResponse
 	json.Unmarshal(responseData, &mediaObject)
-	if mediaObject.Data.Upload.Uuid == "" {
+	if mediaObject.Data.Upload.UUID == "" {
 		err = errors.New("Image id not found in upload response. " + path)
 	}
-	return (UUID)(mediaObject.Data.Upload.Uuid), err
+	return (UUID)(mediaObject.Data.Upload.UUID), err
 }
 
 // populateTags constructs an eventTags object for the createEvent mutation
@@ -835,8 +847,8 @@ func populateCategory(e Event) EventCategory {
 func createEvent(vars map[string]interface{}) (string, error) {
 	var m struct {
 		CreateEvent struct {
-			Id   string
-			Uuid string
+			ID   string
+			UUID string
 		} `graphql:"createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 	err := gqlClient.Mutate(context.Background(), &m, vars)
@@ -844,8 +856,8 @@ func createEvent(vars map[string]interface{}) (string, error) {
 		Log.Error("Error creating event", "error", err, "vars", spew.Sdump(vars))
 		return "", err
 	}
-	Log.Info("Created Event", "id", m.CreateEvent.Id, "UUID", m.CreateEvent.Uuid)
-	return m.CreateEvent.Uuid, err
+	Log.Info("Created Event", "id", m.CreateEvent.ID, "UUID", m.CreateEvent.UUID)
+	return m.CreateEvent.UUID, err
 }
 
 // updateEvent implements the Mobilizòn GraphQL updateEvent mutation
@@ -853,8 +865,8 @@ func createEvent(vars map[string]interface{}) (string, error) {
 func updateEvent(vars map[string]interface{}) (string, error) {
 	var m struct {
 		UpdateEvent struct {
-			Id   string
-			Uuid string
+			ID   string
+			UUID string
 		} `graphql:"updateEvent(eventId: $id, organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, category: $category, visibility: $visibility, description: $description, physicalAddress: $physicalAddress, beginsOn: $beginsOn, endsOn: $endsOn, draft: $draft, onlineAddress: $onlineAddress, externalParticipationUrl: $externalParticipationUrl, tags: $tags, joinOptions: $joinOptions, options: $options, picture: $picture)"`
 	}
 	err := gqlClient.Mutate(context.Background(), &m, vars)
@@ -862,8 +874,8 @@ func updateEvent(vars map[string]interface{}) (string, error) {
 		Log.Error("Error updating event", "error", err, "vars", spew.Sdump(vars))
 		return "", err
 	}
-	Log.Info("Updated Event", "id", m.UpdateEvent.Id, "UUID", m.UpdateEvent.Uuid)
-	return m.UpdateEvent.Id, err
+	Log.Info("Updated Event", "id", m.UpdateEvent.ID, "UUID", m.UpdateEvent.UUID)
+	return m.UpdateEvent.ID, err
 }
 
 // FIXME split this out to a library
@@ -871,7 +883,7 @@ func fetchEvent(uuid string) (graphql.ID, error) {
 	Log.Debug("Attempting to fetch event by uuid", "uuid", uuid)
 	var q struct {
 		Event struct {
-			Id graphql.ID `json:"id"`
+			ID graphql.ID `json:"id"`
 		} `graphql:"event(uuid: $uuid)"`
 	}
 	type UUID string
@@ -883,8 +895,8 @@ func fetchEvent(uuid string) (graphql.ID, error) {
 		Log.Error("Error fetching event", "error", err, "vars", spew.Sdump(vars))
 		return "", err
 	}
-	Log.Debug("Got ID", "id", q.Event.Id)
-	return q.Event.Id, nil
+	Log.Debug("Got ID", "id", q.Event.ID)
+	return q.Event.ID, nil
 }
 
 // registerApp registers an OAuth2 client called "Concert Cloud Bot" and
@@ -897,7 +909,7 @@ func registerApp() {
 		ClientSecret string `json:"client_secret"`
 	}
 
-	var posturl = *opts.MobilizonUrl + "/apps"
+	var posturl = *opts.MobilizonURL + "/apps"
 	body := []byte(`name=Concert%20Cloud%20Bot&redirect_uri=https://login.microsoftonline.com/common/oauth2/nativeclient&website=https://concertcloud.live&scope=write:event:create%20write:event:update%20write:media:upload`)
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
 	if err != nil {
@@ -943,7 +955,7 @@ func authorizeApp() {
 
 	Log.Debug("Performing OAuth2 handshake.")
 
-	var posturl = *opts.MobilizonUrl + "/login/device/code"
+	var posturl = *opts.MobilizonURL + "/login/device/code"
 	clientID := os.Getenv("GRAPHQL_CLIENT_ID")
 
 	body := []byte("client_id=" + clientID + "&scope=write:event:create%20write:event:update%20write:media:upload")
@@ -997,9 +1009,9 @@ func authorizeApp() {
 	// wait for input
 	fmt.Scanln()
 
-	var token_url = *opts.MobilizonUrl + "/oauth/token"
-	token_body := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
-	tokreq, err := http.NewRequest("POST", token_url, bytes.NewBuffer(token_body))
+	var tokenURL = *opts.MobilizonURL + "/oauth/token"
+	tokenBody := []byte("client_id=" + clientID + "&device_code=" + resp.DeviceCode + "&grant_type=urn:ietf:params:oauth:grant-type:device_code")
+	tokreq, err := http.NewRequest("POST", tokenURL, bytes.NewBuffer(tokenBody))
 	if err != nil {
 		Log.Error("", err)
 		os.Exit(1)
@@ -1018,10 +1030,10 @@ func authorizeApp() {
 
 }
 
-// fetchOGImageUrl finds takes the URL of a specific event and returns the
+// fetchOGImageURL finds takes the URL of a specific event and returns the
 // Open Ggraph image URL found there, if one exists.
 // See https://ogp.me/
-func fetchOGImageUrl(url string) string {
+func fetchOGImageURL(url string) string {
 	Log.Debug("Fetching opengraph image url.")
 
 	// get the ogp object
@@ -1086,8 +1098,8 @@ func guessEventImage(url string) string {
 	}
 
 	// Is biggest best? Well maybe not, but that's what we have to work with.
+	var size int64
 	var best = -1
-	var size int64 = 0
 	for i, src := range srcs {
 		// occassionally we get an inline image
 		if strings.HasPrefix(src, "data:") {
@@ -1105,7 +1117,7 @@ func guessEventImage(url string) string {
 			Log.Error("Could not perform HEAD method for image", "src", src, "error", err)
 		}
 		cl := res.ContentLength
-		if cl > size && cl < MAX_IMG_SIZE {
+		if cl > size && cl < maxImageSize {
 			best = i
 			size = cl
 		}
@@ -1173,7 +1185,7 @@ func newfileUploadRequest(path string) (*http.Request, error) {
 		return nil, err
 	}
 
-	r, err := http.NewRequest("POST", *opts.MobilizonUrl+"/api", body)
+	r, err := http.NewRequest("POST", *opts.MobilizonURL+"/api", body)
 	r.Header.Add("Content-Type", writer.FormDataContentType())
 	r.Header.Add("Authorization", "Bearer "+auth.AccessToken)
 
@@ -1196,7 +1208,7 @@ func downloadFile(URL string) (string, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return "", errors.New(fmt.Sprintf("Received response code %d for %s", response.StatusCode, URL))
+		return "", fmt.Errorf("Received response code %d for %s", response.StatusCode, URL)
 	}
 
 	// get tmp filename
@@ -1213,8 +1225,8 @@ func downloadFile(URL string) (string, error) {
 	defer file.Close()
 
 	//Write the bytes to the file
-	if response.ContentLength > MAX_IMG_SIZE || strings.HasSuffix(URL, ".avif") {
-		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), IMAGE_RESIZE_WIDTH)
+	if response.ContentLength > maxImageSize || strings.HasSuffix(URL, ".avif") {
+		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), imageResizeWidth)
 	} else {
 		_, err = io.Copy(file, response.Body)
 	}
@@ -1235,8 +1247,8 @@ func eventExists(e Event) (bool, string) {
 		SearchEvents struct {
 			Total    int `json:"total"`
 			Elements []struct {
-				Id       graphql.ID `json:"id"`
-				Uuid     string     `json:"uuid"`
+				ID       graphql.ID `json:"id"`
+				UUID     string     `json:"uuid"`
 				Title    string     `json:"title"`
 				BeginsOn string     `json:"beginsOn"`
 			}
@@ -1266,23 +1278,23 @@ func eventExists(e Event) (bool, string) {
 			} `graphql:"event(uuid: $uuid)"`
 		}
 		fvars := map[string]interface{}{
-			"uuid": UUID(el.Uuid),
+			"uuid": UUID(el.UUID),
 		}
 		err := gqlClient.Query(context.Background(), &f, fvars)
 		if err != nil {
-			Log.Debug("Failed fetching event by uuid:", el.Uuid, err)
+			Log.Debug("Failed fetching event by uuid:", el.UUID, err)
 		}
 
 		Log.Debug("Checking URL for a match", "url", e.URL)
 		if e.URL == f.Event.OnlineAddress {
 			Log.Debug("Found event matching", "url", e.URL)
-			return true, el.Uuid
+			return true, el.UUID
 		} else if e.URL+"/" == f.Event.OnlineAddress {
 			Log.Debug("Found event matching", "url", e.URL, "issue", "no trailing slash")
-			return true, el.Uuid
+			return true, el.UUID
 		} else if e.URL == f.Event.OnlineAddress+"/" {
 			Log.Debug("Found event matching", "url", e.URL, "issue", "trailing slash")
-			return true, el.Uuid
+			return true, el.UUID
 		}
 	}
 
@@ -1324,7 +1336,7 @@ func refreshAuthorization() error {
 	// run the refresh token query. We need to resturn any errors from here
 	// down because they mean that the refresh has failed and so we'll need
 	// to do the regular authorization
-	c := graphql.NewClient(*opts.MobilizonUrl+"/api", nil)
+	c := graphql.NewClient(*opts.MobilizonURL+"/api", nil)
 	err = c.Mutate(context.Background(), &m, variables)
 	if err != nil {
 		Log.Error("Failed auth token renewal")
@@ -1403,7 +1415,7 @@ func mobilizònRetryPolicy(ctx context.Context, resp *http.Response, err error) 
 // mobilizònErrorBackoff implements the Backoff interface from
 // hashicorp.retryablehttp, waiting long enough for Mobilizòn to recover
 // from an activity-pub related crash
-func mobilizònErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
-	Log.Error("HTTP Error Backoff Called", "min", min, "max", max, "attempt", attemptNum, "status", resp.Status)
-	return SERVER_CRASH_WAIT_TIME
+func mobilizònErrorBackoff(minT, maxT time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	Log.Error("HTTP Error Backoff Called", "min", minT, "max", maxT, "attempt", attemptNum, "status", resp.Status)
+	return serverCrashWaitTime
 }
