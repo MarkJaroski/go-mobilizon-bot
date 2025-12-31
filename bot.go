@@ -47,7 +47,7 @@ const (
 	imageResizeWidth    = 600
 	serverCrashWaitTime = time.Duration(1 * int64(time.Minute))
 	addrFile            = "addrs.json"
-	existsFile          = "exists.json"
+	existsFileName      = "exists.json"
 )
 
 // Options represents the full set of command-line options for the bot
@@ -353,6 +353,70 @@ func init() {
 
 // main still does too much of the work FIXME
 func main() {
+	getopts()
+
+	if *opts.Register {
+		registerApp()
+		return
+	}
+
+	// do the authorization regardless ...
+	authorizeApp()
+	// and if that's all there is to do exit
+	if *opts.Authorize {
+		return
+	}
+
+	// set up the ContentCloud query
+	ccQuery := buildQuery()
+
+	setupHTTPClient()
+
+	// this will hold our json object whether local or from ConcertCloud
+	var events []Event
+
+	if *opts.File != "" {
+		Log.Info("using local file:", "file", *opts.File)
+		dat, err := os.ReadFile(*opts.File)
+		if err != nil {
+			Log.Error("error", err)
+			os.Exit(1)
+		}
+		// goskyr file output produces a simple json array of Event objects
+		err = json.Unmarshal(dat, &events)
+		if err != nil {
+			Log.Error("", err)
+			os.Exit(1) // no point in continuing
+		}
+	} else {
+		// Fetch some concerts from Concert Cloud
+		fetchURL := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
+		response, err := http.Get(fetchURL)
+		if err != nil {
+			Log.Error("error", err)
+			os.Exit(1) // no point in continuing
+		}
+
+		responseData, err := io.ReadAll(response.Body)
+		if err != nil {
+			Log.Error("", err)
+			os.Exit(1) // no point in continuing
+		}
+
+		var jsonEventInput Response
+		err = json.Unmarshal(responseData, &jsonEventInput)
+		if err != nil {
+			Log.Error("", err)
+			os.Exit(1) // no point in continuing
+		}
+		events = jsonEventInput.Event
+	}
+
+	fetchAddrs(events)
+	createEvents(events)
+}
+
+func getopts() {
 	// set up our config dir if it's not already there
 	confdir, err := os.UserConfigDir()
 	if err != nil {
@@ -390,19 +454,14 @@ func main() {
 		*opts.AuthConfig = *opts.Config + "/auth.json"
 	}
 
-	if *opts.Register {
-		registerApp()
-		return
-	}
+	actorID = *opts.ActorID
+	groupID = *opts.GroupID
+	addrsFile = *opts.Config + "/" + addrFile
+	existsFile = *opts.Config + "/" + existsFile
 
-	// do the authorization regardless ...
-	authorizeApp()
-	// and if that's all there is to do exit
-	if *opts.Authorize {
-		return
-	}
+}
 
-	// set up the ContentCloud query
+func buildQuery() string {
 	ccQuery := ""
 	if *opts.City != "X" && *opts.City != "" {
 		ccQuery = fmt.Sprintf("%s&city=%s", ccQuery, url.QueryEscape(*opts.City))
@@ -425,13 +484,10 @@ func main() {
 	if *opts.Debug {
 		Log.SetLevel(hclog.LevelFromString("DEBUG"))
 	}
+	return ccQuery
+}
 
-	actorID = *opts.ActorID
-	groupID = *opts.GroupID
-
-	addrsFile = *opts.Config + "/" + addrFile
-	existsFile = *opts.Config + "/" + existsFile
-
+func setupHTTPClient() {
 	// set up an HTTPClient with automated retries
 	retryClient := retryablehttp.NewClient()
 	retryClient.RetryWaitMin = serverCrashWaitTime
@@ -449,40 +505,6 @@ func main() {
 		r.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 	})
 
-	// this will hold our json object whether local or from ConcertCloud
-	var events []Event
-
-	if *opts.File != "" {
-		Log.Info("using local file:", "file", *opts.File)
-		dat, err := os.ReadFile(*opts.File)
-		if err != nil {
-			Log.Error("error", err)
-			os.Exit(1)
-		}
-		// goskyr file output produces a simple json array of Event objects
-		json.Unmarshal(dat, &events)
-	} else {
-		// Fetch some concerts from Concert Cloud
-		fetchURL := fmt.Sprintf("%s?%s", "https://api.concertcloud.live/api/events", ccQuery)
-		response, err := http.Get(fetchURL)
-		if err != nil {
-			Log.Error("error", err)
-			os.Exit(1) // no point in continuing
-		}
-
-		responseData, err := io.ReadAll(response.Body)
-		if err != nil {
-			Log.Error("", err)
-			os.Exit(1) // no point in continuing
-		}
-
-		var jsonEventInput Response
-		json.Unmarshal(responseData, &jsonEventInput)
-		events = jsonEventInput.Event
-	}
-
-	fetchAddrs(events)
-	createEvents(events)
 }
 
 // fetchAddrs loads the local addr.json file cache and then attempts to
@@ -612,7 +634,11 @@ func fetchOSMAddr(event Event) string {
 		os.Exit(1)
 	}
 	var addrObject NominatumResponse
-	json.Unmarshal(addrData, &addrObject)
+	err = json.Unmarshal(addrData, &addrObject)
+	if err != nil {
+		Log.Error("", err)
+		os.Exit(1)
+	}
 
 	if len(addrObject) == 0 {
 		Log.Debug("OSM Place Not found:", "location", event.Location, "city", event.City)
