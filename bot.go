@@ -31,6 +31,8 @@ import (
 	"github.com/otiai10/opengraph"
 	"github.com/vincent-petithory/dataurl"
 
+	"github.com/markjaroski/go-mobilizon-bot/mobilizon"
+
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/pflag"
@@ -72,56 +74,6 @@ type Options struct {
 
 var opts Options
 
-// Response represents the json reponse from https://api.concertcloud.com/
-// and is used to Unmarshal that json
-// FIXME it might be possible to import this from the official repo
-type Response struct {
-	Event    []Event `json:"data"`
-	Page     int     `json:"page"`
-	Limit    int     `json:"limit"`
-	Total    int     `json:"total"`
-	LastPage int     `json:"last_page"`
-}
-
-// Event represents the Event objects which is the main part of the
-// concertcloud response.
-// FIXME it might be possible to import this from the official repo
-type Event struct {
-	Title     string    `json:"title"`
-	Location  string    `json:"location"`
-	City      string    `json:"city"`
-	Country   string    `json:"country"`
-	URL       string    `json:"url"`
-	Comment   string    `json:"comment"`
-	Type      string    `json:"type"`
-	SourceUrl string    `json:"sourceUrl"`
-	Date      time.Time `json:"date"`
-	ImageUrl  string    `json:"imageUrl"`
-	MobUUID   string    `json:"mobilizonUuid"`
-}
-
-// UUID represents the GraphQL UUID type
-// FIXME move to a library
-type UUID string
-
-// MediaUpload represents the GraphQL MediaUpload type
-// FIXME move to a library
-type MediaUpload struct {
-	Uuid UUID `json:"uuid"`
-}
-
-// MediaData represents the mediaUpload object of a GraphQL mediaUpload mutation
-// FIXME move to a library
-type MediaData struct {
-	Upload MediaUpload `json:"uploadMedia"`
-}
-
-// MediaData represents the response object of a GraphQL mediaUpload mutation
-// FIXME move to a library
-type MediaResponse struct {
-	Data MediaData `json:"data"`
-}
-
 // Address represents the OpenStreetMap address for a given place
 type Address struct {
 	Amenity       string `json:"amenity"`
@@ -151,168 +103,11 @@ type Place struct {
 // NominatumResponse represents the response returned from OpenStreetMap
 type NominatumResponse []Place
 
-// Point represents the latitude and longitude of a place in Mobilizòn
-// FIXME move to a library
-type Point string
-
-// AddressInput represents address data in Mobilizòn GraphQL mutations like
-// createEvent and updateEvent
-// FIXME move to a library
-type AddressInput struct {
-	Id          int    `json:"id"`
-	Description string `json:"description"`
-	Locality    string `json:"locality"`
-	PostalCode  string `json:"postalCode"`
-	Street      string `json:"street"`
-	Country     string `json:"country"`
-	Region      string `json:"region"`
-	Geom        Point  `json:"geom"`
-}
-
-// MediaInput represents media data in Mobilizòn GraphQL mutations like
-// createEvent and updateEvent
-type MediaInput struct {
-	// FIXME move to a library
-	MediaUuid UUID `json:"mediaUuid"`
-}
-
 // NominatumBaseURL is the URL we use to call nominatim
 var NominatumBaseURL = "https://nominatim.openstreetmap.org/search"
 
-// EventCategory represents the list of possible event categories present
-// in Mobilizòn. Obviously this list must be maintained here as the list in
-// the Mobilizòn codebase changes.
-// FIXME move to a library
-type EventCategory string
-
-const (
-	ARTS                          EventCategory = "ARTS"
-	AUTO_BOAT_AIR                 EventCategory = "AUTO_BOAT_AIR"
-	BOOK_CLUBS                    EventCategory = "BOOK_CLUBS"
-	BUSINESS                      EventCategory = "BUSINESS"
-	CAUSES                        EventCategory = "CAUSES"
-	COMEDY                        EventCategory = "COMEDY"
-	COMMUNITY                     EventCategory = "COMMUNITY"
-	CRAFTS                        EventCategory = "CRAFTS"
-	FAMILY_EDUCATION              EventCategory = "FAMILY_EDUCATION"
-	FASHION_BEAUTY                EventCategory = "FASHION_BEAUTY"
-	FILM_MEDIA                    EventCategory = "FILM_MEDIA"
-	FOOD_DRINK                    EventCategory = "FOOD_DRINK"
-	GAMES                         EventCategory = "GAMES"
-	HEALTH                        EventCategory = "HEALTH"
-	LANGUAGE_CULTURE              EventCategory = "LANGUAGE_CULTURE"
-	LEARNING                      EventCategory = "LEARNING"
-	LGBTQ                         EventCategory = "LGBTQ"
-	MEETING                       EventCategory = "MEETING"
-	MOVEMENTS_POLITICS            EventCategory = "MOVEMENTS_POLITICS"
-	MUSIC                         EventCategory = "MUSIC"
-	NETWORKING                    EventCategory = "NETWORKING"
-	OUTDOORS_ADVENTURE            EventCategory = "OUTDOORS_ADVENTURE"
-	PARTY                         EventCategory = "PARTY"
-	PERFORMING_VISUAL_ARTS        EventCategory = "PERFORMING_VISUAL_ARTS"
-	PETS                          EventCategory = "PETS"
-	PHOTOGRAPHY                   EventCategory = "PHOTOGRAPHY"
-	SCIENCE_TECH                  EventCategory = "SCIENCE_TECH"
-	SPIRITUALITY_RELIGION_BELIEFS EventCategory = "SPIRITUALITY_RELIGION_BELIEFS"
-	SPORTS                        EventCategory = "SPORTS"
-	THEATRE                       EventCategory = "THEATRE"
-)
-
-var EventTypeStrings = []string{
-	"ARTS",
-	"AUTO_BOAT_AIR",
-	"BOOK_CLUBS",
-	"BUSINESS",
-	"CAUSES",
-	"COMEDY",
-	"COMMUNITY",
-	"CRAFTS",
-	"FAMILY_EDUCATION",
-	"FASHION_BEAUTY",
-	"FILM_MEDIA",
-	"FOOD_DRINK",
-	"GAMES",
-	"HEALTH",
-	"LANGUAGE_CULTURE",
-	"LEARNING",
-	"LGBTQ",
-	"MEETING",
-	"MOVEMENTS_POLITICS",
-	"MUSIC",
-	"NETWORKING",
-	"OUTDOORS_ADVENTURE",
-	"PARTY",
-	"PERFORMING_VISUAL_ARTS",
-	"PETS",
-	"PHOTOGRAPHY",
-	"SCIENCE_TECH",
-	"SPIRITUALITY_RELIGION_BELIEFS",
-	"SPORTS",
-	"THEATRE",
-}
-
-// EventVisibility represents the EventVisibility Mobilizòn GraphQL type
-// FIXME move to a library
-type EventVisibility string
-
-const (
-	PRIVATE    EventVisibility = "PRIVATE"
-	PUBLIC     EventVisibility = "PUBLIC"
-	RESTRICTED EventVisibility = "RESTRICTED"
-	UNLISTED   EventVisibility = "UNLISTED"
-)
-
-// EventJoinOptions represents the EventJoinOptions Mobilizòn GraphQL type
-// FIXME move to a library
-type EventJoinOptions string
-
-const (
-	FREE     EventJoinOptions = "FREE"
-	EXTERNAL EventJoinOptions = "EXTERNAL"
-)
-
-// DateTime represents the DateTime Mobilizòn GraphQL type
-// FIXME move to a library
-type DateTime string
-
-// EventCommentModeration represents the EventCommentModeration Mobilizòn
-// GraphQL type
-// FIXME move to a library
-type EventCommentModeration string
-
-const (
-	ALLOW_ALL EventCommentModeration = "ALLOW_ALL"
-	CLOSED    EventCommentModeration = "CLOSED"
-	MODERATED EventCommentModeration = "MODERATED"
-)
-
-// Timezone represents the cooresponding Mobilizòn GraphQL type
-// FIXME move to a library
-type Timezone string
-
-// EventOptionsInput represents the cooresponding Mobilizòn GraphQL type
-// FIXME move to a library
-type EventOptionsInput struct {
-	CommentModeration EventCommentModeration `json:"commentModeration"`
-	ShowStartTime     graphql.Boolean        `json:"showStartTime"`
-	ShowEndTime       graphql.Boolean        `json:"showEndTime"`
-	Timezone          Timezone               `json:"timezone"`
-}
-
-// AuthConfig is the OAuth2 response presented by Mobilizòn for
-// authorization and reauthorization. Becomes the structure of the auth
-// FIXME move to a library
-type AuthConfig struct {
-	AccessToken           string `json:"access_token"`
-	ExpiresIn             int    `json:"expires_in"`
-	RefreshToken          string `json:"refresh_token"`
-	RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
-	Scopes                string `json:"scopes"`
-	TokenType             string `json:"token_type"`
-}
-
 // local fields
-var auth AuthConfig
+var auth mobilizon.AuthConfig
 var actorID string
 var groupID string
 var timezone *string
