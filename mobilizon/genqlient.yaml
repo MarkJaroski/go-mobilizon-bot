@@ -1,0 +1,17 @@
+# Default genqlient config; for full documentation see:
+# https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml
+schema: schema.graphql
+operations:
+- genqlient.graphql
+generated: generated.go
+bindings:
+  # To bind a scalar:
+  DateTime:
+    type: time.Time
+  UUID:
+    type: github.com/google/uuid.UUID
+  Point:
+    type: github.com/paulmach/orb.Point
+  Upload:
+    type: github.com/Khan/genqlient/graphql.Upload
+
