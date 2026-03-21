@@ -16,6 +16,12 @@ help:
 	@grep -E '^## ' Makefile | sed 's/## /  /'
 	@echo ""
 
+## Genqlclient
+genqlclient:
+	pushd mobilizon
+	go run -mod=mod github.com/Khan/genqlient
+	popd
+
 ## test: Run unit tests (fast, default)
 test: test-unit
 
