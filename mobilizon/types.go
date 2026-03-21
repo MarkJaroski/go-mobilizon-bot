@@ -39,8 +39,3 @@ type Event struct {
 	EndsOn        time.Time
 	OnlineAddress string
 }
-
-type Registration struct {
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
-}

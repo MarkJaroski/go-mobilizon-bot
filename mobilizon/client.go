@@ -2,30 +2,23 @@
 package mobilizon
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/google/uuid"
-	"github.com/hashicorp/go-hclog"
 	"golang.org/x/oauth2"
 )
 
 // Client wraps the genqlient GraphQL client
 type Client struct {
-	name         string
 	baseURL      string
-	url          string
-	log          hclog.Logger
+	clientID     string
 	oauth2Config *oauth2.Config
 	token        *oauth2.Token
 	gqlClient    graphql.Client
@@ -40,12 +33,16 @@ type AuthConfig struct {
 }
 
 // NewClient creates a new Mobilizon client
-func NewClient(baseURL string, log hclog.Logger) *Client {
+func NewClient(baseURL string, clientID string) *Client {
+	if clientID == "" {
+		panic("clientID is required - call mobilizon.RegisterApp() first")
+	}
+
 	return &Client{
-		baseURL: baseURL,
-		log:     log,
+		baseURL:  baseURL,
+		clientID: clientID,
 		oauth2Config: &oauth2.Config{
-			ClientID: "",
+			ClientID: clientID,
 			Scopes: []string{
 				"write:event:create",
 				"write:event:update",
@@ -91,64 +88,6 @@ func (c *Client) Authorize(ctx context.Context) error {
 
 	httpClient := c.oauth2Config.Client(ctx, c.token)
 	c.gqlClient = graphql.NewClient(c.baseURL+"/api", httpClient)
-
-	return nil
-}
-
-// registers our client as an application with the mobilizon instance
-func (c *Client) Register(ctx context.Context) error {
-	var posturl = c.baseURL + "/apps"
-
-	// FIXME build this with the name and scope from the client settings
-	params := "name=" + url.QueryEscape(c.name)
-	params += "&scope=" + strings.Join(c.oauth2Config.Scopes, "%20")
-	params += "&website=" + c.url
-	// the device code flow doesn't use a redirect_uri so we can put anything here
-	params += "&redirect_uri=https://example.com/endpoint"
-	body := []byte(params)
-
-	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(body))
-	if err != nil {
-		return err
-	}
-
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	res, err := c.HTTPClient(ctx).Do(r)
-	if err != nil {
-		return err
-	}
-
-	resData, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	var reg Registration
-	json.Unmarshal(resData, &reg)
-
-	c.oauth2Config.ClientID = reg.ClientID
-
-	return nil
-}
-
-// stores the OAuth2 Client ID
-func (c *Client) SaveClientID(filepath string) error {
-	if c.oauth2Config.ClientID == "" {
-		return fmt.Errorf("no clientID to save")
-	}
-
-	return os.WriteFile(filepath, []byte(c.oauth2Config.ClientID), 0600)
-}
-
-// loads the OAuth2 Client ID
-func (c *Client) LoadClientID(filepath string) error {
-	data, err := os.ReadFile(filepath)
-	if err != nil {
-		return err
-	}
-
-	c.oauth2Config.ClientID = string(data)
 
 	return nil
 }
@@ -281,4 +220,8 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 	}
 
 	return events, nil
+}
+
+func FetchAddr() error {
+	return nil
 }
