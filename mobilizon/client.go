@@ -4,6 +4,7 @@ package mobilizon
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -12,8 +13,12 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/google/uuid"
+	"github.com/hashicorp/go-retryablehttp"
 	"golang.org/x/oauth2"
 )
+
+// required because our server seems to crash once in a while
+const SERVER_CRASH_WAIT_TIME = time.Duration(1 * int64(time.Minute))
 
 // Client wraps the genqlient GraphQL client
 type Client struct {
@@ -86,8 +91,17 @@ func (c *Client) Authorize(ctx context.Context) error {
 
 	c.token = token
 
+	// set up an HTTPClient with automated retries
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryWaitMin = SERVER_CRASH_WAIT_TIME
+	retryClient.RetryWaitMax = time.Duration(10 * int64(time.Minute))
+	retryClient.RetryMax = 120
+	retryClient.CheckRetry = RetryPolicy
+	retryClient.Backoff = ErrorBackoff
+
 	httpClient := c.oauth2Config.Client(ctx, c.token)
-	c.gqlClient = graphql.NewClient(c.baseURL+"/api", httpClient)
+	retryClient.HTTPClient = httpClient
+	c.gqlClient = graphql.NewClient(c.baseURL+"/api", retryClient.StandardClient())
 
 	return nil
 }
@@ -159,16 +173,10 @@ func (c *Client) UploadMediaFile(ctx context.Context, filepath string) (*uuid.UU
 }
 
 // CreateEventWithMedia creates an event with an image
-func (c *Client) CreateEventWithMedia(
+func (c *Client) CreateEvent(
 	ctx context.Context,
 	params CreateEventParams,
-	imagePath string,
 ) (*uuid.UUID, error) {
-	// First upload the media
-	mediaUUID, err := c.UploadMediaFile(ctx, imagePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to upload media: %w", err)
-	}
 
 	// Create the event with the media UUID
 	resp, err := createEvent(
@@ -186,7 +194,7 @@ func (c *Client) CreateEventWithMedia(
 		params.OnlineAddress,
 		params.Draft,
 		params.Tags,
-		MediaInput{MediaUuid: *mediaUUID}, // Use uploaded media
+		params.Picture,
 		params.OnlineAddress,
 		params.Category,
 		params.PhysicalAddress,
@@ -222,6 +230,59 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 	return events, nil
 }
 
-func FetchAddr() error {
-	return nil
+func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
+	resp, err := SearchAddress(context.Background(), c.gqlClient, query)
+	if err != nil {
+		return nil, err
+	}
+	addrs := make([]AddressInput, len(resp.SearchAddress))
+	for i := 0; i < len(resp.SearchAddress); i++ {
+		fragment := resp.SearchAddress[i].AdressFragment
+		addrs[i] = AddressInput{
+			Geom:        fragment.Geom,
+			Street:      fragment.Street,
+			Locality:    fragment.Locality,
+			PostalCode:  fragment.PostalCode,
+			Region:      fragment.Region,
+			Country:     fragment.Country,
+			Description: fragment.Description,
+			Type:        fragment.Type,
+			Url:         fragment.Url,
+			Id:          fragment.Id,
+			OriginId:    fragment.OriginId,
+			Timezone:    fragment.Timezone,
+		}
+	}
+	return addrs, errors.New("FetchAddr() not implemented")
+}
+
+func (c *Client) EventExists() (bool, *uuid.UUID, error) {
+	return true, nil, errors.New("EventExists() not implemented")
+}
+
+func (c *Client) FetchEvent(uuid.UUID) (*Event, error) {
+	return nil, errors.New("FetchEvents() not implemented.")
+}
+
+// mobilizònRetryPolicy impements the RetryPolicy interface from
+// hashicorp.retryablehttp, which captures the main failure modes cause by
+// an ephemeral crash of the Mobilizòn server process
+func RetryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	if resp.Status == "401" {
+		return true, nil
+	}
+	if resp.Status < "400" {
+		return false, nil
+	}
+	if resp.Status >= "405" {
+		return true, nil
+	}
+	return false, nil
+}
+
+// mobilizònErrorBackoff implements the Backoff interface from
+// hashicorp.retryablehttp, waiting long enough for Mobilizòn to recover
+// from an activity-pub related crash
+func ErrorBackoff(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	return SERVER_CRASH_WAIT_TIME
 }

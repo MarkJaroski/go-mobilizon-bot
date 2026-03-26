@@ -15,8 +15,6 @@ type CreateEventParams struct {
 	Category         EventCategory
 	Visibility       EventVisibility
 	JoinOptions      EventJoinOptions
-	AttributedTo     uuid.UUID
-	OrganizedBy      uuid.UUID
 	PhysicalAddr     *AddressInput
 	OnlineAddress    string
 	Draft            bool
@@ -26,8 +24,11 @@ type CreateEventParams struct {
 	Status           EventStatus
 	Tags             []string
 	Options          EventOptionsInput
-	Contact          []Contact
 	Metadata         []EventMetadataInput
+	Picture          MediaInput
+	Contact          []Contact
+	AttributedTo     uuid.UUID
+	OrganizedBy      uuid.UUID
 }
 
 type Event struct {

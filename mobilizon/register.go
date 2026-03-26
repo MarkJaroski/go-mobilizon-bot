@@ -27,21 +27,21 @@ type Registration struct {
 
 // RegisterApp registers a new OAuth2 application with a Mobilizon instance
 // This is a one-time setup operation typically run before first use
-func RegisterApp(ctx context.Context, baseURL, appName, website string, scopes []string) (*Registration, error) {
-	if scopes == nil {
-		scopes = DefaultScopes()
+func RegisterApp(ctx context.Context, rc RegisterConfig) (*Registration, error) {
+	if rc.Scopes == nil {
+		rc.Scopes = DefaultScopes()
 	}
 
 	params := url.Values{}
-	params.Set("name", appName)
-	params.Set("scopes", strings.Join(scopes, " "))
-	params.Set("website", website)
+	params.Set("name", rc.AppName)
+	params.Set("scopes", strings.Join(rc.Scopes, " "))
+	params.Set("website", rc.Website)
 	params.Set("redirect_uri", "https://example.com/endpoint") // Unused for device flow
 
 	req, err := http.NewRequestWithContext(
 		ctx,
 		"POST",
-		baseURL+"/apps",
+		rc.BaseURL+"/apps",
 		strings.NewReader(params.Encode()),
 	)
 	if err != nil {

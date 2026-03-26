@@ -10,12 +10,11 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-retryablehttp v0.7.7
-	github.com/hasura/go-graphql-client v0.13.1
-	github.com/jakopako/event-api v0.0.0-20260212220744-1e7c6ed2a418
+	github.com/jakopako/event-api v0.0.0-20260321105019-df7c42c82086
 	github.com/otiai10/opengraph v1.1.3
 	github.com/paulmach/orb v0.12.0
+	github.com/printesoi/osm-nominatim-go v0.0.0-20250121225715-ac366bc6998f
 	github.com/spf13/pflag v1.0.6
-	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/image v0.25.0
 	golang.org/x/oauth2 v0.36.0
 )
@@ -26,7 +25,6 @@ require (
 	github.com/antchfx/htmlquery v1.3.4 // indirect
 	github.com/antchfx/xmlquery v1.4.4 // indirect
 	github.com/antchfx/xpath v1.3.6 // indirect
-	github.com/coder/websocket v1.8.13 // indirect
 	github.com/ebitengine/purego v0.8.2 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect

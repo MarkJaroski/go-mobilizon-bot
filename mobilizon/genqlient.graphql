@@ -156,8 +156,8 @@ query FetchEvent($uuid: UUID!) {
   }
 }
 
-query SearchAddress($query: String!, $locale: String, $addType: AddressSearchType) {
-  searchAddress(query: $query, locale: $locale, type: $addType) {
+query SearchAddress($query: String!) {
+  searchAddress(query: $query) {
     ...AdressFragment
     __typename
   }

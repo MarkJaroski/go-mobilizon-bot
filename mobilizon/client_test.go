@@ -3,7 +3,6 @@ package mobilizon
 
 import (
 	"context"
-	"testing"
 
 	"github.com/Khan/genqlient/graphql"
 )
@@ -28,23 +27,23 @@ func (m *MockGraphQLClient) MakeRequest(
 	return nil
 }
 
-func TestClient_CreateEvent(t *testing.T) {
-	mock := &MockGraphQLClient{
-		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
-			// Simulate successful response
-			resp.Data = map[string]interface{}{
-				"createEvent": map[string]interface{}{
-					"id":    "123",
-					"uuid":  "test-uuid",
-					"title": "Test Event",
-				},
-			}
-			return nil
-		},
-	}
-
-	client := &Client{gqlClient: mock}
-
-	// Test using generated function
-	// ...
-}
+// func TestClient_CreateEvent(t *testing.T) {
+// 	mock := &MockGraphQLClient{
+// 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
+// 			// Simulate successful response
+// 			resp.Data = map[string]interface{}{
+// 				"createEvent": map[string]interface{}{
+// 					"id":    "123",
+// 					"uuid":  "test-uuid",
+// 					"title": "Test Event",
+// 				},
+// 			}
+// 			return nil
+// 		},
+// 	}
+//
+// 	client := &Client{gqlClient: mock}
+//
+// 	// Test using generated function
+// 	// ...
+// }

@@ -402,20 +402,6 @@ func (v *AddressInput) GetOriginId() string { return v.OriginId }
 // GetTimezone returns AddressInput.Timezone, and is useful for accessing the field via an interface.
 func (v *AddressInput) GetTimezone() string { return v.Timezone }
 
-// A list of possible values for the type option to search an address.
-//
-// Results may vary depending on the geocoding provider.
-type AddressSearchType string
-
-const (
-	// Administrative results (cities, regions,...)
-	AddressSearchTypeAdministrative AddressSearchType = "ADMINISTRATIVE"
-)
-
-var AllAddressSearchType = []AddressSearchType{
-	AddressSearchTypeAdministrative,
-}
-
 // AdressFragment includes the GraphQL fields of Address requested by the fragment AdressFragment.
 // The GraphQL type's documentation follows.
 //
@@ -5266,19 +5252,11 @@ func (v *__RefreshAuthTokensInput) GetRt() string { return v.Rt }
 
 // __SearchAddressInput is used internally by genqlient
 type __SearchAddressInput struct {
-	Query   string            `json:"query"`
-	Locale  string            `json:"locale"`
-	AddType AddressSearchType `json:"addType"`
+	Query string `json:"query"`
 }
 
 // GetQuery returns __SearchAddressInput.Query, and is useful for accessing the field via an interface.
 func (v *__SearchAddressInput) GetQuery() string { return v.Query }
-
-// GetLocale returns __SearchAddressInput.Locale, and is useful for accessing the field via an interface.
-func (v *__SearchAddressInput) GetLocale() string { return v.Locale }
-
-// GetAddType returns __SearchAddressInput.AddType, and is useful for accessing the field via an interface.
-func (v *__SearchAddressInput) GetAddType() AddressSearchType { return v.AddType }
 
 // __SearchEventsInput is used internally by genqlient
 type __SearchEventsInput struct {
@@ -5736,8 +5714,8 @@ func RefreshAuthTokens(
 
 // The query executed by SearchAddress.
 const SearchAddress_Operation = `
-query SearchAddress ($query: String!, $locale: String, $addType: AddressSearchType) {
-	searchAddress(query: $query, locale: $locale, type: $addType) {
+query SearchAddress ($query: String!) {
+	searchAddress(query: $query) {
 		... AdressFragment
 		__typename
 	}
@@ -5763,16 +5741,12 @@ func SearchAddress(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	query string,
-	locale string,
-	addType AddressSearchType,
 ) (data_ *SearchAddressResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "SearchAddress",
 		Query:  SearchAddress_Operation,
 		Variables: &__SearchAddressInput{
-			Query:   query,
-			Locale:  locale,
-			AddType: addType,
+			Query: query,
 		},
 	}
 
