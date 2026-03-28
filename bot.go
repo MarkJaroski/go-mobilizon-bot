@@ -121,7 +121,7 @@ func main() {
 
 	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.AppName = pflag.String("appname", "Concert Cloud", "The name of your client app")
-	opts.AppURL = pflag.String("appname", "https://concertcloud.live", "Your client app's about page")
+	opts.AppURL = pflag.String("appurl", "https://concertcloud.live", "Your client app's about page")
 	opts.City = pflag.String("city", "", "The concertcloud API param 'city'")
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.Int("limit", 10, "The concertcloud API param 'limit'")
@@ -162,7 +162,7 @@ func main() {
 	if registration == nil {
 		registration, err = mobilizon.LoadRegistration(*opts.Config + "/registration.json")
 		if err != nil {
-			panic("No registration found for application" + *opts.AppName)
+			panic("No registration found for application " + *opts.AppName)
 		}
 	}
 
@@ -176,6 +176,7 @@ func main() {
 	mobClient.Authorize(context.Background())
 	// and if that's all there is to do exit
 	if *opts.Authorize {
+		mobClient.SaveToken(*opts.AuthConfig)
 		return
 	}
 

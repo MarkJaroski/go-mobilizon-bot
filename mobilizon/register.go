@@ -34,7 +34,7 @@ func RegisterApp(ctx context.Context, rc RegisterConfig) (*Registration, error) 
 
 	params := url.Values{}
 	params.Set("name", rc.AppName)
-	params.Set("scopes", strings.Join(rc.Scopes, " "))
+	params.Set("scope", strings.Join(rc.Scopes, " "))
 	params.Set("website", rc.Website)
 	params.Set("redirect_uri", "https://example.com/endpoint") // Unused for device flow
 
