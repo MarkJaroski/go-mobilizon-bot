@@ -10,7 +10,6 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/google/uuid"
-	"github.com/paulmach/orb"
 )
 
 // ActorFragment includes the GraphQL fields of Actor requested by the fragment ActorFragment.
@@ -341,7 +340,7 @@ var AllActorType = []ActorType{
 // An address input
 type AddressInput struct {
 	// The geocoordinates for the point where this address is
-	Geom orb.Point `json:"geom"`
+	Geom string `json:"geom"`
 	// The address's street name (with number)
 	Street string `json:"street"`
 	// The address's locality
@@ -367,7 +366,7 @@ type AddressInput struct {
 }
 
 // GetGeom returns AddressInput.Geom, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetGeom() orb.Point { return v.Geom }
+func (v *AddressInput) GetGeom() string { return v.Geom }
 
 // GetStreet returns AddressInput.Street, and is useful for accessing the field via an interface.
 func (v *AddressInput) GetStreet() string { return v.Street }
@@ -412,7 +411,7 @@ type AdressFragment struct {
 	// The address's description
 	Description string `json:"description"`
 	// The geocoordinates for the point where this address is
-	Geom orb.Point `json:"geom"`
+	Geom string `json:"geom"`
 	// The address's street name (with number)
 	Street string `json:"street"`
 	// The address's locality
@@ -441,7 +440,7 @@ func (v *AdressFragment) GetId() string { return v.Id }
 func (v *AdressFragment) GetDescription() string { return v.Description }
 
 // GetGeom returns AdressFragment.Geom, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetGeom() orb.Point { return v.Geom }
+func (v *AdressFragment) GetGeom() string { return v.Geom }
 
 // GetStreet returns AdressFragment.Street, and is useful for accessing the field via an interface.
 func (v *AdressFragment) GetStreet() string { return v.Street }
@@ -2940,7 +2939,7 @@ func (v *FullEventPhysicalAddress) GetId() string { return v.AdressFragment.Id }
 func (v *FullEventPhysicalAddress) GetDescription() string { return v.AdressFragment.Description }
 
 // GetGeom returns FullEventPhysicalAddress.Geom, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetGeom() orb.Point { return v.AdressFragment.Geom }
+func (v *FullEventPhysicalAddress) GetGeom() string { return v.AdressFragment.Geom }
 
 // GetStreet returns FullEventPhysicalAddress.Street, and is useful for accessing the field via an interface.
 func (v *FullEventPhysicalAddress) GetStreet() string { return v.AdressFragment.Street }
@@ -3001,7 +3000,7 @@ type __premarshalFullEventPhysicalAddress struct {
 
 	Description string `json:"description"`
 
-	Geom orb.Point `json:"geom"`
+	Geom string `json:"geom"`
 
 	Street string `json:"street"`
 
@@ -3463,7 +3462,7 @@ func (v *SearchAddressSearchAddress) GetId() string { return v.AdressFragment.Id
 func (v *SearchAddressSearchAddress) GetDescription() string { return v.AdressFragment.Description }
 
 // GetGeom returns SearchAddressSearchAddress.Geom, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetGeom() orb.Point { return v.AdressFragment.Geom }
+func (v *SearchAddressSearchAddress) GetGeom() string { return v.AdressFragment.Geom }
 
 // GetStreet returns SearchAddressSearchAddress.Street, and is useful for accessing the field via an interface.
 func (v *SearchAddressSearchAddress) GetStreet() string { return v.AdressFragment.Street }
@@ -3524,7 +3523,7 @@ type __premarshalSearchAddressSearchAddress struct {
 
 	Description string `json:"description"`
 
-	Geom orb.Point `json:"geom"`
+	Geom string `json:"geom"`
 
 	Street string `json:"street"`
 
@@ -4958,7 +4957,7 @@ func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetDescription() 
 }
 
 // GetGeom returns SearchEventsSearchEventsElementsEventPhysicalAddress.Geom, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetGeom() orb.Point {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetGeom() string {
 	return v.AdressFragment.Geom
 }
 
@@ -5039,7 +5038,7 @@ type __premarshalSearchEventsSearchEventsElementsEventPhysicalAddress struct {
 
 	Description string `json:"description"`
 
-	Geom orb.Point `json:"geom"`
+	Geom string `json:"geom"`
 
 	Street string `json:"street"`
 

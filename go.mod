@@ -12,7 +12,6 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jakopako/event-api v0.0.0-20260321105019-df7c42c82086
 	github.com/otiai10/opengraph v1.1.3
-	github.com/paulmach/orb v0.12.0
 	github.com/printesoi/osm-nominatim-go v0.0.0-20250121225715-ac366bc6998f
 	github.com/spf13/pflag v1.0.6
 	golang.org/x/image v0.25.0

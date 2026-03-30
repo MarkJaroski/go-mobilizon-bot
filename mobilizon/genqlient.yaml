@@ -11,7 +11,7 @@ bindings:
   UUID:
     type: github.com/google/uuid.UUID
   Point:
-    type: github.com/paulmach/orb.Point
+    type: string
   Upload:
     type: github.com/Khan/genqlient/graphql.Upload
 

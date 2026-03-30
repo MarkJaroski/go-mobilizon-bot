@@ -38,14 +38,15 @@ type AuthConfig struct {
 }
 
 // NewClient creates a new Mobilizon client
-func NewClient(baseURL string, clientID string) *Client {
+func NewClient(baseURL string, clientID string) (*Client, error) {
 	if clientID == "" {
-		panic("clientID is required - call mobilizon.RegisterApp() first")
+		return nil, errors.New("clientID is required - call mobilizon.RegisterApp() first")
 	}
 
 	return &Client{
-		baseURL:  baseURL,
-		clientID: clientID,
+		baseURL:   baseURL,
+		clientID:  clientID,
+		gqlClient: graphql.NewClient(baseURL+"/api", http.DefaultClient),
 		oauth2Config: &oauth2.Config{
 			ClientID: clientID,
 			Scopes: []string{
@@ -59,7 +60,33 @@ func NewClient(baseURL string, clientID string) *Client {
 				DeviceAuthURL: baseURL + "/login/device/code",
 			},
 		},
+	}, nil
+}
+
+// initGraphQLClient initializes the GraphQL client with auth
+func (c *Client) initGraphQLClient(ctx context.Context) {
+	httpClient := c.oauth2Config.Client(ctx, c.token)
+	c.gqlClient = graphql.NewClient(c.baseURL+"/api", httpClient)
+}
+
+// performs the OAuth2 handshake to obtain an account holder's authorization
+// and then initializes the client with the refresh token
+//
+// This also handles token renewal
+func (c *Client) EnsureAuthorization(ctx context.Context, tokenPath string) error {
+	if err := c.LoadToken(tokenPath); err == nil {
+		if err := c.RefreshToken(ctx); err == nil {
+			c.SaveToken(tokenPath)
+			c.initGraphQLClient(ctx)
+			return nil
+		}
 	}
+	if err := c.Authorize(ctx); err != nil {
+		return err
+	}
+	c.SaveToken(tokenPath)
+	c.initGraphQLClient(ctx)
+	return nil
 }
 
 // performs the OAuth2 device code flow to authorize our graphql client
@@ -133,6 +160,19 @@ func (c *Client) LoadToken(filepath string) error {
 	}
 
 	c.token = &token
+	return nil
+}
+
+func (c *Client) RefreshToken(ctx context.Context) error {
+	resp, err := RefreshAuthTokens(ctx, c.gqlClient, c.token.RefreshToken)
+	if err != nil {
+		return err
+	}
+	c.token = &oauth2.Token{
+		AccessToken:  resp.RefreshToken.AccessToken,
+		RefreshToken: resp.RefreshToken.RefreshToken,
+		Expiry:       time.Now().Add(time.Hour * 8),
+	}
 	return nil
 }
 
@@ -235,9 +275,11 @@ func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	addrs := make([]AddressInput, len(resp.SearchAddress))
-	for i := 0; i < len(resp.SearchAddress); i++ {
-		fragment := resp.SearchAddress[i].AdressFragment
+
+	for i, elem := range resp.SearchAddress {
+		fragment := elem.AdressFragment
 		addrs[i] = AddressInput{
 			Geom:        fragment.Geom,
 			Street:      fragment.Street,
@@ -253,7 +295,8 @@ func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
 			Timezone:    fragment.Timezone,
 		}
 	}
-	return addrs, errors.New("FetchAddr() not implemented")
+
+	return addrs, nil
 }
 
 func (c *Client) EventExists() (bool, *uuid.UUID, error) {
