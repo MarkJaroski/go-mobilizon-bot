@@ -234,6 +234,9 @@ func main() {
 
 // loadAddrs loads the local addr.json file cache and then attempts to
 // fetch any missing addresses from OpenStreetMap and Mobilizòn
+//
+// This is no longer neeeded for the vast majority of addresses, since
+// Concertloud
 func loadAddrs(events []concertcloud.Event) {
 	// Read the local file, if it exists. We can trap errors here
 	// since we can just recreate the file if necessary.
@@ -328,13 +331,14 @@ func fetchAddr(e concertcloud.Event) {
 	addrs[addressKey(e)] = resp[len(resp)-1]
 }
 
-func populateAddressInput(e concertcloud.Event) mobilizon.AddressInput {
+// Convert the concert cloud Address from an event into AddressInput for Mobilizon
+func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 	geo := e.Address.Geolocacation.Coordinates
 	offset := time.Duration(e.Offset * int(time.Second))
 	tzName := "UTC" + fmt.Sprintf("%+.0f", offset.Hours())
 	return mobilizon.AddressInput{
 		Geom:        fmt.Sprint("%.8f", geo[0], geo[1]),
-		Street:      e.Address.Street + " " + e.Address.HouseNumber,
+		Street:      e.Address.HouseNumber + " " + e.Address.Street, // mobilizon uses this order
 		Locality:    e.Address.Locality,
 		PostalCode:  e.Address.PostCode,
 		Region:      e.Address.State,
