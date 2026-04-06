@@ -3614,8 +3614,6 @@ type SearchEventsSearchEventsElementsEvent struct {
 	Title string `json:"title"`
 	// The Event UUID
 	Uuid uuid.UUID `json:"uuid"`
-	// Online address of the event
-	OnlineAddress string `json:"onlineAddress"`
 	// Datetime for when the event begins
 	BeginsOn time.Time `json:"beginsOn"`
 	// The event's picture
@@ -3643,9 +3641,6 @@ func (v *SearchEventsSearchEventsElementsEvent) GetTitle() string { return v.Tit
 
 // GetUuid returns SearchEventsSearchEventsElementsEvent.Uuid, and is useful for accessing the field via an interface.
 func (v *SearchEventsSearchEventsElementsEvent) GetUuid() uuid.UUID { return v.Uuid }
-
-// GetOnlineAddress returns SearchEventsSearchEventsElementsEvent.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetOnlineAddress() string { return v.OnlineAddress }
 
 // GetBeginsOn returns SearchEventsSearchEventsElementsEvent.BeginsOn, and is useful for accessing the field via an interface.
 func (v *SearchEventsSearchEventsElementsEvent) GetBeginsOn() time.Time { return v.BeginsOn }
@@ -3740,8 +3735,6 @@ type __premarshalSearchEventsSearchEventsElementsEvent struct {
 
 	Uuid uuid.UUID `json:"uuid"`
 
-	OnlineAddress string `json:"onlineAddress"`
-
 	BeginsOn time.Time `json:"beginsOn"`
 
 	Picture SearchEventsSearchEventsElementsEventPictureMedia `json:"picture"`
@@ -3775,7 +3768,6 @@ func (v *SearchEventsSearchEventsElementsEvent) __premarshalJSON() (*__premarsha
 	retval.Id = v.Id
 	retval.Title = v.Title
 	retval.Uuid = v.Uuid
-	retval.OnlineAddress = v.OnlineAddress
 	retval.BeginsOn = v.BeginsOn
 	retval.Picture = v.Picture
 	retval.Status = v.Status
@@ -5770,7 +5762,6 @@ query SearchEvents ($term: String, $beginsOn: DateTime) {
 			id
 			title
 			uuid
-			onlineAddress
 			beginsOn
 			picture {
 				uuid

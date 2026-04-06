@@ -231,7 +231,7 @@ func (c *Client) CreateEvent(
 		params.Status,
 		params.Visibility,
 		params.JoinOptions,
-		params.OnlineAddress,
+		params.ExternalParticipationURL,
 		params.Draft,
 		params.Tags,
 		params.Picture,
@@ -250,8 +250,8 @@ func (c *Client) CreateEvent(
 }
 
 // SearchForEvents searches for events by term
-func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time.Time) ([]Event, error) {
-	resp, err := SearchEvents(ctx, c.gqlClient, term, beginsOn)
+func (c *Client) SearchForEvents(term string, beginsOn time.Time) ([]Event, error) {
+	resp, err := SearchEvents(context.Background(), c.gqlClient, term, beginsOn)
 	if err != nil {
 		return nil, err
 	}
@@ -259,15 +259,32 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 	events := make([]Event, len(resp.SearchEvents.Elements))
 	for i, elem := range resp.SearchEvents.Elements {
 		events[i] = Event{
-			ID:            elem.Id,
-			UUID:          elem.Uuid,
-			Title:         elem.Title,
-			BeginsOn:      elem.BeginsOn,
-			OnlineAddress: elem.OnlineAddress,
+			ID:       elem.Id,
+			UUID:     elem.Uuid,
+			Title:    elem.Title,
+			BeginsOn: elem.BeginsOn,
 		}
 	}
 
 	return events, nil
+}
+
+func (c *Client) EventExists(title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
+	resp, err := SearchEvents(context.Background(), c.gqlClient, title, beginsOn)
+	if err != nil {
+		return false, nil, err
+	}
+
+	elems := resp.SearchEvents.Elements
+	// no result, the event does not exist
+	if len(elems) < 1 {
+		return false, nil, nil
+	}
+
+	// choosing between multiple matching events is going to be very
+	// difficult, and the first one will always be the best match for the
+	// date so that's the one we'll return
+	return true, &elems[0].Uuid, nil
 }
 
 func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
@@ -297,10 +314,6 @@ func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
 	}
 
 	return addrs, nil
-}
-
-func (c *Client) EventExists() (bool, *uuid.UUID, error) {
-	return true, nil, errors.New("EventExists() not implemented")
 }
 
 func (c *Client) FetchEvent(uuid.UUID) (*Event, error) {

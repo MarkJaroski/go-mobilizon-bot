@@ -173,7 +173,6 @@ query SearchEvents($term: String, $beginsOn: DateTime) {
       id
       title
       uuid
-      onlineAddress
       beginsOn
       picture {
         uuid

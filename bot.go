@@ -22,9 +22,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gen2brain/avif"
-	"github.com/gocolly/colly"
 	"github.com/google/uuid"
-	"github.com/otiai10/opengraph"
 
 	"github.com/markjaroski/go-mobilizon-bot/concertcloud"
 	"github.com/markjaroski/go-mobilizon-bot/mobilizon"
@@ -33,8 +31,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"golang.org/x/image/draw"
-
-	nominatim "github.com/printesoi/osm-nominatim-go"
 )
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
@@ -71,8 +67,8 @@ type Options struct {
 }
 
 type ExistingEvent struct {
-	UUID  uuid.UUID
-	Event concertcloud.Event
+	UUID  uuid.UUID          `json:"uuid"`
+	Event concertcloud.Event `json:"event"`
 }
 
 var opts Options
@@ -141,6 +137,10 @@ func main() {
 	opts.Debug = pflag.Bool("debug", false, "Debug mode.")
 
 	pflag.Parse()
+
+	if *opts.Debug {
+		Log.SetLevel(hclog.LevelFromString("DEBUG"))
+	}
 
 	if *opts.Register {
 		conf := mobilizon.RegisterConfig{
@@ -228,39 +228,7 @@ func main() {
 		events = resp.Data
 	}
 
-	loadAddrs(events)
 	createEvents(events)
-}
-
-// loadAddrs loads the local addr.json file cache and then attempts to
-// fetch any missing addresses from OpenStreetMap and Mobilizòn
-//
-// This is no longer neeeded for the vast majority of addresses, since
-// Concertloud
-func loadAddrs(events []concertcloud.Event) {
-	// Read the local file, if it exists. We can trap errors here
-	// since we can just recreate the file if necessary.
-	if dat, err := os.ReadFile(addrsFile); err == nil {
-		if err = json.Unmarshal(dat, &addrs); err != nil {
-			Log.Error(err.Error())
-		}
-	} else {
-		Log.Error(err.Error())
-	}
-
-	for i := 0; i < len(events); i++ {
-		fetchAddr(events[i])
-	}
-
-	data, err := json.MarshalIndent(&addrs, "", " ")
-	if err != nil {
-		Log.Error(err.Error())
-	}
-
-	if err = os.WriteFile(addrsFile, data, 0600); err != nil {
-		Log.Error(err.Error())
-	}
-
 }
 
 func loadExistingEvents() {
@@ -276,6 +244,7 @@ func loadExistingEvents() {
 }
 
 func saveExistingEvents() {
+	Log.Debug("Saving existing events", "file", existsFile)
 	data, err := json.MarshalIndent(&created, "", " ")
 	if err != nil {
 		Log.Error(err.Error())
@@ -286,49 +255,14 @@ func saveExistingEvents() {
 	}
 }
 
-func addressKey(e concertcloud.Event) string {
-	return e.City + "/" + e.Location
-}
-
+// Create a hopefully unique key for a given event.
+//
+// The lineup may change, and many venues change the title to indicate
+// that an event is cancelled, so we can't use that.
+//
+// A previous version used the URL, but some venues change that as well
 func eventKey(e concertcloud.Event) string {
 	return e.City + "/" + e.Location + "/" + e.Date.Format(time.RFC3339)
-}
-
-// fetchAddr uses OpenStreetMap Nominatim to create a query string which
-// should in almost all cases return the correct location object when run
-// against the Mobilizòn address search.
-func fetchAddr(e concertcloud.Event) {
-
-	// if we already have the address don't bother with the query
-	if _, ok := addrs[addressKey(e)]; ok {
-		Log.Debug("Skipping cached location", "location", e.Location)
-		return
-	}
-
-	// get the addr from OpenStreetMap first
-	Log.Debug("Searching for: ", "location", e.Location)
-	query := buildAddressQuery(e)
-	Log.Debug("Returned from OSM:", "query", query)
-
-	resp, err := mobClient.FetchAddr(query)
-	if err != nil {
-		Log.Info("Error encountered searching for ", "location", e.Location, err)
-	}
-	if len(resp) == 0 {
-		Log.Info("Location not found", "location", e.Location)
-		return
-	}
-
-	for _, a := range resp {
-		Log.Debug("Mobilizòn returned: '" + a.Description + " " + a.Street + " " + a.Locality + " for " + e.Location + " " + e.City)
-		if a.Description == e.Location && a.Locality == e.City {
-			addrs[addressKey(e)] = a
-			return
-		}
-	}
-
-	// just use the last one
-	addrs[addressKey(e)] = resp[len(resp)-1]
 }
 
 // Convert the concert cloud Address from an event into AddressInput for Mobilizon
@@ -350,61 +284,32 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 	}
 }
 
-// buildAddressQuery takes a single Event object from the json input and returns
-// a query string for Mobilizòn which should return the location object
-// which Mobilizòn has constructed for the event address.
-//
-// Doing it this way improves our chances of getting an exact hit when we
-// run the query against Mobilizòn itself.
-func buildAddressQuery(event concertcloud.Event) string {
-
-	// first check if we already have address data in the event
-	if event.Address.Street != "" {
-		return event.Location + " " + event.Address.HouseNumber + " " + event.Address.Street + " " + event.Address.Locality
-	}
-
-	var addr nominatim.SearchResult
-	res, err := nominatim.Search(context.Background(), event.Location+" "+event.City)
-	if err != nil {
-		Log.Debug(err.Error())
-		os.Exit(1)
-	}
-
-	if len(res) == 0 {
-		Log.Debug("OSM Place Not found:", "location", event.Location, "city", event.City)
-		return event.Location + " " + event.City
-	} else if len(res) == 1 {
-		addr = res[0]
-	} else {
-		for _, p := range res {
-			if p.Type == "nightclub" || p.Type == "bar" || p.Type == "restaurant" || p.Type == "theatre" || p.Type == "cinema" || p.Type == "arts_centre" {
-				Log.Debug("Addr Type:", p.Type)
-				addr = p
-				break
-			}
-		}
-	}
-
-	return event.Location + " " + addr.Address.Road + " " + addr.Address.City
-}
-
 // createEvents loops through all of the events in the json input, sets up
 // their variables map, and runs createEvents on them
 func createEvents(events []concertcloud.Event) {
+
+	Log.Debug("createEvents()", "number of events: ", len(events))
+
 	loadExistingEvents()
-	for i := 0; i < len(events); i++ {
-		e := events[i]
+
+	for _, e := range events {
 
 		// Do not upload events from bejazz.ch. They don't like us.
-		// opt out FIXME this should be loaded from a file or something
-		match, _ := regexp.MatchString("bejazz.ch", e.URL)
-		if match {
+		//
+		// FIXME: this should be loaded from an opt out file or something
+		if match, _ := regexp.MatchString("bejazz.ch", e.URL); match {
 			Log.Info("Skipping BeJazz.")
 			continue
 		}
 
 		// NoOp calls for a dry run
 		if *opts.NoOp {
+			continue
+		}
+
+		// Log a warning for missing venues and skip
+		if e.Address.Street == "" {
+			Log.Info("Address not found", "location", e.Location, "city", e.City)
 			continue
 		}
 
@@ -417,70 +322,84 @@ func createEvents(events []concertcloud.Event) {
 			e.Title = e.Title + " ..."
 		}
 
-		var uuid *uuid.UUID
+		var uuid = &uuid.UUID{}
 
 		Log.Debug("Checking for existing events", "eventKey", eventKey(e))
 
 		// guard clauses
 		if _, ok := existing[eventKey(e)]; ok {
-			Log.Debug("Found a cached event")
+
+			Log.Debug("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
 			*uuid = existing[eventKey(e)].UUID
 			created[eventKey(e)] = existing[eventKey(e)]
+
 			if !reflect.DeepEqual(e, existing[eventKey(e)]) {
+
 				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
 				if *opts.NoOp {
 					continue
 				}
+
 				created[eventKey(e)] = ExistingEvent{UUID: *uuid, Event: e}
-				vars, err := populateVariables(e)
-				if err != nil {
-					Log.Error("Error populating vars", "error", err, "vars", spew.Sdump(vars))
-					continue
-				}
+
 				// FIXME still needs work
 				// updateEvent(vars)
+
 			}
 			continue
 		}
 
-		if ok, uuid, _ := mobClient.EventExists(); ok {
+		Log.Debug("Searching for existing events", "title", e.Title, "location", e.Location, "date", e.Date)
+		exists, uuid, err := mobClient.EventExists(
+			e.Title,
+			e.Location,
+			e.Date,
+		)
+		if err != nil {
+			Log.Error("Error searching for a matching event", "error", err)
+			continue
+		}
+		if exists {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
 			continue
 		}
 
+		e.Comment = e.Comment + " <p/><p> " + CC_PLUG
+
 		vars := mobilizon.CreateEventParams{
-			Title:            e.Title,
-			Description:      e.Comment,
-			BeginsOn:         e.Date,
-			EndsOn:           e.Date.Add(time.Hour * 2),
-			Category:         populateCategory(e),
-			Visibility:       mobilizon.EventVisibility("PUBLIC"),
-			JoinOptions:      mobilizon.EventJoinOptions("EXTERNAL"),
-			PhysicalAddress:  addrs[addressKey(e)],
-			OnlineAddress:    e.URL,
-			Draft:            *opts.Draft,
-			OrganizerActorId: actorID,
-			AttributedToId:   groupID,
+			Title:                    e.Title,
+			Description:              e.Comment,
+			BeginsOn:                 e.Date,
+			EndsOn:                   e.Date.Add(time.Hour * 2),
+			Category:                 populateCategory(e),
+			Visibility:               mobilizon.EventVisibility("PUBLIC"),
+			JoinOptions:              mobilizon.EventJoinOptions("EXTERNAL"),
+			PhysicalAddress:          addressToAddressInput(e),
+			OnlineAddress:            e.URL,
+			ExternalParticipationURL: e.URL,
+			Draft:                    *opts.Draft,
+			OrganizerActorId:         actorID,
+			AttributedToId:           groupID,
+			Tags:                     populateTags(e),
+			Options:                  populateEventOptions(),
 		}
-		uuid, err := mobClient.CreateEvent(context.Background(), vars)
+		uuid, err = mobClient.CreateEvent(context.Background(), vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
 		}
 	}
+	Log.Debug("Saving existing events list", "events", spew.Sdump(created))
 	saveExistingEvents()
 }
 
+// FIXME: this is left over from earlier versions
+//
 // populateVariables takes an Event object from the json input and returns
 // a map which can be used as the variables input for the Mobilizòn GraphQL
 // mutations createEvent or updateEvent
 func populateVariables(e concertcloud.Event) (map[string]interface{}, error) {
 	// add a plug for ConcertCloud
-	e.Comment = e.Comment + " <p/><p> " + CC_PLUG
-	vars := map[string]interface{}{
-		"externalParticipationUrl": e.URL,
-		"tags":                     populateTags(e),
-		"options":                  populateEventOptions(),
-	}
+	vars := map[string]interface{}{}
 	// if we have a UUID fetch the corresponding eventId and use it
 	e = populateImageUrl(e)
 	path, err := downloadFile(e.ImageURL)
@@ -506,16 +425,7 @@ func populateImageUrl(e concertcloud.Event) concertcloud.Event {
 	if e.ImageURL != "" && e.ImageURL != e.SourceURL && !strings.HasSuffix(e.ImageURL, "/") {
 		return e
 	}
-	// fetch the opengraph image for the event if there is no event image
-	e.ImageURL = fetchOGImageUrl(e.URL)
-	if strings.HasPrefix(e.ImageURL, "http") {
-		return e
-	}
-	// fetch a backup image if we don't already have something
-	e.ImageURL = guessEventImage(e.URL)
-	if strings.HasPrefix(e.ImageURL, "http") {
-		return e
-	}
+
 	Log.Info("No image found for", "url", e.URL)
 	e.ImageURL = DEFAULT_IMAGE_URL
 	return e
@@ -550,105 +460,6 @@ func populateCategory(e concertcloud.Event) mobilizon.EventCategory {
 		return mobilizon.EventCategory(e.Type)
 	}
 	return mobilizon.EventCategory("MUSIC")
-}
-
-// fetchOGImageUrl finds takes the URL of a specific event and returns the
-// Open Ggraph image URL found there, if one exists.
-// See https://ogp.me/
-func fetchOGImageUrl(url string) string {
-	Log.Debug("Fetching opengraph image url.")
-
-	// get the ogp object
-	ogp, err := opengraph.Fetch(url)
-	if err != nil {
-		Log.Error("fetchOGImage", "error", err)
-	}
-
-	if len(ogp.Image) == 0 {
-		Log.Debug("No opengraph image found")
-		return ""
-	}
-
-	// convert URLs to absolute
-	ogp.ToAbsURL()
-
-	if strings.Contains(url, ogp.Image[0].URL) {
-		Log.Debug("Opengraph image URL is a substring of the base URL")
-		return ""
-	}
-
-	//but check that it works first
-	res, err := http.Head(ogp.Image[0].URL)
-	if err != nil {
-		Log.Error("fetchOGImage", "error", err)
-		return ""
-	}
-
-	if res.StatusCode != 200 {
-		Log.Error("fetchOGImage", "status", res.StatusCode)
-		return ""
-	}
-
-	Log.Debug("Returning first opengraph image URL", "url", ogp.Image[0].URL)
-	return ogp.Image[0].URL
-}
-
-// guessEventImage tries to find a reasonable image on the page found at an
-// event URL. If it succeeds it returns the image URL otherwise it returns
-// ""
-//
-// The best image is so far defined as the largest image in a src attribute
-// on the page. This is far from ideal, but it's a fallback.
-func guessEventImage(url string) string {
-	Log.Debug("Attempting to guess an image URL for", "url", url)
-	var srcs []string
-
-	c := colly.NewCollector()
-
-	// claim to be a browser
-	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
-
-	c.OnHTML("img[src]", func(e *colly.HTMLElement) {
-		i := e.Request.AbsoluteURL(e.Attr("src"))
-		srcs = append(srcs, i)
-	})
-	c.Visit(url)
-	c.Wait()
-
-	if len(srcs) < 1 {
-		return ""
-	}
-
-	// Is biggest best? Well maybe not, but that's what we have to work with.
-	var best = -1
-	var size int64 = 0
-	for i, src := range srcs {
-		// occassionally we get an inline image
-		if strings.HasPrefix(src, "data:") {
-			continue
-		}
-		// sometimes we don't get the absolute URL
-		if strings.HasPrefix(src, "/") {
-			continue
-		}
-		if strings.HasSuffix(src, ".svg") {
-			continue
-		}
-		res, err := http.Head(src)
-		if err != nil {
-			Log.Error("Could not perform HEAD method for image", "src", src, "error", err)
-		}
-		cl := res.ContentLength
-		if cl > size && cl < MAX_IMG_SIZE {
-			best = i
-			size = cl
-		}
-		Log.Debug("Choosing image by size", "i", i, "size", size, "cl", cl, "best", best)
-	}
-	if best == -1 {
-		return ""
-	}
-	return srcs[best]
 }
 
 // downloadFile downloads a file from a given URL and returns the local
