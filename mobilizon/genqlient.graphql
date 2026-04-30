@@ -206,7 +206,7 @@ query SearchEvents($term: String, $beginsOn: DateTime) {
   }
 }
 
-mutation createEvent($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
+mutation CreateEvent($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
   createEvent(
     organizerActorId: $organizerActorId
     attributedToId: $attributedToId
@@ -231,7 +231,7 @@ mutation createEvent($organizerActorId: ID!, $attributedToId: ID, $title: String
 }
 
 
-mutation updateEvent($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
+mutation UpdateEvent($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
   updateEvent(
     eventId: $id
     title: $title
@@ -254,14 +254,6 @@ mutation updateEvent($id: ID!, $title: String, $description: String, $beginsOn: 
     contacts: $contacts
     metadata: $metadata
   ) {id,uuid}
-}
-
-# Media upload mutation
-mutation UploadMedia($file: Upload!, $name: String!) {
-  uploadMedia(file: $file, name: $name) {
-    uuid
-    url
-  }
 }
 
 mutation RefreshAuthTokens($rt:String!){

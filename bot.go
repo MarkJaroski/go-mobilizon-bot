@@ -5,23 +5,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"image"
-	"image/jpeg"
-	"image/png"
-	"io"
 	"io/fs"
-	"math"
-	"net/http"
 	"os"
+	"os/signal"
 	"reflect"
 	"regexp"
 	"slices"
 	"strings"
+	"syscall"
 	"time"
 	"unicode/utf8"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/gen2brain/avif"
 	"github.com/google/uuid"
 
 	"github.com/markjaroski/go-mobilizon-bot/concertcloud"
@@ -29,14 +24,9 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/spf13/pflag"
-
-	"golang.org/x/image/draw"
 )
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
-const DEFAULT_IMAGE_URL = "https://mobilisons.ch/img/mobilizon_default_card.png"
-const MAX_IMG_SIZE = 1024 * 800 // 800kb
-const IMAGE_RESIZE_WIDTH = 600
 const ADDR_FILE = "addrs.json"
 const EXISTS_FILE = "exists.json"
 
@@ -101,8 +91,11 @@ func init() {
 	created = make(map[string]ExistingEvent)
 }
 
-// main still does too much of the work FIXME
+// FIXME: main still does too much of the work
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	// set up our config dir if it's not already there
 	confdir, err := os.UserConfigDir()
 	if err != nil {
@@ -149,7 +142,7 @@ func main() {
 			Website: *opts.AppURL,
 			Scopes:  mobilizon.DefaultScopes(),
 		}
-		registration, err = mobilizon.RegisterApp(context.Background(), conf)
+		registration, err = mobilizon.RegisterApp(ctx, conf)
 		if err != nil {
 			Log.Error("error", err)
 			os.Exit(1)
@@ -164,6 +157,7 @@ func main() {
 		if err != nil {
 			panic("No registration found for application " + *opts.AppName)
 		}
+		*opts.MobilizonUrl = registration.BaseURL
 	}
 
 	if *opts.Config != confdir+"/mobilizon" {
@@ -177,7 +171,7 @@ func main() {
 	}
 
 	// do the authorization
-	if err = mobClient.EnsureAuthorization(context.Background(), *opts.AuthConfig); err != nil {
+	if err = mobClient.EnsureAuthorization(ctx, *opts.AuthConfig); err != nil {
 		Log.Error("error", err)
 		panic(*opts.AppName + " not Authorized")
 	}
@@ -208,7 +202,7 @@ func main() {
 	} else {
 		ccConfig := concertcloud.Config{
 			Logger:     Log,
-			HTTPClient: mobClient.HTTPClient(context.Background()),
+			HTTPClient: mobClient.HTTPClient(ctx),
 		}
 		ccClient, err := concertcloud.NewClient(ccConfig)
 		params := concertcloud.QueryParams{
@@ -219,7 +213,7 @@ func main() {
 			Radius:  *opts.Radius,
 			Date:    *opts.Date,
 		}
-		resp, err := ccClient.GetEvents(context.Background(), params)
+		resp, err := ccClient.GetEvents(ctx, params)
 		// Fetch some concerts from Concert Cloud
 		if err != nil {
 			Log.Error("error", err)
@@ -228,7 +222,7 @@ func main() {
 		events = resp.Data
 	}
 
-	createEvents(events)
+	createEvents(ctx, events)
 }
 
 func loadExistingEvents() {
@@ -286,7 +280,7 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 
 // createEvents loops through all of the events in the json input, sets up
 // their variables map, and runs createEvents on them
-func createEvents(events []concertcloud.Event) {
+func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 	Log.Debug("createEvents()", "number of events: ", len(events))
 
@@ -322,53 +316,9 @@ func createEvents(events []concertcloud.Event) {
 			e.Title = e.Title + " ..."
 		}
 
-		var uuid = &uuid.UUID{}
-
-		Log.Debug("Checking for existing events", "eventKey", eventKey(e))
-
-		// guard clauses
-		if _, ok := existing[eventKey(e)]; ok {
-
-			Log.Debug("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
-			*uuid = existing[eventKey(e)].UUID
-			created[eventKey(e)] = existing[eventKey(e)]
-
-			if !reflect.DeepEqual(e, existing[eventKey(e)]) {
-
-				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
-				if *opts.NoOp {
-					continue
-				}
-
-				created[eventKey(e)] = ExistingEvent{UUID: *uuid, Event: e}
-
-				// FIXME still needs work
-				// updateEvent(vars)
-
-			}
-			continue
-		}
-
-		Log.Debug("Searching for existing events", "title", e.Title, "location", e.Location, "date", e.Date)
-		exists, uuid, err := mobClient.EventExists(
-			e.Title,
-			e.Location,
-			e.Date,
-		)
-		if err != nil {
-			Log.Error("Error searching for a matching event", "error", err)
-			continue
-		}
-		if exists {
-			created[eventKey(e)] = ExistingEvent{*uuid, e}
-			continue
-		}
-
-		e.Comment = e.Comment + " <p/><p> " + CC_PLUG
-
-		vars := mobilizon.CreateEventParams{
+		vars := mobilizon.EventParams{
 			Title:                    e.Title,
-			Description:              e.Comment,
+			Description:              e.Comment + " <p/><p> " + CC_PLUG,
 			BeginsOn:                 e.Date,
 			EndsOn:                   e.Date.Add(time.Hour * 2),
 			Category:                 populateCategory(e),
@@ -383,52 +333,61 @@ func createEvents(events []concertcloud.Event) {
 			Tags:                     populateTags(e),
 			Options:                  populateEventOptions(),
 		}
-		uuid, err = mobClient.CreateEvent(context.Background(), vars)
+
+		if e.ImageURL != "" {
+			vars.ImageURL = e.ImageURL
+		}
+
+		var uuid = &uuid.UUID{}
+
+		Log.Debug("Checking for existing event", "eventKey", eventKey(e))
+
+		// guard clauses
+		if _, ok := existing[eventKey(e)]; ok {
+
+			Log.Debug("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
+			*uuid = existing[eventKey(e)].UUID
+			created[eventKey(e)] = existing[eventKey(e)]
+
+		} else {
+			Log.Debug("Searching for existing events", "title", e.Title, "location", e.Location, "date", e.Date)
+			exists, uuid, err := mobClient.EventExists(
+				ctx,
+				e.Title,
+				e.Location,
+				e.Date,
+			)
+			if err != nil {
+				Log.Error("Error searching for a matching event", "error", err)
+			}
+			if exists {
+				created[eventKey(e)] = ExistingEvent{*uuid, e}
+			}
+		}
+
+		// if the source event has changes add the UUID so the client knows
+		// to do an update operation instead of a create operation
+		if uuid != nil {
+			if !reflect.DeepEqual(e, existing[eventKey(e)]) {
+				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
+				vars.UUID = uuid
+			} else {
+				// the event hasn't changed, there's nothing to do
+				continue
+			}
+		}
+
+		if *opts.NoOp {
+			continue
+		}
+
+		uuid, err := mobClient.CreateOrUpdateEvent(ctx, vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
 		}
 	}
 	Log.Debug("Saving existing events list", "events", spew.Sdump(created))
 	saveExistingEvents()
-}
-
-// FIXME: this is left over from earlier versions
-//
-// populateVariables takes an Event object from the json input and returns
-// a map which can be used as the variables input for the Mobilizòn GraphQL
-// mutations createEvent or updateEvent
-func populateVariables(e concertcloud.Event) (map[string]interface{}, error) {
-	// add a plug for ConcertCloud
-	vars := map[string]interface{}{}
-	// if we have a UUID fetch the corresponding eventId and use it
-	e = populateImageUrl(e)
-	path, err := downloadFile(e.ImageURL)
-	if err != nil {
-		Log.Error("Media download error", "URL", e.ImageURL, "path", path)
-		path, _ = downloadFile(DEFAULT_IMAGE_URL)
-	}
-	uuid, err := mobClient.UploadMediaFile(context.Background(), path)
-	if err != nil {
-		Log.Error("Media uploade error", "URL", e.ImageURL, "path", path, "uuid", uuid)
-		return vars, err
-	}
-	mi := new(mobilizon.MediaInput)
-	mi.MediaUuid = *uuid
-	vars["picture"] = mi
-	return vars, err
-}
-
-// populateImageUrl validates the imageUrl of an event object from the json
-// input and if necessary finds one from the event URL. It updates the
-// ImageUrl field of the Event object in place.
-func populateImageUrl(e concertcloud.Event) concertcloud.Event {
-	if e.ImageURL != "" && e.ImageURL != e.SourceURL && !strings.HasSuffix(e.ImageURL, "/") {
-		return e
-	}
-
-	Log.Info("No image found for", "url", e.URL)
-	e.ImageURL = DEFAULT_IMAGE_URL
-	return e
 }
 
 // populateTags constructs an eventTags object for the createEvent mutation
@@ -460,90 +419,4 @@ func populateCategory(e concertcloud.Event) mobilizon.EventCategory {
 		return mobilizon.EventCategory(e.Type)
 	}
 	return mobilizon.EventCategory("MUSIC")
-}
-
-// downloadFile downloads a file from a given URL and returns the local
-// file path or "" and an error or nil
-func downloadFile(URL string) (string, error) {
-	// if this is a data URL just return it. The uplaod function will deal.
-	if strings.HasPrefix(URL, "data:") {
-		return URL, nil
-	}
-
-	//Get the response bytes from the url
-	response, err := http.Get(URL)
-	if err != nil {
-		return "", err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != 200 {
-		return "", errors.New(fmt.Sprintf("Received response code %d for %s", response.StatusCode, URL))
-	}
-
-	// get tmp filename
-	f, err := os.CreateTemp("", "cc2mob.")
-	if err != nil {
-		return f.Name(), err
-	}
-
-	//Create a empty file
-	file, err := os.Create(f.Name())
-	if err != nil {
-		return f.Name(), err
-	}
-	defer file.Close()
-
-	//Write the bytes to the file
-	if response.ContentLength > MAX_IMG_SIZE || strings.HasSuffix(URL, ".avif") {
-		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), IMAGE_RESIZE_WIDTH)
-	} else {
-		_, err = io.Copy(file, response.Body)
-	}
-	if err != nil {
-		return f.Name(), err
-	}
-
-	return f.Name(), nil
-}
-
-// thumbnail creates a resized image from the reader and writes it to
-// the writer. The mimetype determines how the image will be decoded
-// and must be either "image/jpeg" or "image/png". The desired width
-// of the thumbnail is specified in pixels, and the resulting height
-// will be calculated to preserve the aspect ratio.
-func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
-	var src image.Image
-	var err error
-
-	switch mimetype {
-	case "image/jpeg":
-		src, err = jpeg.Decode(r)
-	case "image/png":
-		src, err = png.Decode(r)
-	case "image/avif":
-		src, err = avif.Decode(r)
-	default:
-		err = errors.New("Unknown MIME Type " + mimetype)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	Log.Debug("Resizing image", "MIME Type", mimetype)
-
-	ratio := (float64)(src.Bounds().Max.Y) / (float64)(src.Bounds().Max.X)
-	height := int(math.Round(float64(width) * ratio))
-
-	dst := image.NewRGBA(image.Rect(0, 0, width, height))
-
-	draw.NearestNeighbor.Scale(dst, dst.Rect, src, src.Bounds(), draw.Over, nil)
-
-	err = jpeg.Encode(w, dst, nil)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

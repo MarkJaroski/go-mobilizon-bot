@@ -2,10 +2,13 @@
 package mobilizon
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
@@ -27,14 +30,6 @@ type Client struct {
 	oauth2Config *oauth2.Config
 	token        *oauth2.Token
 	gqlClient    graphql.Client
-}
-
-// AuthConfig holds OAuth2 tokens
-type AuthConfig struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	TokenType    string    `json:"token_type"`
-	Expiry       time.Time `json:"expiry"`
 }
 
 // NewClient creates a new Mobilizon client
@@ -190,36 +185,67 @@ func (c *Client) HTTPClient(ctx context.Context) *http.Client {
 
 // UploadMediaFile uploads a file and returns the media UUID
 func (c *Client) UploadMediaFile(ctx context.Context, filepath string) (*uuid.UUID, error) {
-	// Open the file
-	file, err := os.Open(filepath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	// Use generated UploadMedia function
-	resp, err := UploadMedia(ctx, c.gqlClient,
-		graphql.Upload{
-			FileName: filepath,
-			Body:     file,
-		},
-		filepath,
-	)
+	// Load the file
+	fileContents, fi, err := loadFileContents(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	return &resp.UploadMedia.Uuid, nil
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+
+	// TODO make this a template string or something to avoid the long line
+	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { uuid } }")
+	writer.WriteField("variables", "{\"name\":\""+fi.Name()+"\",\"file\":\"image1\"}")
+
+	part, err := writer.CreateFormFile("image1", fi.Name())
+	if err != nil {
+		return nil, err
+	}
+	part.Write(fileContents)
+	writer.Close()
+
+	r, err := http.NewRequest("POST", c.baseURL+"/api", body)
+	if err != nil {
+		return nil, err
+	}
+	r.Header.Add("Content-Type", writer.FormDataContentType())
+	r.Header.Add("Authorization", "Bearer "+c.token.AccessToken)
+
+	resp, err := c.HTTPClient(ctx).Do(r)
+	if err != nil {
+		return nil, err
+	}
+
+	respData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var respJSON UploadMediaResponse
+	json.Unmarshal(respData, &respJSON)
+	return &respJSON.Data.UploadMedia.UUID, nil
+
 }
 
-// CreateEventWithMedia creates an event with an image
+// CreateEvent creates an event
 func (c *Client) CreateEvent(
 	ctx context.Context,
-	params CreateEventParams,
+	params EventParams,
 ) (*uuid.UUID, error) {
 
+	var picture MediaInput
+
+	if params.ImageURL != "" {
+		if path, err := downloadFile(params.ImageURL); err == nil {
+			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
+				picture.MediaUuid = *uuid
+			}
+		}
+	}
+
 	// Create the event with the media UUID
-	resp, err := createEvent(
+	resp, err := CreateEvent(
 		ctx,
 		c.gqlClient,
 		strconv.Itoa(params.OrganizerActorId),
@@ -234,7 +260,7 @@ func (c *Client) CreateEvent(
 		params.ExternalParticipationURL,
 		params.Draft,
 		params.Tags,
-		params.Picture,
+		picture,
 		params.OnlineAddress,
 		params.Category,
 		params.PhysicalAddress,
@@ -249,9 +275,69 @@ func (c *Client) CreateEvent(
 	return &resp.CreateEvent.Uuid, nil
 }
 
+// UpdateEvent updates an event
+func (c *Client) UpdateEvent(
+	ctx context.Context,
+	params EventParams,
+) (*uuid.UUID, error) {
+
+	var picture MediaInput
+
+	if params.ImageURL != "" {
+		if path, err := downloadFile(params.ImageURL); err == nil {
+			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
+				picture.MediaUuid = *uuid
+			}
+		}
+	}
+	fre, err := FetchEvent(ctx, c.gqlClient, *params.UUID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the event with the media UUID
+	resp, err := UpdateEvent(
+		ctx,
+		c.gqlClient,
+		fre.Event.FullEvent.Id,
+		params.Title,
+		params.Description,
+		params.BeginsOn,
+		params.EndsOn,
+		params.Status,
+		params.Visibility,
+		params.JoinOptions,
+		params.ExternalParticipationURL,
+		params.Draft,
+		params.Tags,
+		picture,
+		params.OnlineAddress,
+		strconv.Itoa(params.OrganizerActorId),
+		strconv.Itoa(params.AttributedToId),
+		params.Category,
+		params.PhysicalAddress,
+		params.Options,
+		params.Contact,
+		params.Metadata,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp.UpdateEvent.Uuid, nil
+}
+
+// CreateOrUpdateEvent creates an event if params.UUID is nil, otherwise updates it
+func (c *Client) CreateOrUpdateEvent(ctx context.Context, params EventParams) (*uuid.UUID, error) {
+	if params.UUID != nil {
+		return c.UpdateEvent(ctx, params)
+	}
+	return c.CreateEvent(ctx, params)
+}
+
 // SearchForEvents searches for events by term
-func (c *Client) SearchForEvents(term string, beginsOn time.Time) ([]Event, error) {
-	resp, err := SearchEvents(context.Background(), c.gqlClient, term, beginsOn)
+func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time.Time) ([]Event, error) {
+	resp, err := SearchEvents(ctx, c.gqlClient, term, beginsOn)
 	if err != nil {
 		return nil, err
 	}
@@ -269,8 +355,8 @@ func (c *Client) SearchForEvents(term string, beginsOn time.Time) ([]Event, erro
 	return events, nil
 }
 
-func (c *Client) EventExists(title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
-	resp, err := SearchEvents(context.Background(), c.gqlClient, title, beginsOn)
+func (c *Client) EventExists(ctx context.Context, title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
+	resp, err := SearchEvents(ctx, c.gqlClient, title, beginsOn)
 	if err != nil {
 		return false, nil, err
 	}
@@ -287,8 +373,8 @@ func (c *Client) EventExists(title string, location string, beginsOn time.Time) 
 	return true, &elems[0].Uuid, nil
 }
 
-func (c *Client) FetchAddr(query string) ([]AddressInput, error) {
-	resp, err := SearchAddress(context.Background(), c.gqlClient, query)
+func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, error) {
+	resp, err := SearchAddress(ctx, c.gqlClient, query)
 	if err != nil {
 		return nil, err
 	}

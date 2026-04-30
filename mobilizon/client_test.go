@@ -176,7 +176,7 @@ func TestSearchForEvents_Empty(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	events, err := c.SearchForEvents("nothing", time.Now())
+	events, err := c.SearchForEvents(context.Background(), "nothing", time.Now())
 	if err != nil {
 		t.Fatalf("SearchForEvents: %v", err)
 	}
@@ -205,7 +205,7 @@ func TestSearchForEvents_MapsFields(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	events, err := c.SearchForEvents("festival", beginsOn)
+	events, err := c.SearchForEvents(context.Background(), "festival", beginsOn)
 	if err != nil {
 		t.Fatalf("SearchForEvents: %v", err)
 	}
@@ -228,7 +228,7 @@ func TestSearchForEvents_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	_, err := c.SearchForEvents("anything", time.Now())
+	_, err := c.SearchForEvents(context.Background(), "anything", time.Now())
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -246,7 +246,7 @@ func TestEventExists_NotFound(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists("My Concert", "Some Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -273,7 +273,7 @@ func TestEventExists_Found(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists("My Concert", "Some Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -302,7 +302,7 @@ func TestEventExists_MultipleResults_ReturnsFirst(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists("Concert", "Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -322,7 +322,7 @@ func TestEventExists_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists("Concert", "Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", time.Now())
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -358,7 +358,7 @@ func TestFetchAddr_MapsFields(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	addrs, err := c.FetchAddr("Test Venue Lausanne")
+	addrs, err := c.FetchAddr(context.Background(), "Test Venue Lausanne")
 	if err != nil {
 		t.Fatalf("FetchAddr: %v", err)
 	}
@@ -393,7 +393,7 @@ func TestFetchAddr_Empty(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	addrs, err := c.FetchAddr("nowhere")
+	addrs, err := c.FetchAddr(context.Background(), "nowhere")
 	if err != nil {
 		t.Fatalf("FetchAddr: %v", err)
 	}
@@ -410,7 +410,7 @@ func TestFetchAddr_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	_, err := c.FetchAddr("somewhere")
+	_, err := c.FetchAddr(context.Background(), "somewhere")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
@@ -422,8 +422,8 @@ func TestCreateEvent_Success(t *testing.T) {
 	expectedUUID := uuid.New()
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
-			data := resp.Data.(*createEventResponse)
-			data.CreateEvent = createEventCreateEvent{
+			data := resp.Data.(*CreateEventResponse)
+			data.CreateEvent = CreateEventCreateEvent{
 				Id:   "99",
 				Uuid: expectedUUID,
 			}
@@ -432,7 +432,7 @@ func TestCreateEvent_Success(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	params := CreateEventParams{
+	params := EventParams{
 		Title:            "Test Concert",
 		Description:      "A great show",
 		BeginsOn:         time.Date(2025, 12, 31, 20, 0, 0, 0, time.UTC),
@@ -443,7 +443,7 @@ func TestCreateEvent_Success(t *testing.T) {
 		JoinOptions:      EventJoinOptionsExternal,
 	}
 
-	uid, err := c.CreateEvent(context.Background(), params)
+	uid, err := c.CreateOrUpdateEvent(context.Background(), params)
 	if err != nil {
 		t.Fatalf("CreateEvent: %v", err)
 	}
@@ -460,7 +460,7 @@ func TestCreateEvent_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	_, err := c.CreateEvent(context.Background(), CreateEventParams{
+	_, err := c.CreateOrUpdateEvent(context.Background(), EventParams{
 		Title:    "Test",
 		BeginsOn: time.Now(),
 	})

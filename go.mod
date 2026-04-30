@@ -11,6 +11,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jakopako/event-api v0.0.0-20260321105019-df7c42c82086
 	github.com/spf13/pflag v1.0.6
+	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/image v0.25.0
 	golang.org/x/oauth2 v0.36.0
 )
@@ -26,5 +27,3 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.19 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 )
-
-replace github.com/Khan/genqlient => github.com/apiplustech/genqlient v0.2.0

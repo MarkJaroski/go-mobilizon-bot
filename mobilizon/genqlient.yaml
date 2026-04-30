@@ -12,6 +12,4 @@ bindings:
     type: github.com/google/uuid.UUID
   Point:
     type: string
-  Upload:
-    type: github.com/Khan/genqlient/graphql.Upload
 

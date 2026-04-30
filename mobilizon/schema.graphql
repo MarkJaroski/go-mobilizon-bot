@@ -434,9 +434,6 @@ interface ActionLogObject {
   id: ID
 }
 
-"Represents an uploaded file."
-scalar Upload
-
 "A paginated list of posts"
 type PaginatedPostList {
   "A list of posts"
@@ -1822,18 +1819,6 @@ type RootMutationType {
   "Delete a feed token"
   deleteFeedToken("The token to delete" token: String!): DeletedFeedToken
 
-  "Upload a media"
-  uploadMedia(
-    "The media's name"
-    name: String!
-
-    "The media's alternative text"
-    alt: String
-
-    "The media file"
-    file: Upload!
-  ): Media
-
   "Remove a media"
   removeMedia("The media's ID" id: ID!): DeletedObject
 
@@ -2980,9 +2965,6 @@ input MediaInputObject {
 
   "The media's alternative text"
   alt: String
-
-  "The media file"
-  file: Upload!
 
   "The media owner"
   actorId: ID

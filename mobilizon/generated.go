@@ -481,6 +481,32 @@ type Contact struct {
 // GetId returns Contact.Id, and is useful for accessing the field via an interface.
 func (v *Contact) GetId() string { return v.Id }
 
+// CreateEventCreateEvent includes the requested fields of the GraphQL type Event.
+// The GraphQL type's documentation follows.
+//
+// An event
+type CreateEventCreateEvent struct {
+	// Internal ID for this event
+	Id string `json:"id"`
+	// The Event UUID
+	Uuid uuid.UUID `json:"uuid"`
+}
+
+// GetId returns CreateEventCreateEvent.Id, and is useful for accessing the field via an interface.
+func (v *CreateEventCreateEvent) GetId() string { return v.Id }
+
+// GetUuid returns CreateEventCreateEvent.Uuid, and is useful for accessing the field via an interface.
+func (v *CreateEventCreateEvent) GetUuid() uuid.UUID { return v.Uuid }
+
+// CreateEventResponse is returned by CreateEvent on success.
+type CreateEventResponse struct {
+	// Create an event
+	CreateEvent CreateEventCreateEvent `json:"createEvent"`
+}
+
+// GetCreateEvent returns CreateEventResponse.CreateEvent, and is useful for accessing the field via an interface.
+func (v *CreateEventResponse) GetCreateEvent() CreateEventCreateEvent { return v.CreateEvent }
+
 type EventCategory string
 
 const (
@@ -3368,8 +3394,6 @@ type MediaInputObject struct {
 	Name string `json:"name"`
 	// The media's alternative text
 	Alt string `json:"alt"`
-	// The media file
-	File graphql.Upload `json:"file"`
 	// The media owner
 	ActorId string `json:"actorId"`
 }
@@ -3379,9 +3403,6 @@ func (v *MediaInputObject) GetName() string { return v.Name }
 
 // GetAlt returns MediaInputObject.Alt, and is useful for accessing the field via an interface.
 func (v *MediaInputObject) GetAlt() string { return v.Alt }
-
-// GetFile returns MediaInputObject.File, and is useful for accessing the field via an interface.
-func (v *MediaInputObject) GetFile() graphql.Upload { return v.File }
 
 // GetActorId returns MediaInputObject.ActorId, and is useful for accessing the field via an interface.
 func (v *MediaInputObject) GetActorId() string { return v.ActorId }
@@ -5199,31 +5220,111 @@ func (v *TagFragment) GetTitle() string { return v.Title }
 // GetTypename returns TagFragment.Typename, and is useful for accessing the field via an interface.
 func (v *TagFragment) GetTypename() string { return v.Typename }
 
-// UploadMediaResponse is returned by UploadMedia on success.
-type UploadMediaResponse struct {
-	// Upload a media
-	UploadMedia UploadMediaUploadMedia `json:"uploadMedia"`
+// UpdateEventResponse is returned by UpdateEvent on success.
+type UpdateEventResponse struct {
+	// Update an event
+	UpdateEvent UpdateEventUpdateEvent `json:"updateEvent"`
 }
 
-// GetUploadMedia returns UploadMediaResponse.UploadMedia, and is useful for accessing the field via an interface.
-func (v *UploadMediaResponse) GetUploadMedia() UploadMediaUploadMedia { return v.UploadMedia }
+// GetUpdateEvent returns UpdateEventResponse.UpdateEvent, and is useful for accessing the field via an interface.
+func (v *UpdateEventResponse) GetUpdateEvent() UpdateEventUpdateEvent { return v.UpdateEvent }
 
-// UploadMediaUploadMedia includes the requested fields of the GraphQL type Media.
+// UpdateEventUpdateEvent includes the requested fields of the GraphQL type Event.
 // The GraphQL type's documentation follows.
 //
-// A media
-type UploadMediaUploadMedia struct {
-	// The media items UUID
+// An event
+type UpdateEventUpdateEvent struct {
+	// Internal ID for this event
+	Id string `json:"id"`
+	// The Event UUID
 	Uuid uuid.UUID `json:"uuid"`
-	// The media's full URL
-	Url string `json:"url"`
 }
 
-// GetUuid returns UploadMediaUploadMedia.Uuid, and is useful for accessing the field via an interface.
-func (v *UploadMediaUploadMedia) GetUuid() uuid.UUID { return v.Uuid }
+// GetId returns UpdateEventUpdateEvent.Id, and is useful for accessing the field via an interface.
+func (v *UpdateEventUpdateEvent) GetId() string { return v.Id }
 
-// GetUrl returns UploadMediaUploadMedia.Url, and is useful for accessing the field via an interface.
-func (v *UploadMediaUploadMedia) GetUrl() string { return v.Url }
+// GetUuid returns UpdateEventUpdateEvent.Uuid, and is useful for accessing the field via an interface.
+func (v *UpdateEventUpdateEvent) GetUuid() uuid.UUID { return v.Uuid }
+
+// __CreateEventInput is used internally by genqlient
+type __CreateEventInput struct {
+	OrganizerActorId         string               `json:"organizerActorId"`
+	AttributedToId           string               `json:"attributedToId"`
+	Title                    string               `json:"title"`
+	Description              string               `json:"description"`
+	BeginsOn                 time.Time            `json:"beginsOn"`
+	EndsOn                   time.Time            `json:"endsOn"`
+	Status                   EventStatus          `json:"status"`
+	Visibility               EventVisibility      `json:"visibility"`
+	JoinOptions              EventJoinOptions     `json:"joinOptions"`
+	ExternalParticipationUrl string               `json:"externalParticipationUrl"`
+	Draft                    bool                 `json:"draft"`
+	Tags                     []string             `json:"tags"`
+	Picture                  MediaInput           `json:"picture"`
+	OnlineAddress            string               `json:"onlineAddress"`
+	Category                 EventCategory        `json:"category"`
+	PhysicalAddress          AddressInput         `json:"physicalAddress"`
+	Options                  EventOptionsInput    `json:"options"`
+	Contacts                 []Contact            `json:"contacts"`
+	Metadata                 []EventMetadataInput `json:"metadata"`
+}
+
+// GetOrganizerActorId returns __CreateEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
+
+// GetAttributedToId returns __CreateEventInput.AttributedToId, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetAttributedToId() string { return v.AttributedToId }
+
+// GetTitle returns __CreateEventInput.Title, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetTitle() string { return v.Title }
+
+// GetDescription returns __CreateEventInput.Description, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetDescription() string { return v.Description }
+
+// GetBeginsOn returns __CreateEventInput.BeginsOn, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
+
+// GetEndsOn returns __CreateEventInput.EndsOn, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetEndsOn() time.Time { return v.EndsOn }
+
+// GetStatus returns __CreateEventInput.Status, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetStatus() EventStatus { return v.Status }
+
+// GetVisibility returns __CreateEventInput.Visibility, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetVisibility() EventVisibility { return v.Visibility }
+
+// GetJoinOptions returns __CreateEventInput.JoinOptions, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
+
+// GetExternalParticipationUrl returns __CreateEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
+
+// GetDraft returns __CreateEventInput.Draft, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetDraft() bool { return v.Draft }
+
+// GetTags returns __CreateEventInput.Tags, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetTags() []string { return v.Tags }
+
+// GetPicture returns __CreateEventInput.Picture, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetPicture() MediaInput { return v.Picture }
+
+// GetOnlineAddress returns __CreateEventInput.OnlineAddress, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetOnlineAddress() string { return v.OnlineAddress }
+
+// GetCategory returns __CreateEventInput.Category, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetCategory() EventCategory { return v.Category }
+
+// GetPhysicalAddress returns __CreateEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
+
+// GetOptions returns __CreateEventInput.Options, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetOptions() EventOptionsInput { return v.Options }
+
+// GetContacts returns __CreateEventInput.Contacts, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetContacts() []Contact { return v.Contacts }
+
+// GetMetadata returns __CreateEventInput.Metadata, and is useful for accessing the field via an interface.
+func (v *__CreateEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
 
 // __FetchEventInput is used internally by genqlient
 type __FetchEventInput struct {
@@ -5261,100 +5362,8 @@ func (v *__SearchEventsInput) GetTerm() string { return v.Term }
 // GetBeginsOn returns __SearchEventsInput.BeginsOn, and is useful for accessing the field via an interface.
 func (v *__SearchEventsInput) GetBeginsOn() time.Time { return v.BeginsOn }
 
-// __UploadMediaInput is used internally by genqlient
-type __UploadMediaInput struct {
-	File graphql.Upload `json:"file"`
-	Name string         `json:"name"`
-}
-
-// GetFile returns __UploadMediaInput.File, and is useful for accessing the field via an interface.
-func (v *__UploadMediaInput) GetFile() graphql.Upload { return v.File }
-
-// GetName returns __UploadMediaInput.Name, and is useful for accessing the field via an interface.
-func (v *__UploadMediaInput) GetName() string { return v.Name }
-
-// __createEventInput is used internally by genqlient
-type __createEventInput struct {
-	OrganizerActorId         string               `json:"organizerActorId"`
-	AttributedToId           string               `json:"attributedToId"`
-	Title                    string               `json:"title"`
-	Description              string               `json:"description"`
-	BeginsOn                 time.Time            `json:"beginsOn"`
-	EndsOn                   time.Time            `json:"endsOn"`
-	Status                   EventStatus          `json:"status"`
-	Visibility               EventVisibility      `json:"visibility"`
-	JoinOptions              EventJoinOptions     `json:"joinOptions"`
-	ExternalParticipationUrl string               `json:"externalParticipationUrl"`
-	Draft                    bool                 `json:"draft"`
-	Tags                     []string             `json:"tags"`
-	Picture                  MediaInput           `json:"picture"`
-	OnlineAddress            string               `json:"onlineAddress"`
-	Category                 EventCategory        `json:"category"`
-	PhysicalAddress          AddressInput         `json:"physicalAddress"`
-	Options                  EventOptionsInput    `json:"options"`
-	Contacts                 []Contact            `json:"contacts"`
-	Metadata                 []EventMetadataInput `json:"metadata"`
-}
-
-// GetOrganizerActorId returns __createEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
-
-// GetAttributedToId returns __createEventInput.AttributedToId, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetAttributedToId() string { return v.AttributedToId }
-
-// GetTitle returns __createEventInput.Title, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetTitle() string { return v.Title }
-
-// GetDescription returns __createEventInput.Description, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetDescription() string { return v.Description }
-
-// GetBeginsOn returns __createEventInput.BeginsOn, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
-
-// GetEndsOn returns __createEventInput.EndsOn, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetEndsOn() time.Time { return v.EndsOn }
-
-// GetStatus returns __createEventInput.Status, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetStatus() EventStatus { return v.Status }
-
-// GetVisibility returns __createEventInput.Visibility, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetVisibility() EventVisibility { return v.Visibility }
-
-// GetJoinOptions returns __createEventInput.JoinOptions, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
-
-// GetExternalParticipationUrl returns __createEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
-
-// GetDraft returns __createEventInput.Draft, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetDraft() bool { return v.Draft }
-
-// GetTags returns __createEventInput.Tags, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetTags() []string { return v.Tags }
-
-// GetPicture returns __createEventInput.Picture, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetPicture() MediaInput { return v.Picture }
-
-// GetOnlineAddress returns __createEventInput.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetOnlineAddress() string { return v.OnlineAddress }
-
-// GetCategory returns __createEventInput.Category, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetCategory() EventCategory { return v.Category }
-
-// GetPhysicalAddress returns __createEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
-
-// GetOptions returns __createEventInput.Options, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetOptions() EventOptionsInput { return v.Options }
-
-// GetContacts returns __createEventInput.Contacts, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetContacts() []Contact { return v.Contacts }
-
-// GetMetadata returns __createEventInput.Metadata, and is useful for accessing the field via an interface.
-func (v *__createEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
-
-// __updateEventInput is used internally by genqlient
-type __updateEventInput struct {
+// __UpdateEventInput is used internally by genqlient
+type __UpdateEventInput struct {
 	Id                       string               `json:"id"`
 	Title                    string               `json:"title"`
 	Description              string               `json:"description"`
@@ -5377,117 +5386,136 @@ type __updateEventInput struct {
 	Metadata                 []EventMetadataInput `json:"metadata"`
 }
 
-// GetId returns __updateEventInput.Id, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetId() string { return v.Id }
+// GetId returns __UpdateEventInput.Id, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetId() string { return v.Id }
 
-// GetTitle returns __updateEventInput.Title, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetTitle() string { return v.Title }
+// GetTitle returns __UpdateEventInput.Title, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetTitle() string { return v.Title }
 
-// GetDescription returns __updateEventInput.Description, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetDescription() string { return v.Description }
+// GetDescription returns __UpdateEventInput.Description, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetDescription() string { return v.Description }
 
-// GetBeginsOn returns __updateEventInput.BeginsOn, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
+// GetBeginsOn returns __UpdateEventInput.BeginsOn, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
 
-// GetEndsOn returns __updateEventInput.EndsOn, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetEndsOn() time.Time { return v.EndsOn }
+// GetEndsOn returns __UpdateEventInput.EndsOn, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetEndsOn() time.Time { return v.EndsOn }
 
-// GetStatus returns __updateEventInput.Status, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetStatus() EventStatus { return v.Status }
+// GetStatus returns __UpdateEventInput.Status, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetStatus() EventStatus { return v.Status }
 
-// GetVisibility returns __updateEventInput.Visibility, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetVisibility() EventVisibility { return v.Visibility }
+// GetVisibility returns __UpdateEventInput.Visibility, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetVisibility() EventVisibility { return v.Visibility }
 
-// GetJoinOptions returns __updateEventInput.JoinOptions, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
+// GetJoinOptions returns __UpdateEventInput.JoinOptions, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
 
-// GetExternalParticipationUrl returns __updateEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
+// GetExternalParticipationUrl returns __UpdateEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
 
-// GetDraft returns __updateEventInput.Draft, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetDraft() bool { return v.Draft }
+// GetDraft returns __UpdateEventInput.Draft, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetDraft() bool { return v.Draft }
 
-// GetTags returns __updateEventInput.Tags, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetTags() []string { return v.Tags }
+// GetTags returns __UpdateEventInput.Tags, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetTags() []string { return v.Tags }
 
-// GetPicture returns __updateEventInput.Picture, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetPicture() MediaInput { return v.Picture }
+// GetPicture returns __UpdateEventInput.Picture, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetPicture() MediaInput { return v.Picture }
 
-// GetOnlineAddress returns __updateEventInput.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetOnlineAddress() string { return v.OnlineAddress }
+// GetOnlineAddress returns __UpdateEventInput.OnlineAddress, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetOnlineAddress() string { return v.OnlineAddress }
 
-// GetOrganizerActorId returns __updateEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
+// GetOrganizerActorId returns __UpdateEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
 
-// GetAttributedToId returns __updateEventInput.AttributedToId, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetAttributedToId() string { return v.AttributedToId }
+// GetAttributedToId returns __UpdateEventInput.AttributedToId, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetAttributedToId() string { return v.AttributedToId }
 
-// GetCategory returns __updateEventInput.Category, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetCategory() EventCategory { return v.Category }
+// GetCategory returns __UpdateEventInput.Category, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetCategory() EventCategory { return v.Category }
 
-// GetPhysicalAddress returns __updateEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
+// GetPhysicalAddress returns __UpdateEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
 
-// GetOptions returns __updateEventInput.Options, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetOptions() EventOptionsInput { return v.Options }
+// GetOptions returns __UpdateEventInput.Options, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetOptions() EventOptionsInput { return v.Options }
 
-// GetContacts returns __updateEventInput.Contacts, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetContacts() []Contact { return v.Contacts }
+// GetContacts returns __UpdateEventInput.Contacts, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetContacts() []Contact { return v.Contacts }
 
-// GetMetadata returns __updateEventInput.Metadata, and is useful for accessing the field via an interface.
-func (v *__updateEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
+// GetMetadata returns __UpdateEventInput.Metadata, and is useful for accessing the field via an interface.
+func (v *__UpdateEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
 
-// createEventCreateEvent includes the requested fields of the GraphQL type Event.
-// The GraphQL type's documentation follows.
-//
-// An event
-type createEventCreateEvent struct {
-	// Internal ID for this event
-	Id string `json:"id"`
-	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
+// The mutation executed by CreateEvent.
+const CreateEvent_Operation = `
+mutation CreateEvent ($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
+	createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts, metadata: $metadata) {
+		id
+		uuid
+	}
 }
+`
 
-// GetId returns createEventCreateEvent.Id, and is useful for accessing the field via an interface.
-func (v *createEventCreateEvent) GetId() string { return v.Id }
+func CreateEvent(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	organizerActorId string,
+	attributedToId string,
+	title string,
+	description string,
+	beginsOn time.Time,
+	endsOn time.Time,
+	status EventStatus,
+	visibility EventVisibility,
+	joinOptions EventJoinOptions,
+	externalParticipationUrl string,
+	draft bool,
+	tags []string,
+	picture MediaInput,
+	onlineAddress string,
+	category EventCategory,
+	physicalAddress AddressInput,
+	options EventOptionsInput,
+	contacts []Contact,
+	metadata []EventMetadataInput,
+) (data_ *CreateEventResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateEvent",
+		Query:  CreateEvent_Operation,
+		Variables: &__CreateEventInput{
+			OrganizerActorId:         organizerActorId,
+			AttributedToId:           attributedToId,
+			Title:                    title,
+			Description:              description,
+			BeginsOn:                 beginsOn,
+			EndsOn:                   endsOn,
+			Status:                   status,
+			Visibility:               visibility,
+			JoinOptions:              joinOptions,
+			ExternalParticipationUrl: externalParticipationUrl,
+			Draft:                    draft,
+			Tags:                     tags,
+			Picture:                  picture,
+			OnlineAddress:            onlineAddress,
+			Category:                 category,
+			PhysicalAddress:          physicalAddress,
+			Options:                  options,
+			Contacts:                 contacts,
+			Metadata:                 metadata,
+		},
+	}
 
-// GetUuid returns createEventCreateEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *createEventCreateEvent) GetUuid() uuid.UUID { return v.Uuid }
+	data_ = &CreateEventResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
-// createEventResponse is returned by createEvent on success.
-type createEventResponse struct {
-	// Create an event
-	CreateEvent createEventCreateEvent `json:"createEvent"`
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
 }
-
-// GetCreateEvent returns createEventResponse.CreateEvent, and is useful for accessing the field via an interface.
-func (v *createEventResponse) GetCreateEvent() createEventCreateEvent { return v.CreateEvent }
-
-// updateEventResponse is returned by updateEvent on success.
-type updateEventResponse struct {
-	// Update an event
-	UpdateEvent updateEventUpdateEvent `json:"updateEvent"`
-}
-
-// GetUpdateEvent returns updateEventResponse.UpdateEvent, and is useful for accessing the field via an interface.
-func (v *updateEventResponse) GetUpdateEvent() updateEventUpdateEvent { return v.UpdateEvent }
-
-// updateEventUpdateEvent includes the requested fields of the GraphQL type Event.
-// The GraphQL type's documentation follows.
-//
-// An event
-type updateEventUpdateEvent struct {
-	// Internal ID for this event
-	Id string `json:"id"`
-	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
-}
-
-// GetId returns updateEventUpdateEvent.Id, and is useful for accessing the field via an interface.
-func (v *updateEventUpdateEvent) GetId() string { return v.Id }
-
-// GetUuid returns updateEventUpdateEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *updateEventUpdateEvent) GetUuid() uuid.UUID { return v.Uuid }
 
 // The query executed by FetchEvent.
 const FetchEvent_Operation = `
@@ -5888,118 +5916,9 @@ func SearchEvents(
 	return data_, err_
 }
 
-// The mutation executed by UploadMedia.
-const UploadMedia_Operation = `
-mutation UploadMedia ($file: Upload!, $name: String!) {
-	uploadMedia(file: $file, name: $name) {
-		uuid
-		url
-	}
-}
-`
-
-// Media upload mutation
-func UploadMedia(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	file graphql.Upload,
-	name string,
-) (data_ *UploadMediaResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "UploadMedia",
-		Query:  UploadMedia_Operation,
-		Variables: &__UploadMediaInput{
-			File: file,
-			Name: name,
-		},
-	}
-
-	data_ = &UploadMediaResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The mutation executed by createEvent.
-const createEvent_Operation = `
-mutation createEvent ($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
-	createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts, metadata: $metadata) {
-		id
-		uuid
-	}
-}
-`
-
-func createEvent(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	organizerActorId string,
-	attributedToId string,
-	title string,
-	description string,
-	beginsOn time.Time,
-	endsOn time.Time,
-	status EventStatus,
-	visibility EventVisibility,
-	joinOptions EventJoinOptions,
-	externalParticipationUrl string,
-	draft bool,
-	tags []string,
-	picture MediaInput,
-	onlineAddress string,
-	category EventCategory,
-	physicalAddress AddressInput,
-	options EventOptionsInput,
-	contacts []Contact,
-	metadata []EventMetadataInput,
-) (data_ *createEventResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "createEvent",
-		Query:  createEvent_Operation,
-		Variables: &__createEventInput{
-			OrganizerActorId:         organizerActorId,
-			AttributedToId:           attributedToId,
-			Title:                    title,
-			Description:              description,
-			BeginsOn:                 beginsOn,
-			EndsOn:                   endsOn,
-			Status:                   status,
-			Visibility:               visibility,
-			JoinOptions:              joinOptions,
-			ExternalParticipationUrl: externalParticipationUrl,
-			Draft:                    draft,
-			Tags:                     tags,
-			Picture:                  picture,
-			OnlineAddress:            onlineAddress,
-			Category:                 category,
-			PhysicalAddress:          physicalAddress,
-			Options:                  options,
-			Contacts:                 contacts,
-			Metadata:                 metadata,
-		},
-	}
-
-	data_ = &createEventResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
-// The mutation executed by updateEvent.
-const updateEvent_Operation = `
-mutation updateEvent ($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
+// The mutation executed by UpdateEvent.
+const UpdateEvent_Operation = `
+mutation UpdateEvent ($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
 	updateEvent(eventId: $id, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, organizerActorId: $organizerActorId, attributedToId: $attributedToId, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts, metadata: $metadata) {
 		id
 		uuid
@@ -6007,7 +5926,7 @@ mutation updateEvent ($id: ID!, $title: String, $description: String, $beginsOn:
 }
 `
 
-func updateEvent(
+func UpdateEvent(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	id string,
@@ -6030,11 +5949,11 @@ func updateEvent(
 	options EventOptionsInput,
 	contacts []Contact,
 	metadata []EventMetadataInput,
-) (data_ *updateEventResponse, err_ error) {
+) (data_ *UpdateEventResponse, err_ error) {
 	req_ := &graphql.Request{
-		OpName: "updateEvent",
-		Query:  updateEvent_Operation,
-		Variables: &__updateEventInput{
+		OpName: "UpdateEvent",
+		Query:  UpdateEvent_Operation,
+		Variables: &__UpdateEventInput{
 			Id:                       id,
 			Title:                    title,
 			Description:              description,
@@ -6058,7 +5977,7 @@ func updateEvent(
 		},
 	}
 
-	data_ = &updateEventResponse{}
+	data_ = &UpdateEventResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

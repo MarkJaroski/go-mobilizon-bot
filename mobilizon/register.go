@@ -20,6 +20,7 @@ type RegisterConfig struct {
 }
 
 type Registration struct {
+	BaseURL      string `json:"mobilizon_url"`
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	Name         string `json:"name"`
@@ -65,6 +66,9 @@ func RegisterApp(ctx context.Context, rc RegisterConfig) (*Registration, error) 
 	if err := json.NewDecoder(resp.Body).Decode(&reg); err != nil {
 		return nil, fmt.Errorf("failed to parse registration response: %w", err)
 	}
+
+	// save the mobilizon URL with the registration
+	reg.BaseURL = rc.BaseURL
 
 	return &reg, nil
 }
