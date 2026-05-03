@@ -239,40 +239,40 @@ func (c *Client) CreateEvent(
 	if params.ImageURL != "" {
 		if path, err := downloadFile(params.ImageURL); err == nil {
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
-				picture.MediaUuid = *uuid
+				picture.MediaUuid = uuid
 			}
 		}
 	}
+	endDate := strconv.Itoa(params.AttributedToId)
 
 	// Create the event with the media UUID
 	resp, err := CreateEvent(
 		ctx,
 		c.gqlClient,
 		strconv.Itoa(params.OrganizerActorId),
-		strconv.Itoa(params.AttributedToId),
+		&endDate,
 		params.Title,
 		params.Description,
 		params.BeginsOn,
-		params.EndsOn,
-		params.Status,
-		params.Visibility,
-		params.JoinOptions,
-		params.ExternalParticipationURL,
-		params.Draft,
+		&params.EndsOn,
+		&params.Status,
+		&params.Visibility,
+		&params.JoinOptions,
+		&params.ExternalParticipationURL,
+		&params.Draft,
 		params.Tags,
-		picture,
-		params.OnlineAddress,
-		params.Category,
-		params.PhysicalAddress,
-		params.Options,
+		&picture,
+		&params.OnlineAddress,
+		&params.Category,
+		&params.PhysicalAddress,
+		&params.Options,
 		params.Contact,
-		params.Metadata,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &resp.CreateEvent.Uuid, nil
+	return resp.CreateEvent.Uuid, nil
 }
 
 // UpdateEvent updates an event
@@ -286,7 +286,7 @@ func (c *Client) UpdateEvent(
 	if params.ImageURL != "" {
 		if path, err := downloadFile(params.ImageURL); err == nil {
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
-				picture.MediaUuid = *uuid
+				picture.MediaUuid = uuid
 			}
 		}
 	}
@@ -295,36 +295,38 @@ func (c *Client) UpdateEvent(
 		return nil, err
 	}
 
+	organizer := strconv.Itoa(params.OrganizerActorId)
+	attribute := strconv.Itoa(params.AttributedToId)
+
 	// Update the event with the media UUID
 	resp, err := UpdateEvent(
 		ctx,
 		c.gqlClient,
-		fre.Event.FullEvent.Id,
-		params.Title,
-		params.Description,
-		params.BeginsOn,
-		params.EndsOn,
-		params.Status,
-		params.Visibility,
-		params.JoinOptions,
-		params.ExternalParticipationURL,
-		params.Draft,
+		*fre.Event.FullEvent.Id,
+		&params.Title,
+		&params.Description,
+		&params.BeginsOn,
+		&params.EndsOn,
+		&params.Status,
+		&params.Visibility,
+		&params.JoinOptions,
+		&params.ExternalParticipationURL,
+		&params.Draft,
 		params.Tags,
-		picture,
-		params.OnlineAddress,
-		strconv.Itoa(params.OrganizerActorId),
-		strconv.Itoa(params.AttributedToId),
-		params.Category,
-		params.PhysicalAddress,
-		params.Options,
+		&picture,
+		&params.OnlineAddress,
+		&organizer,
+		&attribute,
+		&params.Category,
+		&params.PhysicalAddress,
+		&params.Options,
 		params.Contact,
-		params.Metadata,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &resp.UpdateEvent.Uuid, nil
+	return resp.UpdateEvent.Uuid, nil
 }
 
 // CreateOrUpdateEvent creates an event if params.UUID is nil, otherwise updates it
@@ -337,7 +339,7 @@ func (c *Client) CreateOrUpdateEvent(ctx context.Context, params EventParams) (*
 
 // SearchForEvents searches for events by term
 func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time.Time) ([]Event, error) {
-	resp, err := SearchEvents(ctx, c.gqlClient, term, beginsOn)
+	resp, err := SearchEvents(ctx, c.gqlClient, &term, &beginsOn)
 	if err != nil {
 		return nil, err
 	}
@@ -345,10 +347,10 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 	events := make([]Event, len(resp.SearchEvents.Elements))
 	for i, elem := range resp.SearchEvents.Elements {
 		events[i] = Event{
-			ID:       elem.Id,
-			UUID:     elem.Uuid,
-			Title:    elem.Title,
-			BeginsOn: elem.BeginsOn,
+			ID:       *elem.Id,
+			UUID:     *elem.Uuid,
+			Title:    *elem.Title,
+			BeginsOn: *elem.BeginsOn,
 		}
 	}
 
@@ -356,7 +358,7 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 }
 
 func (c *Client) EventExists(ctx context.Context, title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
-	resp, err := SearchEvents(ctx, c.gqlClient, title, beginsOn)
+	resp, err := SearchEvents(ctx, c.gqlClient, &title, &beginsOn)
 	if err != nil {
 		return false, nil, err
 	}
@@ -370,7 +372,7 @@ func (c *Client) EventExists(ctx context.Context, title string, location string,
 	// choosing between multiple matching events is going to be very
 	// difficult, and the first one will always be the best match for the
 	// date so that's the one we'll return
-	return true, &elems[0].Uuid, nil
+	return true, elems[0].Uuid, nil
 }
 
 func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, error) {
@@ -384,6 +386,7 @@ func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, e
 	for i, elem := range resp.SearchAddress {
 		fragment := elem.AdressFragment
 		addrs[i] = AddressInput{
+			Id:          fragment.Id,
 			Geom:        fragment.Geom,
 			Street:      fragment.Street,
 			Locality:    fragment.Locality,
@@ -393,7 +396,6 @@ func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, e
 			Description: fragment.Description,
 			Type:        fragment.Type,
 			Url:         fragment.Url,
-			Id:          fragment.Id,
 			OriginId:    fragment.OriginId,
 			Timezone:    fragment.Timezone,
 		}

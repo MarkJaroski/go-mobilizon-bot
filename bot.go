@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"os/signal"
 	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -222,7 +222,64 @@ func main() {
 		events = resp.Data
 	}
 
+	fetchAddrs(ctx, events)
 	createEvents(ctx, events)
+}
+
+func fetchAddrs(ctx context.Context, events []concertcloud.Event) {
+	loadAddresses()
+	for i := 0; i < len(events); i++ {
+		fetchAddr(ctx, events[i])
+	}
+	saveAddresses()
+}
+
+// fetchAddr searches for a existing address in Mobilizon. If we don't do
+// this Mobilizon will create a new row in the addresses table for every
+// event
+func fetchAddr(ctx context.Context, e concertcloud.Event) {
+	Log.Debug("Searching for: ", "location", e.Location)
+	if _, ok := addrs[addrKey(e)]; ok {
+		Log.Debug("Skipping cached location", "location", e.Location)
+	}
+
+	query := e.Location + " " + e.City
+	found, err := mobClient.FetchAddr(ctx, query)
+	if err != nil {
+		Log.Error("Error attempting to look up address", "query", query)
+	}
+
+	if len(found) == 0 {
+		Log.Info("Address not found", "query", query)
+	}
+
+	// no fuss, let's just use the first one
+	addrs[addrKey(e)] = found[0]
+
+}
+
+func loadAddresses() {
+	dat, err := os.ReadFile(addrsFile)
+	if err != nil {
+		Log.Error(err.Error())
+		return
+	}
+	err = json.Unmarshal(dat, &addrs)
+	if err != nil {
+		Log.Error(err.Error())
+	}
+}
+
+func saveAddresses() {
+	Log.Debug("Saving addresses", "file", addrsFile)
+	data, err := json.MarshalIndent(&addrs, "", " ")
+	if err != nil {
+		Log.Error(err.Error())
+	}
+	err = os.WriteFile(addrsFile, data, 0600)
+	if err != nil {
+		Log.Error(err.Error())
+	}
 }
 
 func loadExistingEvents() {
@@ -259,22 +316,27 @@ func eventKey(e concertcloud.Event) string {
 	return e.City + "/" + e.Location + "/" + e.Date.Format(time.RFC3339)
 }
 
+// Create a hopefully unique key for a given address
+func addrKey(e concertcloud.Event) string {
+	return e.City + "/" + e.Location
+}
+
 // Convert the concert cloud Address from an event into AddressInput for Mobilizon
 func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 	geo := e.Address.Geolocacation.Coordinates
-	offset := time.Duration(e.Offset * int(time.Second))
-	tzName := "UTC" + fmt.Sprintf("%+.0f", offset.Hours())
+	// offset := time.Duration(e.Offset * int(time.Second))
+	// tzName := "UTC" + fmt.Sprintf("%+.0f", offset.Hours())
+	latlong := strconv.FormatFloat(geo[0], 'f', 8, 64) + ";" + strconv.FormatFloat(geo[1], 'f', 8, 64)
+	street := e.Address.HouseNumber + " " + e.Address.Street
 	return mobilizon.AddressInput{
-		Geom:        fmt.Sprint("%.8f", geo[0], geo[1]),
-		Street:      e.Address.HouseNumber + " " + e.Address.Street, // mobilizon uses this order
-		Locality:    e.Address.Locality,
-		PostalCode:  e.Address.PostCode,
-		Region:      e.Address.State,
-		Country:     e.Address.Country,
-		Description: e.Location,
-		Type:        "",
-		Url:         e.SourceURL,
-		Timezone:    tzName,
+		Geom:        &latlong,
+		Street:      &street,
+		Locality:    &e.Address.Locality,
+		PostalCode:  &e.Address.PostCode,
+		Region:      &e.Address.State,
+		Country:     &e.Address.Country,
+		Description: &e.Location,
+		Url:         &e.SourceURL,
 	}
 }
 
@@ -322,8 +384,8 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			BeginsOn:                 e.Date,
 			EndsOn:                   e.Date.Add(time.Hour * 2),
 			Category:                 populateCategory(e),
-			Visibility:               mobilizon.EventVisibility("PUBLIC"),
-			JoinOptions:              mobilizon.EventJoinOptions("EXTERNAL"),
+			Visibility:               mobilizon.EventVisibilityPublic,
+			JoinOptions:              mobilizon.EventJoinOptionsExternal,
 			PhysicalAddress:          addressToAddressInput(e),
 			OnlineAddress:            e.URL,
 			ExternalParticipationURL: e.URL,
@@ -332,6 +394,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			AttributedToId:           groupID,
 			Tags:                     populateTags(e),
 			Options:                  populateEventOptions(),
+			Status:                   mobilizon.EventStatusConfirmed,
 		}
 
 		if e.ImageURL != "" {
@@ -371,6 +434,9 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			if !reflect.DeepEqual(e, existing[eventKey(e)]) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
 				vars.UUID = uuid
+				if _, err := mobClient.UpdateEvent(ctx, vars); err != nil {
+					Log.Error("Error updating event", "error", err)
+				}
 			} else {
 				// the event hasn't changed, there's nothing to do
 				continue
@@ -381,9 +447,11 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			continue
 		}
 
-		uuid, err := mobClient.CreateOrUpdateEvent(ctx, vars)
+		uuid, err := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
+		} else {
+			Log.Error("Error creating event", "error", err)
 		}
 	}
 	Log.Debug("Saving existing events list", "events", spew.Sdump(created))
@@ -391,10 +459,10 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 }
 
 // populateTags constructs an eventTags object for the createEvent mutation
-func populateTags(e concertcloud.Event) []string {
-	return []string{
-		e.Location,
-		e.City,
+func populateTags(e concertcloud.Event) []*string {
+	return []*string{
+		&e.Location,
+		&e.City,
 	}
 }
 
@@ -402,11 +470,14 @@ func populateTags(e concertcloud.Event) []string {
 // FIXME should od this in init()
 func populateEventOptions() mobilizon.EventOptionsInput {
 	tz := *opts.Timezone
+	showStart := true
+	showEnd := false
+	moderation := mobilizon.EventCommentModeration("ALLOW_ALL")
 	return mobilizon.EventOptionsInput{
-		CommentModeration: mobilizon.EventCommentModeration("ALLOW_ALL"),
-		ShowStartTime:     true,
-		ShowEndTime:       false,
-		Timezone:          tz,
+		CommentModeration: &moderation,
+		ShowStartTime:     &showStart,
+		ShowEndTime:       &showEnd,
+		Timezone:          &tz,
 	}
 }
 

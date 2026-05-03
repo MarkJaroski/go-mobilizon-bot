@@ -32,11 +32,10 @@ type EventParams struct {
 	Draft                    bool
 	PhysicalAddress          AddressInput
 	Status                   EventStatus
-	Tags                     []string
+	Tags                     []*string
 	Options                  EventOptionsInput
 	ImageURL                 string
-	Metadata                 []EventMetadataInput
-	Contact                  []Contact
+	Contact                  []*Contact
 	AttributedTo             uuid.UUID
 	OrganizedBy              uuid.UUID
 }

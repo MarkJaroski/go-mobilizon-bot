@@ -508,12 +508,6 @@ type Comment implements ActivityObject & ActionLogObject {
 
 "An attached media or a link to a media"
 input MediaInput {
-  "A full media attached"
-  media: MediaInputObject
-
-  "The ID of an existing media"
-  mediaId: ID
-
   "The UUIDID of an existing media"
   mediaUuid: UUID
 }

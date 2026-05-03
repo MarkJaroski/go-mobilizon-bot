@@ -15,6 +15,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
+func strPtr(s string) *string { return &s }
+
 // MockGraphQLClient for testing
 type MockGraphQLClient struct {
 	MakeRequestFunc func(
@@ -131,8 +133,10 @@ func TestRefreshToken_Success(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*RefreshAuthTokensResponse)
-			data.RefreshToken.AccessToken = "new-access"
-			data.RefreshToken.RefreshToken = "new-refresh"
+			data.RefreshToken = &RefreshAuthTokensRefreshTokenRefreshedToken{
+				AccessToken:  "new-access",
+				RefreshToken: "new-refresh",
+			}
 			return nil
 		},
 	}
@@ -170,7 +174,7 @@ func TestSearchForEvents_Empty(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchEventsResponse)
-			data.SearchEvents = SearchEventsSearchEvents{Total: 0, Elements: nil}
+			data.SearchEvents = &SearchEventsSearchEvents{Total: 0, Elements: nil}
 			return nil
 		},
 	}
@@ -193,11 +197,12 @@ func TestSearchForEvents_MapsFields(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchEventsResponse)
-			data.SearchEvents = SearchEventsSearchEvents{
+			beginsOnPlus1 := beginsOn.Add(time.Hour)
+			data.SearchEvents = &SearchEventsSearchEvents{
 				Total: 2,
-				Elements: []SearchEventsSearchEventsElementsEvent{
-					{Id: "1", Uuid: id1, Title: "First Event", BeginsOn: beginsOn},
-					{Id: "2", Uuid: id2, Title: "Second Event", BeginsOn: beginsOn.Add(time.Hour)},
+				Elements: []*SearchEventsSearchEventsElementsEvent{
+					{Id: strPtr("1"), Uuid: &id1, Title: strPtr("First Event"), BeginsOn: &beginsOn},
+					{Id: strPtr("2"), Uuid: &id2, Title: strPtr("Second Event"), BeginsOn: &beginsOnPlus1},
 				},
 			}
 			return nil
@@ -240,7 +245,7 @@ func TestEventExists_NotFound(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchEventsResponse)
-			data.SearchEvents = SearchEventsSearchEvents{Elements: nil}
+			data.SearchEvents = &SearchEventsSearchEvents{Elements: nil}
 			return nil
 		},
 	}
@@ -263,9 +268,9 @@ func TestEventExists_Found(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchEventsResponse)
-			data.SearchEvents = SearchEventsSearchEvents{
-				Elements: []SearchEventsSearchEventsElementsEvent{
-					{Id: "42", Uuid: expectedUUID, Title: "My Concert"},
+			data.SearchEvents = &SearchEventsSearchEvents{
+				Elements: []*SearchEventsSearchEventsElementsEvent{
+					{Id: strPtr("42"), Uuid: &expectedUUID, Title: strPtr("My Concert")},
 				},
 			}
 			return nil
@@ -291,10 +296,10 @@ func TestEventExists_MultipleResults_ReturnsFirst(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchEventsResponse)
-			data.SearchEvents = SearchEventsSearchEvents{
-				Elements: []SearchEventsSearchEventsElementsEvent{
-					{Id: "1", Uuid: first},
-					{Id: "2", Uuid: second},
+			data.SearchEvents = &SearchEventsSearchEvents{
+				Elements: []*SearchEventsSearchEventsElementsEvent{
+					{Id: strPtr("1"), Uuid: &first},
+					{Id: strPtr("2"), Uuid: &second},
 				},
 			}
 			return nil
@@ -337,19 +342,19 @@ func TestFetchAddr_MapsFields(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*SearchAddressResponse)
-			data.SearchAddress = []SearchAddressSearchAddress{
+			data.SearchAddress = []*SearchAddressSearchAddress{
 				{
 					AdressFragment: AdressFragment{
-						Id:          "addr-1",
-						Street:      "1 Main St",
-						Locality:    "Lausanne",
-						PostalCode:  "1000",
-						Region:      "Vaud",
-						Country:     "Switzerland",
-						Description: "Test Venue",
-						Timezone:    "Europe/Zurich",
-						Geom:        "6.6323 46.5197",
-						OriginId:    "origin-1",
+						Id:          strPtr("addr-1"),
+						Street:      strPtr("1 Main St"),
+						Locality:    strPtr("Lausanne"),
+						PostalCode:  strPtr("1000"),
+						Region:      strPtr("Vaud"),
+						Country:     strPtr("Switzerland"),
+						Description: strPtr("Test Venue"),
+						Timezone:    strPtr("Europe/Zurich"),
+						Geom:        strPtr("6.6323 46.5197"),
+						OriginId:    strPtr("origin-1"),
 					},
 				},
 			}
@@ -366,20 +371,20 @@ func TestFetchAddr_MapsFields(t *testing.T) {
 		t.Fatalf("expected 1 address, got %d", len(addrs))
 	}
 	a := addrs[0]
-	if a.Street != "1 Main St" {
-		t.Errorf("Street = %q, want %q", a.Street, "1 Main St")
+	if a.Street == nil || *a.Street != "1 Main St" {
+		t.Errorf("Street = %v, want %q", a.Street, "1 Main St")
 	}
-	if a.Locality != "Lausanne" {
-		t.Errorf("Locality = %q, want %q", a.Locality, "Lausanne")
+	if a.Locality == nil || *a.Locality != "Lausanne" {
+		t.Errorf("Locality = %v, want %q", a.Locality, "Lausanne")
 	}
-	if a.PostalCode != "1000" {
-		t.Errorf("PostalCode = %q, want %q", a.PostalCode, "1000")
+	if a.PostalCode == nil || *a.PostalCode != "1000" {
+		t.Errorf("PostalCode = %v, want %q", a.PostalCode, "1000")
 	}
-	if a.Country != "Switzerland" {
-		t.Errorf("Country = %q, want %q", a.Country, "Switzerland")
+	if a.Country == nil || *a.Country != "Switzerland" {
+		t.Errorf("Country = %v, want %q", a.Country, "Switzerland")
 	}
-	if a.Timezone != "Europe/Zurich" {
-		t.Errorf("Timezone = %q, want %q", a.Timezone, "Europe/Zurich")
+	if a.Timezone == nil || *a.Timezone != "Europe/Zurich" {
+		t.Errorf("Timezone = %v, want %q", a.Timezone, "Europe/Zurich")
 	}
 }
 
@@ -423,9 +428,9 @@ func TestCreateEvent_Success(t *testing.T) {
 	mock := &MockGraphQLClient{
 		MakeRequestFunc: func(ctx context.Context, req *graphql.Request, resp *graphql.Response) error {
 			data := resp.Data.(*CreateEventResponse)
-			data.CreateEvent = CreateEventCreateEvent{
-				Id:   "99",
-				Uuid: expectedUUID,
+			data.CreateEvent = &CreateEventCreateEvent{
+				Id:   strPtr("99"),
+				Uuid: &expectedUUID,
 			}
 			return nil
 		},

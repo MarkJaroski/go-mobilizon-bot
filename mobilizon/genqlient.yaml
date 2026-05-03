@@ -4,6 +4,7 @@ schema: schema.graphql
 operations:
 - genqlient.graphql
 generated: generated.go
+optional: pointer
 bindings:
   # To bind a scalar:
   DateTime:

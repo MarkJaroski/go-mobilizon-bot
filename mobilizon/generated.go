@@ -27,44 +27,44 @@ type ActorFragment interface {
 	// The GraphQL interface field's documentation follows.
 	//
 	// Internal ID for this actor
-	GetId() string
+	GetId() *string
 	// GetAvatar returns the interface-field "avatar" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The actor's avatar media
-	GetAvatar() ActorFragmentAvatarMedia
+	GetAvatar() *ActorFragmentAvatarMedia
 	// GetType returns the interface-field "type" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The type of Actor (Person, Group,…)
-	GetType() ActorType
+	GetType() *ActorType
 	// GetPreferredUsername returns the interface-field "preferredUsername" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The actor's preferred username
-	GetPreferredUsername() string
+	GetPreferredUsername() *string
 	// GetName returns the interface-field "name" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The actor's displayed name
-	GetName() string
+	GetName() *string
 	// GetDomain returns the interface-field "domain" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The actor's domain if (null if it's this instance)
-	GetDomain() string
+	GetDomain() *string
 	// GetSummary returns the interface-field "summary" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The actor's summary
-	GetSummary() string
+	GetSummary() *string
 	// GetUrl returns the interface-field "url" from its implementation.
 	// The GraphQL interface field's documentation follows.
 	//
 	// The ActivityPub actor's URL
-	GetUrl() string
+	GetUrl() *string
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *ActorFragmentApplication) implementsGraphQLInterfaceActorFragment() {}
@@ -145,50 +145,50 @@ func __marshalActorFragment(v *ActorFragment) ([]byte, error) {
 // An ActivityPub actor
 type ActorFragmentApplication struct {
 	// Internal ID for this actor
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The actor's avatar media
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 	// The type of Actor (Person, Group,…)
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 	// The actor's preferred username
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 	// The actor's displayed name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 	// The actor's domain if (null if it's this instance)
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 	// The actor's summary
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 	// The ActivityPub actor's URL
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetId returns ActorFragmentApplication.Id, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetId() string { return v.Id }
+func (v *ActorFragmentApplication) GetId() *string { return v.Id }
 
 // GetAvatar returns ActorFragmentApplication.Avatar, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetAvatar() ActorFragmentAvatarMedia { return v.Avatar }
+func (v *ActorFragmentApplication) GetAvatar() *ActorFragmentAvatarMedia { return v.Avatar }
 
 // GetType returns ActorFragmentApplication.Type, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetType() ActorType { return v.Type }
+func (v *ActorFragmentApplication) GetType() *ActorType { return v.Type }
 
 // GetPreferredUsername returns ActorFragmentApplication.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetPreferredUsername() string { return v.PreferredUsername }
+func (v *ActorFragmentApplication) GetPreferredUsername() *string { return v.PreferredUsername }
 
 // GetName returns ActorFragmentApplication.Name, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetName() string { return v.Name }
+func (v *ActorFragmentApplication) GetName() *string { return v.Name }
 
 // GetDomain returns ActorFragmentApplication.Domain, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetDomain() string { return v.Domain }
+func (v *ActorFragmentApplication) GetDomain() *string { return v.Domain }
 
 // GetSummary returns ActorFragmentApplication.Summary, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetSummary() string { return v.Summary }
+func (v *ActorFragmentApplication) GetSummary() *string { return v.Summary }
 
 // GetUrl returns ActorFragmentApplication.Url, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetUrl() string { return v.Url }
+func (v *ActorFragmentApplication) GetUrl() *string { return v.Url }
 
 // GetTypename returns ActorFragmentApplication.Typename, and is useful for accessing the field via an interface.
-func (v *ActorFragmentApplication) GetTypename() string { return v.Typename }
+func (v *ActorFragmentApplication) GetTypename() *string { return v.Typename }
 
 // ActorFragmentAvatarMedia includes the requested fields of the GraphQL type Media.
 // The GraphQL type's documentation follows.
@@ -196,20 +196,20 @@ func (v *ActorFragmentApplication) GetTypename() string { return v.Typename }
 // A media
 type ActorFragmentAvatarMedia struct {
 	// The media items UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 	// The media's full URL
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetUuid returns ActorFragmentAvatarMedia.Uuid, and is useful for accessing the field via an interface.
-func (v *ActorFragmentAvatarMedia) GetUuid() uuid.UUID { return v.Uuid }
+func (v *ActorFragmentAvatarMedia) GetUuid() *uuid.UUID { return v.Uuid }
 
 // GetUrl returns ActorFragmentAvatarMedia.Url, and is useful for accessing the field via an interface.
-func (v *ActorFragmentAvatarMedia) GetUrl() string { return v.Url }
+func (v *ActorFragmentAvatarMedia) GetUrl() *string { return v.Url }
 
 // GetTypename returns ActorFragmentAvatarMedia.Typename, and is useful for accessing the field via an interface.
-func (v *ActorFragmentAvatarMedia) GetTypename() string { return v.Typename }
+func (v *ActorFragmentAvatarMedia) GetTypename() *string { return v.Typename }
 
 // ActorFragment includes the GraphQL fields of Group requested by the fragment ActorFragment.
 // The GraphQL type's documentation follows.
@@ -217,50 +217,50 @@ func (v *ActorFragmentAvatarMedia) GetTypename() string { return v.Typename }
 // An ActivityPub actor
 type ActorFragmentGroup struct {
 	// Internal ID for this actor
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The actor's avatar media
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 	// The type of Actor (Person, Group,…)
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 	// The actor's preferred username
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 	// The actor's displayed name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 	// The actor's domain if (null if it's this instance)
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 	// The actor's summary
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 	// The ActivityPub actor's URL
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetId returns ActorFragmentGroup.Id, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetId() string { return v.Id }
+func (v *ActorFragmentGroup) GetId() *string { return v.Id }
 
 // GetAvatar returns ActorFragmentGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetAvatar() ActorFragmentAvatarMedia { return v.Avatar }
+func (v *ActorFragmentGroup) GetAvatar() *ActorFragmentAvatarMedia { return v.Avatar }
 
 // GetType returns ActorFragmentGroup.Type, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetType() ActorType { return v.Type }
+func (v *ActorFragmentGroup) GetType() *ActorType { return v.Type }
 
 // GetPreferredUsername returns ActorFragmentGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetPreferredUsername() string { return v.PreferredUsername }
+func (v *ActorFragmentGroup) GetPreferredUsername() *string { return v.PreferredUsername }
 
 // GetName returns ActorFragmentGroup.Name, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetName() string { return v.Name }
+func (v *ActorFragmentGroup) GetName() *string { return v.Name }
 
 // GetDomain returns ActorFragmentGroup.Domain, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetDomain() string { return v.Domain }
+func (v *ActorFragmentGroup) GetDomain() *string { return v.Domain }
 
 // GetSummary returns ActorFragmentGroup.Summary, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetSummary() string { return v.Summary }
+func (v *ActorFragmentGroup) GetSummary() *string { return v.Summary }
 
 // GetUrl returns ActorFragmentGroup.Url, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetUrl() string { return v.Url }
+func (v *ActorFragmentGroup) GetUrl() *string { return v.Url }
 
 // GetTypename returns ActorFragmentGroup.Typename, and is useful for accessing the field via an interface.
-func (v *ActorFragmentGroup) GetTypename() string { return v.Typename }
+func (v *ActorFragmentGroup) GetTypename() *string { return v.Typename }
 
 // ActorFragment includes the GraphQL fields of Person requested by the fragment ActorFragment.
 // The GraphQL type's documentation follows.
@@ -268,50 +268,50 @@ func (v *ActorFragmentGroup) GetTypename() string { return v.Typename }
 // An ActivityPub actor
 type ActorFragmentPerson struct {
 	// Internal ID for this actor
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The actor's avatar media
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 	// The type of Actor (Person, Group,…)
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 	// The actor's preferred username
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 	// The actor's displayed name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 	// The actor's domain if (null if it's this instance)
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 	// The actor's summary
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 	// The ActivityPub actor's URL
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetId returns ActorFragmentPerson.Id, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetId() string { return v.Id }
+func (v *ActorFragmentPerson) GetId() *string { return v.Id }
 
 // GetAvatar returns ActorFragmentPerson.Avatar, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetAvatar() ActorFragmentAvatarMedia { return v.Avatar }
+func (v *ActorFragmentPerson) GetAvatar() *ActorFragmentAvatarMedia { return v.Avatar }
 
 // GetType returns ActorFragmentPerson.Type, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetType() ActorType { return v.Type }
+func (v *ActorFragmentPerson) GetType() *ActorType { return v.Type }
 
 // GetPreferredUsername returns ActorFragmentPerson.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetPreferredUsername() string { return v.PreferredUsername }
+func (v *ActorFragmentPerson) GetPreferredUsername() *string { return v.PreferredUsername }
 
 // GetName returns ActorFragmentPerson.Name, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetName() string { return v.Name }
+func (v *ActorFragmentPerson) GetName() *string { return v.Name }
 
 // GetDomain returns ActorFragmentPerson.Domain, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetDomain() string { return v.Domain }
+func (v *ActorFragmentPerson) GetDomain() *string { return v.Domain }
 
 // GetSummary returns ActorFragmentPerson.Summary, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetSummary() string { return v.Summary }
+func (v *ActorFragmentPerson) GetSummary() *string { return v.Summary }
 
 // GetUrl returns ActorFragmentPerson.Url, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetUrl() string { return v.Url }
+func (v *ActorFragmentPerson) GetUrl() *string { return v.Url }
 
 // GetTypename returns ActorFragmentPerson.Typename, and is useful for accessing the field via an interface.
-func (v *ActorFragmentPerson) GetTypename() string { return v.Typename }
+func (v *ActorFragmentPerson) GetTypename() *string { return v.Typename }
 
 // The list of types an actor can be
 type ActorType string
@@ -340,66 +340,66 @@ var AllActorType = []ActorType{
 // An address input
 type AddressInput struct {
 	// The geocoordinates for the point where this address is
-	Geom string `json:"geom"`
+	Geom *string `json:"geom"`
 	// The address's street name (with number)
-	Street string `json:"street"`
+	Street *string `json:"street"`
 	// The address's locality
-	Locality string `json:"locality"`
+	Locality *string `json:"locality"`
 	// The address's postal code
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 	// The address's region
-	Region string `json:"region"`
+	Region *string `json:"region"`
 	// The address's country
-	Country string `json:"country"`
+	Country *string `json:"country"`
 	// The address's description
-	Description string `json:"description"`
+	Description *string `json:"description"`
 	// The address's type
-	Type string `json:"type"`
+	Type *string `json:"type"`
 	// The address's URL
-	Url string `json:"url"`
+	Url *string `json:"url"`
 	// The address's ID
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The address's original ID from the provider
-	OriginId string `json:"originId"`
+	OriginId *string `json:"originId"`
 	// The (estimated) timezone of the location
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 }
 
 // GetGeom returns AddressInput.Geom, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetGeom() string { return v.Geom }
+func (v *AddressInput) GetGeom() *string { return v.Geom }
 
 // GetStreet returns AddressInput.Street, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetStreet() string { return v.Street }
+func (v *AddressInput) GetStreet() *string { return v.Street }
 
 // GetLocality returns AddressInput.Locality, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetLocality() string { return v.Locality }
+func (v *AddressInput) GetLocality() *string { return v.Locality }
 
 // GetPostalCode returns AddressInput.PostalCode, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetPostalCode() string { return v.PostalCode }
+func (v *AddressInput) GetPostalCode() *string { return v.PostalCode }
 
 // GetRegion returns AddressInput.Region, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetRegion() string { return v.Region }
+func (v *AddressInput) GetRegion() *string { return v.Region }
 
 // GetCountry returns AddressInput.Country, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetCountry() string { return v.Country }
+func (v *AddressInput) GetCountry() *string { return v.Country }
 
 // GetDescription returns AddressInput.Description, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetDescription() string { return v.Description }
+func (v *AddressInput) GetDescription() *string { return v.Description }
 
 // GetType returns AddressInput.Type, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetType() string { return v.Type }
+func (v *AddressInput) GetType() *string { return v.Type }
 
 // GetUrl returns AddressInput.Url, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetUrl() string { return v.Url }
+func (v *AddressInput) GetUrl() *string { return v.Url }
 
 // GetId returns AddressInput.Id, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetId() string { return v.Id }
+func (v *AddressInput) GetId() *string { return v.Id }
 
 // GetOriginId returns AddressInput.OriginId, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetOriginId() string { return v.OriginId }
+func (v *AddressInput) GetOriginId() *string { return v.OriginId }
 
 // GetTimezone returns AddressInput.Timezone, and is useful for accessing the field via an interface.
-func (v *AddressInput) GetTimezone() string { return v.Timezone }
+func (v *AddressInput) GetTimezone() *string { return v.Timezone }
 
 // AdressFragment includes the GraphQL fields of Address requested by the fragment AdressFragment.
 // The GraphQL type's documentation follows.
@@ -407,79 +407,79 @@ func (v *AddressInput) GetTimezone() string { return v.Timezone }
 // An address object
 type AdressFragment struct {
 	// The address's ID
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The address's description
-	Description string `json:"description"`
+	Description *string `json:"description"`
 	// The geocoordinates for the point where this address is
-	Geom string `json:"geom"`
+	Geom *string `json:"geom"`
 	// The address's street name (with number)
-	Street string `json:"street"`
+	Street *string `json:"street"`
 	// The address's locality
-	Locality string `json:"locality"`
+	Locality *string `json:"locality"`
 	// The address's postal code
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 	// The address's region
-	Region string `json:"region"`
+	Region *string `json:"region"`
 	// The address's country
-	Country string `json:"country"`
+	Country *string `json:"country"`
 	// The address's type
-	Type string `json:"type"`
+	Type *string `json:"type"`
 	// The address's URL
-	Url string `json:"url"`
+	Url *string `json:"url"`
 	// The address's original ID from the provider
-	OriginId string `json:"originId"`
+	OriginId *string `json:"originId"`
 	// The (estimated) timezone of the location
-	Timezone string `json:"timezone"`
-	Typename string `json:"__typename"`
+	Timezone *string `json:"timezone"`
+	Typename *string `json:"__typename"`
 }
 
 // GetId returns AdressFragment.Id, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetId() string { return v.Id }
+func (v *AdressFragment) GetId() *string { return v.Id }
 
 // GetDescription returns AdressFragment.Description, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetDescription() string { return v.Description }
+func (v *AdressFragment) GetDescription() *string { return v.Description }
 
 // GetGeom returns AdressFragment.Geom, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetGeom() string { return v.Geom }
+func (v *AdressFragment) GetGeom() *string { return v.Geom }
 
 // GetStreet returns AdressFragment.Street, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetStreet() string { return v.Street }
+func (v *AdressFragment) GetStreet() *string { return v.Street }
 
 // GetLocality returns AdressFragment.Locality, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetLocality() string { return v.Locality }
+func (v *AdressFragment) GetLocality() *string { return v.Locality }
 
 // GetPostalCode returns AdressFragment.PostalCode, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetPostalCode() string { return v.PostalCode }
+func (v *AdressFragment) GetPostalCode() *string { return v.PostalCode }
 
 // GetRegion returns AdressFragment.Region, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetRegion() string { return v.Region }
+func (v *AdressFragment) GetRegion() *string { return v.Region }
 
 // GetCountry returns AdressFragment.Country, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetCountry() string { return v.Country }
+func (v *AdressFragment) GetCountry() *string { return v.Country }
 
 // GetType returns AdressFragment.Type, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetType() string { return v.Type }
+func (v *AdressFragment) GetType() *string { return v.Type }
 
 // GetUrl returns AdressFragment.Url, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetUrl() string { return v.Url }
+func (v *AdressFragment) GetUrl() *string { return v.Url }
 
 // GetOriginId returns AdressFragment.OriginId, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetOriginId() string { return v.OriginId }
+func (v *AdressFragment) GetOriginId() *string { return v.OriginId }
 
 // GetTimezone returns AdressFragment.Timezone, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetTimezone() string { return v.Timezone }
+func (v *AdressFragment) GetTimezone() *string { return v.Timezone }
 
 // GetTypename returns AdressFragment.Typename, and is useful for accessing the field via an interface.
-func (v *AdressFragment) GetTypename() string { return v.Typename }
+func (v *AdressFragment) GetTypename() *string { return v.Typename }
 
 // A event contact
 type Contact struct {
 	// The Contact Actor ID
-	Id string `json:"id"`
+	Id *string `json:"id"`
 }
 
 // GetId returns Contact.Id, and is useful for accessing the field via an interface.
-func (v *Contact) GetId() string { return v.Id }
+func (v *Contact) GetId() *string { return v.Id }
 
 // CreateEventCreateEvent includes the requested fields of the GraphQL type Event.
 // The GraphQL type's documentation follows.
@@ -487,25 +487,25 @@ func (v *Contact) GetId() string { return v.Id }
 // An event
 type CreateEventCreateEvent struct {
 	// Internal ID for this event
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 }
 
 // GetId returns CreateEventCreateEvent.Id, and is useful for accessing the field via an interface.
-func (v *CreateEventCreateEvent) GetId() string { return v.Id }
+func (v *CreateEventCreateEvent) GetId() *string { return v.Id }
 
 // GetUuid returns CreateEventCreateEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *CreateEventCreateEvent) GetUuid() uuid.UUID { return v.Uuid }
+func (v *CreateEventCreateEvent) GetUuid() *uuid.UUID { return v.Uuid }
 
 // CreateEventResponse is returned by CreateEvent on success.
 type CreateEventResponse struct {
 	// Create an event
-	CreateEvent CreateEventCreateEvent `json:"createEvent"`
+	CreateEvent *CreateEventCreateEvent `json:"createEvent"`
 }
 
 // GetCreateEvent returns CreateEventResponse.CreateEvent, and is useful for accessing the field via an interface.
-func (v *CreateEventResponse) GetCreateEvent() CreateEventCreateEvent { return v.CreateEvent }
+func (v *CreateEventResponse) GetCreateEvent() *CreateEventCreateEvent { return v.CreateEvent }
 
 type EventCategory string
 
@@ -614,29 +614,6 @@ var AllEventJoinOptions = []EventJoinOptions{
 	EventJoinOptionsExternal,
 }
 
-type EventMetadataInput struct {
-	// The key for the metadata
-	Key string `json:"key"`
-	// The title for the metadata
-	Title string `json:"title"`
-	// The value for the metadata
-	Value string `json:"value"`
-	// The metadata type
-	Type EventMetadataType `json:"type"`
-}
-
-// GetKey returns EventMetadataInput.Key, and is useful for accessing the field via an interface.
-func (v *EventMetadataInput) GetKey() string { return v.Key }
-
-// GetTitle returns EventMetadataInput.Title, and is useful for accessing the field via an interface.
-func (v *EventMetadataInput) GetTitle() string { return v.Title }
-
-// GetValue returns EventMetadataInput.Value, and is useful for accessing the field via an interface.
-func (v *EventMetadataInput) GetValue() string { return v.Value }
-
-// GetType returns EventMetadataInput.Type, and is useful for accessing the field via an interface.
-func (v *EventMetadataInput) GetType() EventMetadataType { return v.Type }
-
 type EventMetadataType string
 
 const (
@@ -657,21 +634,21 @@ var AllEventMetadataType = []EventMetadataType{
 // An event offer
 type EventOfferInput struct {
 	// The price amount for this offer
-	Price float64 `json:"price"`
+	Price *float64 `json:"price"`
 	// The currency for this price offer
-	PriceCurrency string `json:"priceCurrency"`
+	PriceCurrency *string `json:"priceCurrency"`
 	// The URL to access to this offer
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 // GetPrice returns EventOfferInput.Price, and is useful for accessing the field via an interface.
-func (v *EventOfferInput) GetPrice() float64 { return v.Price }
+func (v *EventOfferInput) GetPrice() *float64 { return v.Price }
 
 // GetPriceCurrency returns EventOfferInput.PriceCurrency, and is useful for accessing the field via an interface.
-func (v *EventOfferInput) GetPriceCurrency() string { return v.PriceCurrency }
+func (v *EventOfferInput) GetPriceCurrency() *string { return v.PriceCurrency }
 
 // GetUrl returns EventOfferInput.Url, and is useful for accessing the field via an interface.
-func (v *EventOfferInput) GetUrl() string { return v.Url }
+func (v *EventOfferInput) GetUrl() *string { return v.Url }
 
 // EventOptions includes the GraphQL fields of EventOptions requested by the fragment EventOptions.
 // The GraphQL type's documentation follows.
@@ -679,179 +656,181 @@ func (v *EventOfferInput) GetUrl() string { return v.Url }
 // Event options
 type EventOptions struct {
 	// The maximum attendee capacity for this event
-	MaximumAttendeeCapacity int `json:"maximumAttendeeCapacity"`
+	MaximumAttendeeCapacity *int `json:"maximumAttendeeCapacity"`
 	// The number of remaining seats for this event
-	RemainingAttendeeCapacity int `json:"remainingAttendeeCapacity"`
+	RemainingAttendeeCapacity *int `json:"remainingAttendeeCapacity"`
 	// Whether or not to show the number of remaining seats for this event
-	ShowRemainingAttendeeCapacity bool `json:"showRemainingAttendeeCapacity"`
+	ShowRemainingAttendeeCapacity *bool `json:"showRemainingAttendeeCapacity"`
 	// Whether or not to allow anonymous participation (if the server allows it)
-	AnonymousParticipation bool `json:"anonymousParticipation"`
+	AnonymousParticipation *bool `json:"anonymousParticipation"`
 	// Should the number of participants be hidden in the various event views?
-	HideNumberOfParticipants bool `json:"hideNumberOfParticipants"`
+	HideNumberOfParticipants *bool `json:"hideNumberOfParticipants"`
 	// Show event start time
-	ShowStartTime bool `json:"showStartTime"`
+	ShowStartTime *bool `json:"showStartTime"`
 	// Show event end time
-	ShowEndTime bool `json:"showEndTime"`
+	ShowEndTime *bool `json:"showEndTime"`
 	// The event's timezone
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 	// The list of offers to show for this event
-	Offers []EventOptionsOffersEventOffer `json:"offers"`
+	Offers []*EventOptionsOffersEventOffer `json:"offers"`
 	// The list of participation conditions to accept to join this event
-	ParticipationConditions []EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
+	ParticipationConditions []*EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
 	// The list of special attendees
-	Attendees []string `json:"attendees"`
+	Attendees []*string `json:"attendees"`
 	// The list of the event
-	Program string `json:"program"`
+	Program *string `json:"program"`
 	// The policy on public comment moderation under the event
-	CommentModeration EventCommentModeration `json:"commentModeration"`
+	CommentModeration *EventCommentModeration `json:"commentModeration"`
 	// Whether or not to show the participation price
-	ShowParticipationPrice bool `json:"showParticipationPrice"`
+	ShowParticipationPrice *bool `json:"showParticipationPrice"`
 	// Whether to show or hide the person organizer when event is organized by a group
-	HideOrganizerWhenGroupEvent bool `json:"hideOrganizerWhenGroupEvent"`
+	HideOrganizerWhenGroupEvent *bool `json:"hideOrganizerWhenGroupEvent"`
 	// Whether the event is fully online
-	IsOnline bool   `json:"isOnline"`
-	Typename string `json:"__typename"`
+	IsOnline *bool   `json:"isOnline"`
+	Typename *string `json:"__typename"`
 }
 
 // GetMaximumAttendeeCapacity returns EventOptions.MaximumAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetMaximumAttendeeCapacity() int { return v.MaximumAttendeeCapacity }
+func (v *EventOptions) GetMaximumAttendeeCapacity() *int { return v.MaximumAttendeeCapacity }
 
 // GetRemainingAttendeeCapacity returns EventOptions.RemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetRemainingAttendeeCapacity() int { return v.RemainingAttendeeCapacity }
+func (v *EventOptions) GetRemainingAttendeeCapacity() *int { return v.RemainingAttendeeCapacity }
 
 // GetShowRemainingAttendeeCapacity returns EventOptions.ShowRemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetShowRemainingAttendeeCapacity() bool {
+func (v *EventOptions) GetShowRemainingAttendeeCapacity() *bool {
 	return v.ShowRemainingAttendeeCapacity
 }
 
 // GetAnonymousParticipation returns EventOptions.AnonymousParticipation, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetAnonymousParticipation() bool { return v.AnonymousParticipation }
+func (v *EventOptions) GetAnonymousParticipation() *bool { return v.AnonymousParticipation }
 
 // GetHideNumberOfParticipants returns EventOptions.HideNumberOfParticipants, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetHideNumberOfParticipants() bool { return v.HideNumberOfParticipants }
+func (v *EventOptions) GetHideNumberOfParticipants() *bool { return v.HideNumberOfParticipants }
 
 // GetShowStartTime returns EventOptions.ShowStartTime, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetShowStartTime() bool { return v.ShowStartTime }
+func (v *EventOptions) GetShowStartTime() *bool { return v.ShowStartTime }
 
 // GetShowEndTime returns EventOptions.ShowEndTime, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetShowEndTime() bool { return v.ShowEndTime }
+func (v *EventOptions) GetShowEndTime() *bool { return v.ShowEndTime }
 
 // GetTimezone returns EventOptions.Timezone, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetTimezone() string { return v.Timezone }
+func (v *EventOptions) GetTimezone() *string { return v.Timezone }
 
 // GetOffers returns EventOptions.Offers, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetOffers() []EventOptionsOffersEventOffer { return v.Offers }
+func (v *EventOptions) GetOffers() []*EventOptionsOffersEventOffer { return v.Offers }
 
 // GetParticipationConditions returns EventOptions.ParticipationConditions, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetParticipationConditions() []EventOptionsParticipationConditionsEventParticipationCondition {
+func (v *EventOptions) GetParticipationConditions() []*EventOptionsParticipationConditionsEventParticipationCondition {
 	return v.ParticipationConditions
 }
 
 // GetAttendees returns EventOptions.Attendees, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetAttendees() []string { return v.Attendees }
+func (v *EventOptions) GetAttendees() []*string { return v.Attendees }
 
 // GetProgram returns EventOptions.Program, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetProgram() string { return v.Program }
+func (v *EventOptions) GetProgram() *string { return v.Program }
 
 // GetCommentModeration returns EventOptions.CommentModeration, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetCommentModeration() EventCommentModeration { return v.CommentModeration }
+func (v *EventOptions) GetCommentModeration() *EventCommentModeration { return v.CommentModeration }
 
 // GetShowParticipationPrice returns EventOptions.ShowParticipationPrice, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetShowParticipationPrice() bool { return v.ShowParticipationPrice }
+func (v *EventOptions) GetShowParticipationPrice() *bool { return v.ShowParticipationPrice }
 
 // GetHideOrganizerWhenGroupEvent returns EventOptions.HideOrganizerWhenGroupEvent, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetHideOrganizerWhenGroupEvent() bool { return v.HideOrganizerWhenGroupEvent }
+func (v *EventOptions) GetHideOrganizerWhenGroupEvent() *bool { return v.HideOrganizerWhenGroupEvent }
 
 // GetIsOnline returns EventOptions.IsOnline, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetIsOnline() bool { return v.IsOnline }
+func (v *EventOptions) GetIsOnline() *bool { return v.IsOnline }
 
 // GetTypename returns EventOptions.Typename, and is useful for accessing the field via an interface.
-func (v *EventOptions) GetTypename() string { return v.Typename }
+func (v *EventOptions) GetTypename() *string { return v.Typename }
 
 // Event options
 type EventOptionsInput struct {
 	// The maximum attendee capacity for this event
-	MaximumAttendeeCapacity int `json:"maximumAttendeeCapacity"`
+	MaximumAttendeeCapacity *int `json:"maximumAttendeeCapacity"`
 	// The number of remaining seats for this event
-	RemainingAttendeeCapacity int `json:"remainingAttendeeCapacity"`
+	RemainingAttendeeCapacity *int `json:"remainingAttendeeCapacity"`
 	// Whether or not to show the number of remaining seats for this event
-	ShowRemainingAttendeeCapacity bool `json:"showRemainingAttendeeCapacity"`
+	ShowRemainingAttendeeCapacity *bool `json:"showRemainingAttendeeCapacity"`
 	// Whether or not to allow anonymous participation (if the server allows it)
-	AnonymousParticipation bool `json:"anonymousParticipation"`
+	AnonymousParticipation *bool `json:"anonymousParticipation"`
 	// The list of offers to show for this event
-	Offers []EventOfferInput `json:"offers"`
+	Offers []*EventOfferInput `json:"offers"`
 	// The list of participation conditions to accept to join this event
-	ParticipationConditions []EventParticipationConditionInput `json:"participationConditions"`
+	ParticipationConditions []*EventParticipationConditionInput `json:"participationConditions"`
 	// The list of special attendees
-	Attendees []string `json:"attendees"`
+	Attendees []*string `json:"attendees"`
 	// The list of the event
-	Program string `json:"program"`
+	Program *string `json:"program"`
 	// The policy on public comment moderation under the event
-	CommentModeration EventCommentModeration `json:"commentModeration"`
+	CommentModeration *EventCommentModeration `json:"commentModeration"`
 	// Whether or not to show the participation price
-	ShowParticipationPrice bool `json:"showParticipationPrice"`
+	ShowParticipationPrice *bool `json:"showParticipationPrice"`
 	// Show event start time
-	ShowStartTime bool `json:"showStartTime"`
+	ShowStartTime *bool `json:"showStartTime"`
 	// Show event end time
-	ShowEndTime bool `json:"showEndTime"`
+	ShowEndTime *bool `json:"showEndTime"`
 	// The event's timezone
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 	// Whether to show or hide the person organizer when event is organized by a group
-	HideOrganizerWhenGroupEvent bool `json:"hideOrganizerWhenGroupEvent"`
+	HideOrganizerWhenGroupEvent *bool `json:"hideOrganizerWhenGroupEvent"`
 	// Whether the event is fully online
-	IsOnline bool `json:"isOnline"`
+	IsOnline *bool `json:"isOnline"`
 }
 
 // GetMaximumAttendeeCapacity returns EventOptionsInput.MaximumAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetMaximumAttendeeCapacity() int { return v.MaximumAttendeeCapacity }
+func (v *EventOptionsInput) GetMaximumAttendeeCapacity() *int { return v.MaximumAttendeeCapacity }
 
 // GetRemainingAttendeeCapacity returns EventOptionsInput.RemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetRemainingAttendeeCapacity() int { return v.RemainingAttendeeCapacity }
+func (v *EventOptionsInput) GetRemainingAttendeeCapacity() *int { return v.RemainingAttendeeCapacity }
 
 // GetShowRemainingAttendeeCapacity returns EventOptionsInput.ShowRemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetShowRemainingAttendeeCapacity() bool {
+func (v *EventOptionsInput) GetShowRemainingAttendeeCapacity() *bool {
 	return v.ShowRemainingAttendeeCapacity
 }
 
 // GetAnonymousParticipation returns EventOptionsInput.AnonymousParticipation, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetAnonymousParticipation() bool { return v.AnonymousParticipation }
+func (v *EventOptionsInput) GetAnonymousParticipation() *bool { return v.AnonymousParticipation }
 
 // GetOffers returns EventOptionsInput.Offers, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetOffers() []EventOfferInput { return v.Offers }
+func (v *EventOptionsInput) GetOffers() []*EventOfferInput { return v.Offers }
 
 // GetParticipationConditions returns EventOptionsInput.ParticipationConditions, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetParticipationConditions() []EventParticipationConditionInput {
+func (v *EventOptionsInput) GetParticipationConditions() []*EventParticipationConditionInput {
 	return v.ParticipationConditions
 }
 
 // GetAttendees returns EventOptionsInput.Attendees, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetAttendees() []string { return v.Attendees }
+func (v *EventOptionsInput) GetAttendees() []*string { return v.Attendees }
 
 // GetProgram returns EventOptionsInput.Program, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetProgram() string { return v.Program }
+func (v *EventOptionsInput) GetProgram() *string { return v.Program }
 
 // GetCommentModeration returns EventOptionsInput.CommentModeration, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetCommentModeration() EventCommentModeration { return v.CommentModeration }
+func (v *EventOptionsInput) GetCommentModeration() *EventCommentModeration {
+	return v.CommentModeration
+}
 
 // GetShowParticipationPrice returns EventOptionsInput.ShowParticipationPrice, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetShowParticipationPrice() bool { return v.ShowParticipationPrice }
+func (v *EventOptionsInput) GetShowParticipationPrice() *bool { return v.ShowParticipationPrice }
 
 // GetShowStartTime returns EventOptionsInput.ShowStartTime, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetShowStartTime() bool { return v.ShowStartTime }
+func (v *EventOptionsInput) GetShowStartTime() *bool { return v.ShowStartTime }
 
 // GetShowEndTime returns EventOptionsInput.ShowEndTime, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetShowEndTime() bool { return v.ShowEndTime }
+func (v *EventOptionsInput) GetShowEndTime() *bool { return v.ShowEndTime }
 
 // GetTimezone returns EventOptionsInput.Timezone, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetTimezone() string { return v.Timezone }
+func (v *EventOptionsInput) GetTimezone() *string { return v.Timezone }
 
 // GetHideOrganizerWhenGroupEvent returns EventOptionsInput.HideOrganizerWhenGroupEvent, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetHideOrganizerWhenGroupEvent() bool {
+func (v *EventOptionsInput) GetHideOrganizerWhenGroupEvent() *bool {
 	return v.HideOrganizerWhenGroupEvent
 }
 
 // GetIsOnline returns EventOptionsInput.IsOnline, and is useful for accessing the field via an interface.
-func (v *EventOptionsInput) GetIsOnline() bool { return v.IsOnline }
+func (v *EventOptionsInput) GetIsOnline() *bool { return v.IsOnline }
 
 // EventOptionsOffersEventOffer includes the requested fields of the GraphQL type EventOffer.
 // The GraphQL type's documentation follows.
@@ -859,25 +838,25 @@ func (v *EventOptionsInput) GetIsOnline() bool { return v.IsOnline }
 // An event offer
 type EventOptionsOffersEventOffer struct {
 	// The price amount for this offer
-	Price float64 `json:"price"`
+	Price *float64 `json:"price"`
 	// The currency for this price offer
-	PriceCurrency string `json:"priceCurrency"`
+	PriceCurrency *string `json:"priceCurrency"`
 	// The URL to access to this offer
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetPrice returns EventOptionsOffersEventOffer.Price, and is useful for accessing the field via an interface.
-func (v *EventOptionsOffersEventOffer) GetPrice() float64 { return v.Price }
+func (v *EventOptionsOffersEventOffer) GetPrice() *float64 { return v.Price }
 
 // GetPriceCurrency returns EventOptionsOffersEventOffer.PriceCurrency, and is useful for accessing the field via an interface.
-func (v *EventOptionsOffersEventOffer) GetPriceCurrency() string { return v.PriceCurrency }
+func (v *EventOptionsOffersEventOffer) GetPriceCurrency() *string { return v.PriceCurrency }
 
 // GetUrl returns EventOptionsOffersEventOffer.Url, and is useful for accessing the field via an interface.
-func (v *EventOptionsOffersEventOffer) GetUrl() string { return v.Url }
+func (v *EventOptionsOffersEventOffer) GetUrl() *string { return v.Url }
 
 // GetTypename returns EventOptionsOffersEventOffer.Typename, and is useful for accessing the field via an interface.
-func (v *EventOptionsOffersEventOffer) GetTypename() string { return v.Typename }
+func (v *EventOptionsOffersEventOffer) GetTypename() *string { return v.Typename }
 
 // EventOptionsParticipationConditionsEventParticipationCondition includes the requested fields of the GraphQL type EventParticipationCondition.
 // The GraphQL type's documentation follows.
@@ -885,52 +864,52 @@ func (v *EventOptionsOffersEventOffer) GetTypename() string { return v.Typename 
 // An event participation condition
 type EventOptionsParticipationConditionsEventParticipationCondition struct {
 	// The title for this condition
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	// The content for this condition
-	Content string `json:"content"`
+	Content *string `json:"content"`
 	// The URL to access this condition
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetTitle returns EventOptionsParticipationConditionsEventParticipationCondition.Title, and is useful for accessing the field via an interface.
-func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetTitle() string {
+func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetTitle() *string {
 	return v.Title
 }
 
 // GetContent returns EventOptionsParticipationConditionsEventParticipationCondition.Content, and is useful for accessing the field via an interface.
-func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetContent() string {
+func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetContent() *string {
 	return v.Content
 }
 
 // GetUrl returns EventOptionsParticipationConditionsEventParticipationCondition.Url, and is useful for accessing the field via an interface.
-func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetUrl() string {
+func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetUrl() *string {
 	return v.Url
 }
 
 // GetTypename returns EventOptionsParticipationConditionsEventParticipationCondition.Typename, and is useful for accessing the field via an interface.
-func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetTypename() string {
+func (v *EventOptionsParticipationConditionsEventParticipationCondition) GetTypename() *string {
 	return v.Typename
 }
 
 // An event participation condition
 type EventParticipationConditionInput struct {
 	// The title for this condition
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	// The content for this condition
-	Content string `json:"content"`
+	Content *string `json:"content"`
 	// The URL to access this condition
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 // GetTitle returns EventParticipationConditionInput.Title, and is useful for accessing the field via an interface.
-func (v *EventParticipationConditionInput) GetTitle() string { return v.Title }
+func (v *EventParticipationConditionInput) GetTitle() *string { return v.Title }
 
 // GetContent returns EventParticipationConditionInput.Content, and is useful for accessing the field via an interface.
-func (v *EventParticipationConditionInput) GetContent() string { return v.Content }
+func (v *EventParticipationConditionInput) GetContent() *string { return v.Content }
 
 // GetUrl returns EventParticipationConditionInput.Url, and is useful for accessing the field via an interface.
-func (v *EventParticipationConditionInput) GetUrl() string { return v.Url }
+func (v *EventParticipationConditionInput) GetUrl() *string { return v.Url }
 
 // The list of possible options for the event's status
 type EventStatus string
@@ -977,102 +956,102 @@ var AllEventVisibility = []EventVisibility{
 // An event
 type FetchEventEvent struct {
 	FullEvent `json:"-"`
-	Typename  string `json:"__typename"`
+	Typename  *string `json:"__typename"`
 }
 
 // GetTypename returns FetchEventEvent.Typename, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetTypename() string { return v.Typename }
+func (v *FetchEventEvent) GetTypename() *string { return v.Typename }
 
 // GetId returns FetchEventEvent.Id, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetId() string { return v.FullEvent.Id }
+func (v *FetchEventEvent) GetId() *string { return v.FullEvent.Id }
 
 // GetUuid returns FetchEventEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetUuid() uuid.UUID { return v.FullEvent.Uuid }
+func (v *FetchEventEvent) GetUuid() *uuid.UUID { return v.FullEvent.Uuid }
 
 // GetUrl returns FetchEventEvent.Url, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetUrl() string { return v.FullEvent.Url }
+func (v *FetchEventEvent) GetUrl() *string { return v.FullEvent.Url }
 
 // GetLocal returns FetchEventEvent.Local, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetLocal() bool { return v.FullEvent.Local }
+func (v *FetchEventEvent) GetLocal() *bool { return v.FullEvent.Local }
 
 // GetTitle returns FetchEventEvent.Title, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetTitle() string { return v.FullEvent.Title }
+func (v *FetchEventEvent) GetTitle() *string { return v.FullEvent.Title }
 
 // GetDescription returns FetchEventEvent.Description, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetDescription() string { return v.FullEvent.Description }
+func (v *FetchEventEvent) GetDescription() *string { return v.FullEvent.Description }
 
 // GetBeginsOn returns FetchEventEvent.BeginsOn, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetBeginsOn() time.Time { return v.FullEvent.BeginsOn }
+func (v *FetchEventEvent) GetBeginsOn() *time.Time { return v.FullEvent.BeginsOn }
 
 // GetEndsOn returns FetchEventEvent.EndsOn, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetEndsOn() time.Time { return v.FullEvent.EndsOn }
+func (v *FetchEventEvent) GetEndsOn() *time.Time { return v.FullEvent.EndsOn }
 
 // GetStatus returns FetchEventEvent.Status, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetStatus() EventStatus { return v.FullEvent.Status }
+func (v *FetchEventEvent) GetStatus() *EventStatus { return v.FullEvent.Status }
 
 // GetVisibility returns FetchEventEvent.Visibility, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetVisibility() EventVisibility { return v.FullEvent.Visibility }
+func (v *FetchEventEvent) GetVisibility() *EventVisibility { return v.FullEvent.Visibility }
 
 // GetJoinOptions returns FetchEventEvent.JoinOptions, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetJoinOptions() EventJoinOptions { return v.FullEvent.JoinOptions }
+func (v *FetchEventEvent) GetJoinOptions() *EventJoinOptions { return v.FullEvent.JoinOptions }
 
 // GetExternalParticipationUrl returns FetchEventEvent.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetExternalParticipationUrl() string {
+func (v *FetchEventEvent) GetExternalParticipationUrl() *string {
 	return v.FullEvent.ExternalParticipationUrl
 }
 
 // GetDraft returns FetchEventEvent.Draft, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetDraft() bool { return v.FullEvent.Draft }
+func (v *FetchEventEvent) GetDraft() *bool { return v.FullEvent.Draft }
 
 // GetLanguage returns FetchEventEvent.Language, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetLanguage() string { return v.FullEvent.Language }
+func (v *FetchEventEvent) GetLanguage() *string { return v.FullEvent.Language }
 
 // GetCategory returns FetchEventEvent.Category, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetCategory() EventCategory { return v.FullEvent.Category }
+func (v *FetchEventEvent) GetCategory() *EventCategory { return v.FullEvent.Category }
 
 // GetPicture returns FetchEventEvent.Picture, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetPicture() FullEventPictureMedia { return v.FullEvent.Picture }
+func (v *FetchEventEvent) GetPicture() *FullEventPictureMedia { return v.FullEvent.Picture }
 
 // GetPublishAt returns FetchEventEvent.PublishAt, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetPublishAt() time.Time { return v.FullEvent.PublishAt }
+func (v *FetchEventEvent) GetPublishAt() *time.Time { return v.FullEvent.PublishAt }
 
 // GetOnlineAddress returns FetchEventEvent.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetOnlineAddress() string { return v.FullEvent.OnlineAddress }
+func (v *FetchEventEvent) GetOnlineAddress() *string { return v.FullEvent.OnlineAddress }
 
 // GetPhoneAddress returns FetchEventEvent.PhoneAddress, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetPhoneAddress() string { return v.FullEvent.PhoneAddress }
+func (v *FetchEventEvent) GetPhoneAddress() *string { return v.FullEvent.PhoneAddress }
 
 // GetPhysicalAddress returns FetchEventEvent.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetPhysicalAddress() FullEventPhysicalAddress {
+func (v *FetchEventEvent) GetPhysicalAddress() *FullEventPhysicalAddress {
 	return v.FullEvent.PhysicalAddress
 }
 
 // GetOrganizerActor returns FetchEventEvent.OrganizerActor, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetOrganizerActor() FullEventOrganizerActor {
+func (v *FetchEventEvent) GetOrganizerActor() *FullEventOrganizerActor {
 	return v.FullEvent.OrganizerActor
 }
 
 // GetContacts returns FetchEventEvent.Contacts, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetContacts() []FullEventContactsActor { return v.FullEvent.Contacts }
+func (v *FetchEventEvent) GetContacts() []*FullEventContactsActor { return v.FullEvent.Contacts }
 
 // GetAttributedTo returns FetchEventEvent.AttributedTo, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetAttributedTo() FullEventAttributedToActor {
+func (v *FetchEventEvent) GetAttributedTo() *FullEventAttributedToActor {
 	return v.FullEvent.AttributedTo
 }
 
 // GetParticipantStats returns FetchEventEvent.ParticipantStats, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetParticipantStats() FullEventParticipantStats {
+func (v *FetchEventEvent) GetParticipantStats() *FullEventParticipantStats {
 	return v.FullEvent.ParticipantStats
 }
 
 // GetTags returns FetchEventEvent.Tags, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetTags() []FullEventTagsTag { return v.FullEvent.Tags }
+func (v *FetchEventEvent) GetTags() []*FullEventTagsTag { return v.FullEvent.Tags }
 
 // GetOptions returns FetchEventEvent.Options, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetOptions() FullEventOptions { return v.FullEvent.Options }
+func (v *FetchEventEvent) GetOptions() *FullEventOptions { return v.FullEvent.Options }
 
 // GetMetadata returns FetchEventEvent.Metadata, and is useful for accessing the field via an interface.
-func (v *FetchEventEvent) GetMetadata() []FullEventMetadata { return v.FullEvent.Metadata }
+func (v *FetchEventEvent) GetMetadata() []*FullEventMetadata { return v.FullEvent.Metadata }
 
 func (v *FetchEventEvent) UnmarshalJSON(b []byte) error {
 
@@ -1100,47 +1079,47 @@ func (v *FetchEventEvent) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFetchEventEvent struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 
-	Local bool `json:"local"`
+	Local *bool `json:"local"`
 
-	Title string `json:"title"`
+	Title *string `json:"title"`
 
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
-	BeginsOn time.Time `json:"beginsOn"`
+	BeginsOn *time.Time `json:"beginsOn"`
 
-	EndsOn time.Time `json:"endsOn"`
+	EndsOn *time.Time `json:"endsOn"`
 
-	Status EventStatus `json:"status"`
+	Status *EventStatus `json:"status"`
 
-	Visibility EventVisibility `json:"visibility"`
+	Visibility *EventVisibility `json:"visibility"`
 
-	JoinOptions EventJoinOptions `json:"joinOptions"`
+	JoinOptions *EventJoinOptions `json:"joinOptions"`
 
-	ExternalParticipationUrl string `json:"externalParticipationUrl"`
+	ExternalParticipationUrl *string `json:"externalParticipationUrl"`
 
-	Draft bool `json:"draft"`
+	Draft *bool `json:"draft"`
 
-	Language string `json:"language"`
+	Language *string `json:"language"`
 
-	Category EventCategory `json:"category"`
+	Category *EventCategory `json:"category"`
 
-	Picture FullEventPictureMedia `json:"picture"`
+	Picture *FullEventPictureMedia `json:"picture"`
 
-	PublishAt time.Time `json:"publishAt"`
+	PublishAt *time.Time `json:"publishAt"`
 
-	OnlineAddress string `json:"onlineAddress"`
+	OnlineAddress *string `json:"onlineAddress"`
 
-	PhoneAddress string `json:"phoneAddress"`
+	PhoneAddress *string `json:"phoneAddress"`
 
-	PhysicalAddress FullEventPhysicalAddress `json:"physicalAddress"`
+	PhysicalAddress *FullEventPhysicalAddress `json:"physicalAddress"`
 
 	OrganizerActor json.RawMessage `json:"organizerActor"`
 
@@ -1148,13 +1127,13 @@ type __premarshalFetchEventEvent struct {
 
 	AttributedTo json.RawMessage `json:"attributedTo"`
 
-	ParticipantStats FullEventParticipantStats `json:"participantStats"`
+	ParticipantStats *FullEventParticipantStats `json:"participantStats"`
 
-	Tags []FullEventTagsTag `json:"tags"`
+	Tags []*FullEventTagsTag `json:"tags"`
 
-	Options FullEventOptions `json:"options"`
+	Options *FullEventOptions `json:"options"`
 
-	Metadata []FullEventMetadata `json:"metadata"`
+	Metadata []*FullEventMetadata `json:"metadata"`
 }
 
 func (v *FetchEventEvent) MarshalJSON() ([]byte, error) {
@@ -1193,12 +1172,14 @@ func (v *FetchEventEvent) __premarshalJSON() (*__premarshalFetchEventEvent, erro
 
 		dst := &retval.OrganizerActor
 		src := v.FullEvent.OrganizerActor
-		var err error
-		*dst, err = __marshalFullEventOrganizerActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal FetchEventEvent.FullEvent.OrganizerActor: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalFullEventOrganizerActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal FetchEventEvent.FullEvent.OrganizerActor: %w", err)
+			}
 		}
 	}
 	{
@@ -1210,12 +1191,14 @@ func (v *FetchEventEvent) __premarshalJSON() (*__premarshalFetchEventEvent, erro
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
-			var err error
-			*dst, err = __marshalFullEventContactsActor(
-				&src)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"unable to marshal FetchEventEvent.FullEvent.Contacts: %w", err)
+			if src != nil {
+				var err error
+				*dst, err = __marshalFullEventContactsActor(
+					src)
+				if err != nil {
+					return nil, fmt.Errorf(
+						"unable to marshal FetchEventEvent.FullEvent.Contacts: %w", err)
+				}
 			}
 		}
 	}
@@ -1223,12 +1206,14 @@ func (v *FetchEventEvent) __premarshalJSON() (*__premarshalFetchEventEvent, erro
 
 		dst := &retval.AttributedTo
 		src := v.FullEvent.AttributedTo
-		var err error
-		*dst, err = __marshalFullEventAttributedToActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal FetchEventEvent.FullEvent.AttributedTo: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalFullEventAttributedToActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal FetchEventEvent.FullEvent.AttributedTo: %w", err)
+			}
 		}
 	}
 	retval.ParticipantStats = v.FullEvent.ParticipantStats
@@ -1241,11 +1226,11 @@ func (v *FetchEventEvent) __premarshalJSON() (*__premarshalFetchEventEvent, erro
 // FetchEventResponse is returned by FetchEvent on success.
 type FetchEventResponse struct {
 	// Get an event by uuid
-	Event FetchEventEvent `json:"event"`
+	Event *FetchEventEvent `json:"event"`
 }
 
 // GetEvent returns FetchEventResponse.Event, and is useful for accessing the field via an interface.
-func (v *FetchEventResponse) GetEvent() FetchEventEvent { return v.Event }
+func (v *FetchEventResponse) GetEvent() *FetchEventEvent { return v.Event }
 
 // FullEvent includes the GraphQL fields of Event requested by the fragment FullEvent.
 // The GraphQL type's documentation follows.
@@ -1253,145 +1238,145 @@ func (v *FetchEventResponse) GetEvent() FetchEventEvent { return v.Event }
 // An event
 type FullEvent struct {
 	// Internal ID for this event
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 	// The ActivityPub Event URL
-	Url string `json:"url"`
+	Url *string `json:"url"`
 	// Whether the event is local or not
-	Local bool `json:"local"`
+	Local *bool `json:"local"`
 	// The event's title
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	// The event's description
-	Description string `json:"description"`
+	Description *string `json:"description"`
 	// Datetime for when the event begins
-	BeginsOn time.Time `json:"beginsOn"`
+	BeginsOn *time.Time `json:"beginsOn"`
 	// Datetime for when the event ends
-	EndsOn time.Time `json:"endsOn"`
+	EndsOn *time.Time `json:"endsOn"`
 	// Status of the event
-	Status EventStatus `json:"status"`
+	Status *EventStatus `json:"status"`
 	// The event's visibility
-	Visibility EventVisibility `json:"visibility"`
+	Visibility *EventVisibility `json:"visibility"`
 	// The event's visibility
-	JoinOptions EventJoinOptions `json:"joinOptions"`
+	JoinOptions *EventJoinOptions `json:"joinOptions"`
 	// External URL for participation
-	ExternalParticipationUrl string `json:"externalParticipationUrl"`
+	ExternalParticipationUrl *string `json:"externalParticipationUrl"`
 	// Whether or not the event is a draft
-	Draft bool `json:"draft"`
+	Draft *bool `json:"draft"`
 	// The event language
-	Language string `json:"language"`
+	Language *string `json:"language"`
 	// The event's category
-	Category EventCategory `json:"category"`
+	Category *EventCategory `json:"category"`
 	// The event's picture
-	Picture FullEventPictureMedia `json:"picture"`
+	Picture *FullEventPictureMedia `json:"picture"`
 	// When the event was published
-	PublishAt time.Time `json:"publishAt"`
+	PublishAt *time.Time `json:"publishAt"`
 	// Online address of the event
-	OnlineAddress string `json:"onlineAddress"`
+	OnlineAddress *string `json:"onlineAddress"`
 	// Phone address for the event
-	PhoneAddress string `json:"phoneAddress"`
+	PhoneAddress *string `json:"phoneAddress"`
 	// The event's physical address
-	PhysicalAddress FullEventPhysicalAddress `json:"physicalAddress"`
+	PhysicalAddress *FullEventPhysicalAddress `json:"physicalAddress"`
 	// The event's organizer (as a person)
-	OrganizerActor FullEventOrganizerActor `json:"-"`
+	OrganizerActor *FullEventOrganizerActor `json:"-"`
 	// The events contacts
-	Contacts []FullEventContactsActor `json:"-"`
+	Contacts []*FullEventContactsActor `json:"-"`
 	// Who the event is attributed to (often a group)
-	AttributedTo FullEventAttributedToActor `json:"-"`
+	AttributedTo *FullEventAttributedToActor `json:"-"`
 	// Statistics on the event
-	ParticipantStats FullEventParticipantStats `json:"participantStats"`
+	ParticipantStats *FullEventParticipantStats `json:"participantStats"`
 	// The event's tags
-	Tags []FullEventTagsTag `json:"tags"`
+	Tags []*FullEventTagsTag `json:"tags"`
 	// The event options
-	Options FullEventOptions `json:"options"`
+	Options *FullEventOptions `json:"options"`
 	// A key-value list of metadata
-	Metadata []FullEventMetadata `json:"metadata"`
-	Typename string              `json:"__typename"`
+	Metadata []*FullEventMetadata `json:"metadata"`
+	Typename *string              `json:"__typename"`
 }
 
 // GetId returns FullEvent.Id, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetId() string { return v.Id }
+func (v *FullEvent) GetId() *string { return v.Id }
 
 // GetUuid returns FullEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetUuid() uuid.UUID { return v.Uuid }
+func (v *FullEvent) GetUuid() *uuid.UUID { return v.Uuid }
 
 // GetUrl returns FullEvent.Url, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetUrl() string { return v.Url }
+func (v *FullEvent) GetUrl() *string { return v.Url }
 
 // GetLocal returns FullEvent.Local, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetLocal() bool { return v.Local }
+func (v *FullEvent) GetLocal() *bool { return v.Local }
 
 // GetTitle returns FullEvent.Title, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetTitle() string { return v.Title }
+func (v *FullEvent) GetTitle() *string { return v.Title }
 
 // GetDescription returns FullEvent.Description, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetDescription() string { return v.Description }
+func (v *FullEvent) GetDescription() *string { return v.Description }
 
 // GetBeginsOn returns FullEvent.BeginsOn, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetBeginsOn() time.Time { return v.BeginsOn }
+func (v *FullEvent) GetBeginsOn() *time.Time { return v.BeginsOn }
 
 // GetEndsOn returns FullEvent.EndsOn, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetEndsOn() time.Time { return v.EndsOn }
+func (v *FullEvent) GetEndsOn() *time.Time { return v.EndsOn }
 
 // GetStatus returns FullEvent.Status, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetStatus() EventStatus { return v.Status }
+func (v *FullEvent) GetStatus() *EventStatus { return v.Status }
 
 // GetVisibility returns FullEvent.Visibility, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetVisibility() EventVisibility { return v.Visibility }
+func (v *FullEvent) GetVisibility() *EventVisibility { return v.Visibility }
 
 // GetJoinOptions returns FullEvent.JoinOptions, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
+func (v *FullEvent) GetJoinOptions() *EventJoinOptions { return v.JoinOptions }
 
 // GetExternalParticipationUrl returns FullEvent.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
+func (v *FullEvent) GetExternalParticipationUrl() *string { return v.ExternalParticipationUrl }
 
 // GetDraft returns FullEvent.Draft, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetDraft() bool { return v.Draft }
+func (v *FullEvent) GetDraft() *bool { return v.Draft }
 
 // GetLanguage returns FullEvent.Language, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetLanguage() string { return v.Language }
+func (v *FullEvent) GetLanguage() *string { return v.Language }
 
 // GetCategory returns FullEvent.Category, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetCategory() EventCategory { return v.Category }
+func (v *FullEvent) GetCategory() *EventCategory { return v.Category }
 
 // GetPicture returns FullEvent.Picture, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetPicture() FullEventPictureMedia { return v.Picture }
+func (v *FullEvent) GetPicture() *FullEventPictureMedia { return v.Picture }
 
 // GetPublishAt returns FullEvent.PublishAt, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetPublishAt() time.Time { return v.PublishAt }
+func (v *FullEvent) GetPublishAt() *time.Time { return v.PublishAt }
 
 // GetOnlineAddress returns FullEvent.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetOnlineAddress() string { return v.OnlineAddress }
+func (v *FullEvent) GetOnlineAddress() *string { return v.OnlineAddress }
 
 // GetPhoneAddress returns FullEvent.PhoneAddress, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetPhoneAddress() string { return v.PhoneAddress }
+func (v *FullEvent) GetPhoneAddress() *string { return v.PhoneAddress }
 
 // GetPhysicalAddress returns FullEvent.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetPhysicalAddress() FullEventPhysicalAddress { return v.PhysicalAddress }
+func (v *FullEvent) GetPhysicalAddress() *FullEventPhysicalAddress { return v.PhysicalAddress }
 
 // GetOrganizerActor returns FullEvent.OrganizerActor, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetOrganizerActor() FullEventOrganizerActor { return v.OrganizerActor }
+func (v *FullEvent) GetOrganizerActor() *FullEventOrganizerActor { return v.OrganizerActor }
 
 // GetContacts returns FullEvent.Contacts, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetContacts() []FullEventContactsActor { return v.Contacts }
+func (v *FullEvent) GetContacts() []*FullEventContactsActor { return v.Contacts }
 
 // GetAttributedTo returns FullEvent.AttributedTo, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetAttributedTo() FullEventAttributedToActor { return v.AttributedTo }
+func (v *FullEvent) GetAttributedTo() *FullEventAttributedToActor { return v.AttributedTo }
 
 // GetParticipantStats returns FullEvent.ParticipantStats, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetParticipantStats() FullEventParticipantStats { return v.ParticipantStats }
+func (v *FullEvent) GetParticipantStats() *FullEventParticipantStats { return v.ParticipantStats }
 
 // GetTags returns FullEvent.Tags, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetTags() []FullEventTagsTag { return v.Tags }
+func (v *FullEvent) GetTags() []*FullEventTagsTag { return v.Tags }
 
 // GetOptions returns FullEvent.Options, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetOptions() FullEventOptions { return v.Options }
+func (v *FullEvent) GetOptions() *FullEventOptions { return v.Options }
 
 // GetMetadata returns FullEvent.Metadata, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetMetadata() []FullEventMetadata { return v.Metadata }
+func (v *FullEvent) GetMetadata() []*FullEventMetadata { return v.Metadata }
 
 // GetTypename returns FullEvent.Typename, and is useful for accessing the field via an interface.
-func (v *FullEvent) GetTypename() string { return v.Typename }
+func (v *FullEvent) GetTypename() *string { return v.Typename }
 
 func (v *FullEvent) UnmarshalJSON(b []byte) error {
 
@@ -1417,8 +1402,9 @@ func (v *FullEvent) UnmarshalJSON(b []byte) error {
 		dst := &v.OrganizerActor
 		src := firstPass.OrganizerActor
 		if len(src) != 0 && string(src) != "null" {
+			*dst = new(FullEventOrganizerActor)
 			err = __unmarshalFullEventOrganizerActor(
-				src, dst)
+				src, *dst)
 			if err != nil {
 				return fmt.Errorf(
 					"unable to unmarshal FullEvent.OrganizerActor: %w", err)
@@ -1430,13 +1416,14 @@ func (v *FullEvent) UnmarshalJSON(b []byte) error {
 		dst := &v.Contacts
 		src := firstPass.Contacts
 		*dst = make(
-			[]FullEventContactsActor,
+			[]*FullEventContactsActor,
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
 			if len(src) != 0 && string(src) != "null" {
+				*dst = new(FullEventContactsActor)
 				err = __unmarshalFullEventContactsActor(
-					src, dst)
+					src, *dst)
 				if err != nil {
 					return fmt.Errorf(
 						"unable to unmarshal FullEvent.Contacts: %w", err)
@@ -1449,8 +1436,9 @@ func (v *FullEvent) UnmarshalJSON(b []byte) error {
 		dst := &v.AttributedTo
 		src := firstPass.AttributedTo
 		if len(src) != 0 && string(src) != "null" {
+			*dst = new(FullEventAttributedToActor)
 			err = __unmarshalFullEventAttributedToActor(
-				src, dst)
+				src, *dst)
 			if err != nil {
 				return fmt.Errorf(
 					"unable to unmarshal FullEvent.AttributedTo: %w", err)
@@ -1461,45 +1449,45 @@ func (v *FullEvent) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEvent struct {
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 
-	Local bool `json:"local"`
+	Local *bool `json:"local"`
 
-	Title string `json:"title"`
+	Title *string `json:"title"`
 
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
-	BeginsOn time.Time `json:"beginsOn"`
+	BeginsOn *time.Time `json:"beginsOn"`
 
-	EndsOn time.Time `json:"endsOn"`
+	EndsOn *time.Time `json:"endsOn"`
 
-	Status EventStatus `json:"status"`
+	Status *EventStatus `json:"status"`
 
-	Visibility EventVisibility `json:"visibility"`
+	Visibility *EventVisibility `json:"visibility"`
 
-	JoinOptions EventJoinOptions `json:"joinOptions"`
+	JoinOptions *EventJoinOptions `json:"joinOptions"`
 
-	ExternalParticipationUrl string `json:"externalParticipationUrl"`
+	ExternalParticipationUrl *string `json:"externalParticipationUrl"`
 
-	Draft bool `json:"draft"`
+	Draft *bool `json:"draft"`
 
-	Language string `json:"language"`
+	Language *string `json:"language"`
 
-	Category EventCategory `json:"category"`
+	Category *EventCategory `json:"category"`
 
-	Picture FullEventPictureMedia `json:"picture"`
+	Picture *FullEventPictureMedia `json:"picture"`
 
-	PublishAt time.Time `json:"publishAt"`
+	PublishAt *time.Time `json:"publishAt"`
 
-	OnlineAddress string `json:"onlineAddress"`
+	OnlineAddress *string `json:"onlineAddress"`
 
-	PhoneAddress string `json:"phoneAddress"`
+	PhoneAddress *string `json:"phoneAddress"`
 
-	PhysicalAddress FullEventPhysicalAddress `json:"physicalAddress"`
+	PhysicalAddress *FullEventPhysicalAddress `json:"physicalAddress"`
 
 	OrganizerActor json.RawMessage `json:"organizerActor"`
 
@@ -1507,15 +1495,15 @@ type __premarshalFullEvent struct {
 
 	AttributedTo json.RawMessage `json:"attributedTo"`
 
-	ParticipantStats FullEventParticipantStats `json:"participantStats"`
+	ParticipantStats *FullEventParticipantStats `json:"participantStats"`
 
-	Tags []FullEventTagsTag `json:"tags"`
+	Tags []*FullEventTagsTag `json:"tags"`
 
-	Options FullEventOptions `json:"options"`
+	Options *FullEventOptions `json:"options"`
 
-	Metadata []FullEventMetadata `json:"metadata"`
+	Metadata []*FullEventMetadata `json:"metadata"`
 
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 }
 
 func (v *FullEvent) MarshalJSON() ([]byte, error) {
@@ -1553,12 +1541,14 @@ func (v *FullEvent) __premarshalJSON() (*__premarshalFullEvent, error) {
 
 		dst := &retval.OrganizerActor
 		src := v.OrganizerActor
-		var err error
-		*dst, err = __marshalFullEventOrganizerActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal FullEvent.OrganizerActor: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalFullEventOrganizerActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal FullEvent.OrganizerActor: %w", err)
+			}
 		}
 	}
 	{
@@ -1570,12 +1560,14 @@ func (v *FullEvent) __premarshalJSON() (*__premarshalFullEvent, error) {
 			len(src))
 		for i, src := range src {
 			dst := &(*dst)[i]
-			var err error
-			*dst, err = __marshalFullEventContactsActor(
-				&src)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"unable to marshal FullEvent.Contacts: %w", err)
+			if src != nil {
+				var err error
+				*dst, err = __marshalFullEventContactsActor(
+					src)
+				if err != nil {
+					return nil, fmt.Errorf(
+						"unable to marshal FullEvent.Contacts: %w", err)
+				}
 			}
 		}
 	}
@@ -1583,12 +1575,14 @@ func (v *FullEvent) __premarshalJSON() (*__premarshalFullEvent, error) {
 
 		dst := &retval.AttributedTo
 		src := v.AttributedTo
-		var err error
-		*dst, err = __marshalFullEventAttributedToActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal FullEvent.AttributedTo: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalFullEventAttributedToActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal FullEvent.AttributedTo: %w", err)
+			}
 		}
 	}
 	retval.ParticipantStats = v.ParticipantStats
@@ -1611,7 +1605,7 @@ func (v *FullEvent) __premarshalJSON() (*__premarshalFullEvent, error) {
 type FullEventAttributedToActor interface {
 	implementsGraphQLInterfaceFullEventAttributedToActor()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *FullEventAttributedToApplication) implementsGraphQLInterfaceFullEventAttributedToActor() {}
@@ -1695,11 +1689,11 @@ func __marshalFullEventAttributedToActor(v *FullEventAttributedToActor) ([]byte,
 //
 // Represents an application
 type FullEventAttributedToApplication struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventAttributedToApplication.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToApplication) GetTypename() string { return v.Typename }
+func (v *FullEventAttributedToApplication) GetTypename() *string { return v.Typename }
 
 // FullEventAttributedToGroup includes the requested fields of the GraphQL type Group.
 // The GraphQL type's documentation follows.
@@ -1707,70 +1701,70 @@ func (v *FullEventAttributedToApplication) GetTypename() string { return v.Typen
 // Represents a group of actors
 type FullEventAttributedToGroup struct {
 	GroupMinimalFields `json:"-"`
-	Typename           string `json:"__typename"`
+	Typename           *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventAttributedToGroup.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetTypename() string { return v.Typename }
+func (v *FullEventAttributedToGroup) GetTypename() *string { return v.Typename }
 
 // GetSuspended returns FullEventAttributedToGroup.Suspended, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetSuspended() bool { return v.GroupMinimalFields.Suspended }
+func (v *FullEventAttributedToGroup) GetSuspended() *bool { return v.GroupMinimalFields.Suspended }
 
 // GetVisibility returns FullEventAttributedToGroup.Visibility, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetVisibility() GroupVisibility {
+func (v *FullEventAttributedToGroup) GetVisibility() *GroupVisibility {
 	return v.GroupMinimalFields.Visibility
 }
 
 // GetOpenness returns FullEventAttributedToGroup.Openness, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetOpenness() Openness { return v.GroupMinimalFields.Openness }
+func (v *FullEventAttributedToGroup) GetOpenness() *Openness { return v.GroupMinimalFields.Openness }
 
 // GetManuallyApprovesFollowers returns FullEventAttributedToGroup.ManuallyApprovesFollowers, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetManuallyApprovesFollowers() bool {
+func (v *FullEventAttributedToGroup) GetManuallyApprovesFollowers() *bool {
 	return v.GroupMinimalFields.ManuallyApprovesFollowers
 }
 
 // GetAllowSeeParticipants returns FullEventAttributedToGroup.AllowSeeParticipants, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetAllowSeeParticipants() bool {
+func (v *FullEventAttributedToGroup) GetAllowSeeParticipants() *bool {
 	return v.GroupMinimalFields.AllowSeeParticipants
 }
 
 // GetId returns FullEventAttributedToGroup.Id, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetId() string {
+func (v *FullEventAttributedToGroup) GetId() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.Id
 }
 
 // GetAvatar returns FullEventAttributedToGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventAttributedToGroup) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.GroupMinimalFields.ActorFragmentGroup.Avatar
 }
 
 // GetType returns FullEventAttributedToGroup.Type, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetType() ActorType {
+func (v *FullEventAttributedToGroup) GetType() *ActorType {
 	return v.GroupMinimalFields.ActorFragmentGroup.Type
 }
 
 // GetPreferredUsername returns FullEventAttributedToGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetPreferredUsername() string {
+func (v *FullEventAttributedToGroup) GetPreferredUsername() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns FullEventAttributedToGroup.Name, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetName() string {
+func (v *FullEventAttributedToGroup) GetName() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.Name
 }
 
 // GetDomain returns FullEventAttributedToGroup.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetDomain() string {
+func (v *FullEventAttributedToGroup) GetDomain() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.Domain
 }
 
 // GetSummary returns FullEventAttributedToGroup.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetSummary() string {
+func (v *FullEventAttributedToGroup) GetSummary() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.Summary
 }
 
 // GetUrl returns FullEventAttributedToGroup.Url, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToGroup) GetUrl() string {
+func (v *FullEventAttributedToGroup) GetUrl() *string {
 	return v.GroupMinimalFields.ActorFragmentGroup.Url
 }
 
@@ -1800,33 +1794,33 @@ func (v *FullEventAttributedToGroup) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventAttributedToGroup struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Suspended bool `json:"suspended"`
+	Suspended *bool `json:"suspended"`
 
-	Visibility GroupVisibility `json:"visibility"`
+	Visibility *GroupVisibility `json:"visibility"`
 
-	Openness Openness `json:"openness"`
+	Openness *Openness `json:"openness"`
 
-	ManuallyApprovesFollowers bool `json:"manuallyApprovesFollowers"`
+	ManuallyApprovesFollowers *bool `json:"manuallyApprovesFollowers"`
 
-	AllowSeeParticipants bool `json:"allowSeeParticipants"`
+	AllowSeeParticipants *bool `json:"allowSeeParticipants"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventAttributedToGroup) MarshalJSON() ([]byte, error) {
@@ -1862,11 +1856,11 @@ func (v *FullEventAttributedToGroup) __premarshalJSON() (*__premarshalFullEventA
 //
 // Represents a person identity
 type FullEventAttributedToPerson struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventAttributedToPerson.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventAttributedToPerson) GetTypename() string { return v.Typename }
+func (v *FullEventAttributedToPerson) GetTypename() *string { return v.Typename }
 
 // FullEventContactsActor includes the requested fields of the GraphQL interface Actor.
 //
@@ -1881,7 +1875,7 @@ type FullEventContactsActor interface {
 	implementsGraphQLInterfaceFullEventContactsActor()
 	ActorFragment
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *FullEventContactsApplication) implementsGraphQLInterfaceFullEventContactsActor() {}
@@ -1974,39 +1968,41 @@ func __marshalFullEventContactsActor(v *FullEventContactsActor) ([]byte, error) 
 // Represents an application
 type FullEventContactsApplication struct {
 	ActorFragmentApplication `json:"-"`
-	Typename                 string `json:"__typename"`
+	Typename                 *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventContactsApplication.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetTypename() string { return v.Typename }
+func (v *FullEventContactsApplication) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventContactsApplication.Id, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetId() string { return v.ActorFragmentApplication.Id }
+func (v *FullEventContactsApplication) GetId() *string { return v.ActorFragmentApplication.Id }
 
 // GetAvatar returns FullEventContactsApplication.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventContactsApplication) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentApplication.Avatar
 }
 
 // GetType returns FullEventContactsApplication.Type, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetType() ActorType { return v.ActorFragmentApplication.Type }
+func (v *FullEventContactsApplication) GetType() *ActorType { return v.ActorFragmentApplication.Type }
 
 // GetPreferredUsername returns FullEventContactsApplication.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetPreferredUsername() string {
+func (v *FullEventContactsApplication) GetPreferredUsername() *string {
 	return v.ActorFragmentApplication.PreferredUsername
 }
 
 // GetName returns FullEventContactsApplication.Name, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetName() string { return v.ActorFragmentApplication.Name }
+func (v *FullEventContactsApplication) GetName() *string { return v.ActorFragmentApplication.Name }
 
 // GetDomain returns FullEventContactsApplication.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetDomain() string { return v.ActorFragmentApplication.Domain }
+func (v *FullEventContactsApplication) GetDomain() *string { return v.ActorFragmentApplication.Domain }
 
 // GetSummary returns FullEventContactsApplication.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetSummary() string { return v.ActorFragmentApplication.Summary }
+func (v *FullEventContactsApplication) GetSummary() *string {
+	return v.ActorFragmentApplication.Summary
+}
 
 // GetUrl returns FullEventContactsApplication.Url, and is useful for accessing the field via an interface.
-func (v *FullEventContactsApplication) GetUrl() string { return v.ActorFragmentApplication.Url }
+func (v *FullEventContactsApplication) GetUrl() *string { return v.ActorFragmentApplication.Url }
 
 func (v *FullEventContactsApplication) UnmarshalJSON(b []byte) error {
 
@@ -2034,23 +2030,23 @@ func (v *FullEventContactsApplication) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventContactsApplication struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventContactsApplication) MarshalJSON() ([]byte, error) {
@@ -2082,39 +2078,39 @@ func (v *FullEventContactsApplication) __premarshalJSON() (*__premarshalFullEven
 // Represents a group of actors
 type FullEventContactsGroup struct {
 	ActorFragmentGroup `json:"-"`
-	Typename           string `json:"__typename"`
+	Typename           *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventContactsGroup.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetTypename() string { return v.Typename }
+func (v *FullEventContactsGroup) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventContactsGroup.Id, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetId() string { return v.ActorFragmentGroup.Id }
+func (v *FullEventContactsGroup) GetId() *string { return v.ActorFragmentGroup.Id }
 
 // GetAvatar returns FullEventContactsGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventContactsGroup) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentGroup.Avatar
 }
 
 // GetType returns FullEventContactsGroup.Type, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetType() ActorType { return v.ActorFragmentGroup.Type }
+func (v *FullEventContactsGroup) GetType() *ActorType { return v.ActorFragmentGroup.Type }
 
 // GetPreferredUsername returns FullEventContactsGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetPreferredUsername() string {
+func (v *FullEventContactsGroup) GetPreferredUsername() *string {
 	return v.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns FullEventContactsGroup.Name, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetName() string { return v.ActorFragmentGroup.Name }
+func (v *FullEventContactsGroup) GetName() *string { return v.ActorFragmentGroup.Name }
 
 // GetDomain returns FullEventContactsGroup.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetDomain() string { return v.ActorFragmentGroup.Domain }
+func (v *FullEventContactsGroup) GetDomain() *string { return v.ActorFragmentGroup.Domain }
 
 // GetSummary returns FullEventContactsGroup.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetSummary() string { return v.ActorFragmentGroup.Summary }
+func (v *FullEventContactsGroup) GetSummary() *string { return v.ActorFragmentGroup.Summary }
 
 // GetUrl returns FullEventContactsGroup.Url, and is useful for accessing the field via an interface.
-func (v *FullEventContactsGroup) GetUrl() string { return v.ActorFragmentGroup.Url }
+func (v *FullEventContactsGroup) GetUrl() *string { return v.ActorFragmentGroup.Url }
 
 func (v *FullEventContactsGroup) UnmarshalJSON(b []byte) error {
 
@@ -2142,23 +2138,23 @@ func (v *FullEventContactsGroup) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventContactsGroup struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventContactsGroup) MarshalJSON() ([]byte, error) {
@@ -2190,39 +2186,39 @@ func (v *FullEventContactsGroup) __premarshalJSON() (*__premarshalFullEventConta
 // Represents a person identity
 type FullEventContactsPerson struct {
 	ActorFragmentPerson `json:"-"`
-	Typename            string `json:"__typename"`
+	Typename            *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventContactsPerson.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetTypename() string { return v.Typename }
+func (v *FullEventContactsPerson) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventContactsPerson.Id, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetId() string { return v.ActorFragmentPerson.Id }
+func (v *FullEventContactsPerson) GetId() *string { return v.ActorFragmentPerson.Id }
 
 // GetAvatar returns FullEventContactsPerson.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventContactsPerson) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentPerson.Avatar
 }
 
 // GetType returns FullEventContactsPerson.Type, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetType() ActorType { return v.ActorFragmentPerson.Type }
+func (v *FullEventContactsPerson) GetType() *ActorType { return v.ActorFragmentPerson.Type }
 
 // GetPreferredUsername returns FullEventContactsPerson.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetPreferredUsername() string {
+func (v *FullEventContactsPerson) GetPreferredUsername() *string {
 	return v.ActorFragmentPerson.PreferredUsername
 }
 
 // GetName returns FullEventContactsPerson.Name, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetName() string { return v.ActorFragmentPerson.Name }
+func (v *FullEventContactsPerson) GetName() *string { return v.ActorFragmentPerson.Name }
 
 // GetDomain returns FullEventContactsPerson.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetDomain() string { return v.ActorFragmentPerson.Domain }
+func (v *FullEventContactsPerson) GetDomain() *string { return v.ActorFragmentPerson.Domain }
 
 // GetSummary returns FullEventContactsPerson.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetSummary() string { return v.ActorFragmentPerson.Summary }
+func (v *FullEventContactsPerson) GetSummary() *string { return v.ActorFragmentPerson.Summary }
 
 // GetUrl returns FullEventContactsPerson.Url, and is useful for accessing the field via an interface.
-func (v *FullEventContactsPerson) GetUrl() string { return v.ActorFragmentPerson.Url }
+func (v *FullEventContactsPerson) GetUrl() *string { return v.ActorFragmentPerson.Url }
 
 func (v *FullEventContactsPerson) UnmarshalJSON(b []byte) error {
 
@@ -2250,23 +2246,23 @@ func (v *FullEventContactsPerson) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventContactsPerson struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventContactsPerson) MarshalJSON() ([]byte, error) {
@@ -2295,30 +2291,30 @@ func (v *FullEventContactsPerson) __premarshalJSON() (*__premarshalFullEventCont
 // FullEventMetadata includes the requested fields of the GraphQL type EventMetadata.
 type FullEventMetadata struct {
 	// The key for the metadata
-	Key string `json:"key"`
+	Key *string `json:"key"`
 	// The title for the metadata
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	// The value for the metadata
-	Value string `json:"value"`
+	Value *string `json:"value"`
 	// The metadata type
-	Type     EventMetadataType `json:"type"`
-	Typename string            `json:"__typename"`
+	Type     *EventMetadataType `json:"type"`
+	Typename *string            `json:"__typename"`
 }
 
 // GetKey returns FullEventMetadata.Key, and is useful for accessing the field via an interface.
-func (v *FullEventMetadata) GetKey() string { return v.Key }
+func (v *FullEventMetadata) GetKey() *string { return v.Key }
 
 // GetTitle returns FullEventMetadata.Title, and is useful for accessing the field via an interface.
-func (v *FullEventMetadata) GetTitle() string { return v.Title }
+func (v *FullEventMetadata) GetTitle() *string { return v.Title }
 
 // GetValue returns FullEventMetadata.Value, and is useful for accessing the field via an interface.
-func (v *FullEventMetadata) GetValue() string { return v.Value }
+func (v *FullEventMetadata) GetValue() *string { return v.Value }
 
 // GetType returns FullEventMetadata.Type, and is useful for accessing the field via an interface.
-func (v *FullEventMetadata) GetType() EventMetadataType { return v.Type }
+func (v *FullEventMetadata) GetType() *EventMetadataType { return v.Type }
 
 // GetTypename returns FullEventMetadata.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventMetadata) GetTypename() string { return v.Typename }
+func (v *FullEventMetadata) GetTypename() *string { return v.Typename }
 
 // FullEventOptions includes the requested fields of the GraphQL type EventOptions.
 // The GraphQL type's documentation follows.
@@ -2326,77 +2322,77 @@ func (v *FullEventMetadata) GetTypename() string { return v.Typename }
 // Event options
 type FullEventOptions struct {
 	EventOptions `json:"-"`
-	Typename     string `json:"__typename"`
+	Typename     *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventOptions.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetTypename() string { return v.Typename }
+func (v *FullEventOptions) GetTypename() *string { return v.Typename }
 
 // GetMaximumAttendeeCapacity returns FullEventOptions.MaximumAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetMaximumAttendeeCapacity() int {
+func (v *FullEventOptions) GetMaximumAttendeeCapacity() *int {
 	return v.EventOptions.MaximumAttendeeCapacity
 }
 
 // GetRemainingAttendeeCapacity returns FullEventOptions.RemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetRemainingAttendeeCapacity() int {
+func (v *FullEventOptions) GetRemainingAttendeeCapacity() *int {
 	return v.EventOptions.RemainingAttendeeCapacity
 }
 
 // GetShowRemainingAttendeeCapacity returns FullEventOptions.ShowRemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetShowRemainingAttendeeCapacity() bool {
+func (v *FullEventOptions) GetShowRemainingAttendeeCapacity() *bool {
 	return v.EventOptions.ShowRemainingAttendeeCapacity
 }
 
 // GetAnonymousParticipation returns FullEventOptions.AnonymousParticipation, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetAnonymousParticipation() bool {
+func (v *FullEventOptions) GetAnonymousParticipation() *bool {
 	return v.EventOptions.AnonymousParticipation
 }
 
 // GetHideNumberOfParticipants returns FullEventOptions.HideNumberOfParticipants, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetHideNumberOfParticipants() bool {
+func (v *FullEventOptions) GetHideNumberOfParticipants() *bool {
 	return v.EventOptions.HideNumberOfParticipants
 }
 
 // GetShowStartTime returns FullEventOptions.ShowStartTime, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetShowStartTime() bool { return v.EventOptions.ShowStartTime }
+func (v *FullEventOptions) GetShowStartTime() *bool { return v.EventOptions.ShowStartTime }
 
 // GetShowEndTime returns FullEventOptions.ShowEndTime, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetShowEndTime() bool { return v.EventOptions.ShowEndTime }
+func (v *FullEventOptions) GetShowEndTime() *bool { return v.EventOptions.ShowEndTime }
 
 // GetTimezone returns FullEventOptions.Timezone, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetTimezone() string { return v.EventOptions.Timezone }
+func (v *FullEventOptions) GetTimezone() *string { return v.EventOptions.Timezone }
 
 // GetOffers returns FullEventOptions.Offers, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetOffers() []EventOptionsOffersEventOffer { return v.EventOptions.Offers }
+func (v *FullEventOptions) GetOffers() []*EventOptionsOffersEventOffer { return v.EventOptions.Offers }
 
 // GetParticipationConditions returns FullEventOptions.ParticipationConditions, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetParticipationConditions() []EventOptionsParticipationConditionsEventParticipationCondition {
+func (v *FullEventOptions) GetParticipationConditions() []*EventOptionsParticipationConditionsEventParticipationCondition {
 	return v.EventOptions.ParticipationConditions
 }
 
 // GetAttendees returns FullEventOptions.Attendees, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetAttendees() []string { return v.EventOptions.Attendees }
+func (v *FullEventOptions) GetAttendees() []*string { return v.EventOptions.Attendees }
 
 // GetProgram returns FullEventOptions.Program, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetProgram() string { return v.EventOptions.Program }
+func (v *FullEventOptions) GetProgram() *string { return v.EventOptions.Program }
 
 // GetCommentModeration returns FullEventOptions.CommentModeration, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetCommentModeration() EventCommentModeration {
+func (v *FullEventOptions) GetCommentModeration() *EventCommentModeration {
 	return v.EventOptions.CommentModeration
 }
 
 // GetShowParticipationPrice returns FullEventOptions.ShowParticipationPrice, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetShowParticipationPrice() bool {
+func (v *FullEventOptions) GetShowParticipationPrice() *bool {
 	return v.EventOptions.ShowParticipationPrice
 }
 
 // GetHideOrganizerWhenGroupEvent returns FullEventOptions.HideOrganizerWhenGroupEvent, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetHideOrganizerWhenGroupEvent() bool {
+func (v *FullEventOptions) GetHideOrganizerWhenGroupEvent() *bool {
 	return v.EventOptions.HideOrganizerWhenGroupEvent
 }
 
 // GetIsOnline returns FullEventOptions.IsOnline, and is useful for accessing the field via an interface.
-func (v *FullEventOptions) GetIsOnline() bool { return v.EventOptions.IsOnline }
+func (v *FullEventOptions) GetIsOnline() *bool { return v.EventOptions.IsOnline }
 
 func (v *FullEventOptions) UnmarshalJSON(b []byte) error {
 
@@ -2424,39 +2420,39 @@ func (v *FullEventOptions) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventOptions struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	MaximumAttendeeCapacity int `json:"maximumAttendeeCapacity"`
+	MaximumAttendeeCapacity *int `json:"maximumAttendeeCapacity"`
 
-	RemainingAttendeeCapacity int `json:"remainingAttendeeCapacity"`
+	RemainingAttendeeCapacity *int `json:"remainingAttendeeCapacity"`
 
-	ShowRemainingAttendeeCapacity bool `json:"showRemainingAttendeeCapacity"`
+	ShowRemainingAttendeeCapacity *bool `json:"showRemainingAttendeeCapacity"`
 
-	AnonymousParticipation bool `json:"anonymousParticipation"`
+	AnonymousParticipation *bool `json:"anonymousParticipation"`
 
-	HideNumberOfParticipants bool `json:"hideNumberOfParticipants"`
+	HideNumberOfParticipants *bool `json:"hideNumberOfParticipants"`
 
-	ShowStartTime bool `json:"showStartTime"`
+	ShowStartTime *bool `json:"showStartTime"`
 
-	ShowEndTime bool `json:"showEndTime"`
+	ShowEndTime *bool `json:"showEndTime"`
 
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 
-	Offers []EventOptionsOffersEventOffer `json:"offers"`
+	Offers []*EventOptionsOffersEventOffer `json:"offers"`
 
-	ParticipationConditions []EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
+	ParticipationConditions []*EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
 
-	Attendees []string `json:"attendees"`
+	Attendees []*string `json:"attendees"`
 
-	Program string `json:"program"`
+	Program *string `json:"program"`
 
-	CommentModeration EventCommentModeration `json:"commentModeration"`
+	CommentModeration *EventCommentModeration `json:"commentModeration"`
 
-	ShowParticipationPrice bool `json:"showParticipationPrice"`
+	ShowParticipationPrice *bool `json:"showParticipationPrice"`
 
-	HideOrganizerWhenGroupEvent bool `json:"hideOrganizerWhenGroupEvent"`
+	HideOrganizerWhenGroupEvent *bool `json:"hideOrganizerWhenGroupEvent"`
 
-	IsOnline bool `json:"isOnline"`
+	IsOnline *bool `json:"isOnline"`
 }
 
 func (v *FullEventOptions) MarshalJSON() ([]byte, error) {
@@ -2503,7 +2499,7 @@ type FullEventOrganizerActor interface {
 	implementsGraphQLInterfaceFullEventOrganizerActor()
 	ActorFragment
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *FullEventOrganizerActorApplication) implementsGraphQLInterfaceFullEventOrganizerActor() {}
@@ -2596,45 +2592,47 @@ func __marshalFullEventOrganizerActor(v *FullEventOrganizerActor) ([]byte, error
 // Represents an application
 type FullEventOrganizerActorApplication struct {
 	ActorFragmentApplication `json:"-"`
-	Typename                 string `json:"__typename"`
+	Typename                 *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventOrganizerActorApplication.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetTypename() string { return v.Typename }
+func (v *FullEventOrganizerActorApplication) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventOrganizerActorApplication.Id, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetId() string { return v.ActorFragmentApplication.Id }
+func (v *FullEventOrganizerActorApplication) GetId() *string { return v.ActorFragmentApplication.Id }
 
 // GetAvatar returns FullEventOrganizerActorApplication.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventOrganizerActorApplication) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentApplication.Avatar
 }
 
 // GetType returns FullEventOrganizerActorApplication.Type, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetType() ActorType {
+func (v *FullEventOrganizerActorApplication) GetType() *ActorType {
 	return v.ActorFragmentApplication.Type
 }
 
 // GetPreferredUsername returns FullEventOrganizerActorApplication.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetPreferredUsername() string {
+func (v *FullEventOrganizerActorApplication) GetPreferredUsername() *string {
 	return v.ActorFragmentApplication.PreferredUsername
 }
 
 // GetName returns FullEventOrganizerActorApplication.Name, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetName() string { return v.ActorFragmentApplication.Name }
+func (v *FullEventOrganizerActorApplication) GetName() *string {
+	return v.ActorFragmentApplication.Name
+}
 
 // GetDomain returns FullEventOrganizerActorApplication.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetDomain() string {
+func (v *FullEventOrganizerActorApplication) GetDomain() *string {
 	return v.ActorFragmentApplication.Domain
 }
 
 // GetSummary returns FullEventOrganizerActorApplication.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetSummary() string {
+func (v *FullEventOrganizerActorApplication) GetSummary() *string {
 	return v.ActorFragmentApplication.Summary
 }
 
 // GetUrl returns FullEventOrganizerActorApplication.Url, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorApplication) GetUrl() string { return v.ActorFragmentApplication.Url }
+func (v *FullEventOrganizerActorApplication) GetUrl() *string { return v.ActorFragmentApplication.Url }
 
 func (v *FullEventOrganizerActorApplication) UnmarshalJSON(b []byte) error {
 
@@ -2662,23 +2660,23 @@ func (v *FullEventOrganizerActorApplication) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventOrganizerActorApplication struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventOrganizerActorApplication) MarshalJSON() ([]byte, error) {
@@ -2710,39 +2708,39 @@ func (v *FullEventOrganizerActorApplication) __premarshalJSON() (*__premarshalFu
 // Represents a group of actors
 type FullEventOrganizerActorGroup struct {
 	ActorFragmentGroup `json:"-"`
-	Typename           string `json:"__typename"`
+	Typename           *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventOrganizerActorGroup.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetTypename() string { return v.Typename }
+func (v *FullEventOrganizerActorGroup) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventOrganizerActorGroup.Id, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetId() string { return v.ActorFragmentGroup.Id }
+func (v *FullEventOrganizerActorGroup) GetId() *string { return v.ActorFragmentGroup.Id }
 
 // GetAvatar returns FullEventOrganizerActorGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventOrganizerActorGroup) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentGroup.Avatar
 }
 
 // GetType returns FullEventOrganizerActorGroup.Type, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetType() ActorType { return v.ActorFragmentGroup.Type }
+func (v *FullEventOrganizerActorGroup) GetType() *ActorType { return v.ActorFragmentGroup.Type }
 
 // GetPreferredUsername returns FullEventOrganizerActorGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetPreferredUsername() string {
+func (v *FullEventOrganizerActorGroup) GetPreferredUsername() *string {
 	return v.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns FullEventOrganizerActorGroup.Name, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetName() string { return v.ActorFragmentGroup.Name }
+func (v *FullEventOrganizerActorGroup) GetName() *string { return v.ActorFragmentGroup.Name }
 
 // GetDomain returns FullEventOrganizerActorGroup.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetDomain() string { return v.ActorFragmentGroup.Domain }
+func (v *FullEventOrganizerActorGroup) GetDomain() *string { return v.ActorFragmentGroup.Domain }
 
 // GetSummary returns FullEventOrganizerActorGroup.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetSummary() string { return v.ActorFragmentGroup.Summary }
+func (v *FullEventOrganizerActorGroup) GetSummary() *string { return v.ActorFragmentGroup.Summary }
 
 // GetUrl returns FullEventOrganizerActorGroup.Url, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorGroup) GetUrl() string { return v.ActorFragmentGroup.Url }
+func (v *FullEventOrganizerActorGroup) GetUrl() *string { return v.ActorFragmentGroup.Url }
 
 func (v *FullEventOrganizerActorGroup) UnmarshalJSON(b []byte) error {
 
@@ -2770,23 +2768,23 @@ func (v *FullEventOrganizerActorGroup) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventOrganizerActorGroup struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventOrganizerActorGroup) MarshalJSON() ([]byte, error) {
@@ -2818,39 +2816,39 @@ func (v *FullEventOrganizerActorGroup) __premarshalJSON() (*__premarshalFullEven
 // Represents a person identity
 type FullEventOrganizerActorPerson struct {
 	ActorFragmentPerson `json:"-"`
-	Typename            string `json:"__typename"`
+	Typename            *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventOrganizerActorPerson.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetTypename() string { return v.Typename }
+func (v *FullEventOrganizerActorPerson) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventOrganizerActorPerson.Id, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetId() string { return v.ActorFragmentPerson.Id }
+func (v *FullEventOrganizerActorPerson) GetId() *string { return v.ActorFragmentPerson.Id }
 
 // GetAvatar returns FullEventOrganizerActorPerson.Avatar, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetAvatar() ActorFragmentAvatarMedia {
+func (v *FullEventOrganizerActorPerson) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentPerson.Avatar
 }
 
 // GetType returns FullEventOrganizerActorPerson.Type, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetType() ActorType { return v.ActorFragmentPerson.Type }
+func (v *FullEventOrganizerActorPerson) GetType() *ActorType { return v.ActorFragmentPerson.Type }
 
 // GetPreferredUsername returns FullEventOrganizerActorPerson.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetPreferredUsername() string {
+func (v *FullEventOrganizerActorPerson) GetPreferredUsername() *string {
 	return v.ActorFragmentPerson.PreferredUsername
 }
 
 // GetName returns FullEventOrganizerActorPerson.Name, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetName() string { return v.ActorFragmentPerson.Name }
+func (v *FullEventOrganizerActorPerson) GetName() *string { return v.ActorFragmentPerson.Name }
 
 // GetDomain returns FullEventOrganizerActorPerson.Domain, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetDomain() string { return v.ActorFragmentPerson.Domain }
+func (v *FullEventOrganizerActorPerson) GetDomain() *string { return v.ActorFragmentPerson.Domain }
 
 // GetSummary returns FullEventOrganizerActorPerson.Summary, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetSummary() string { return v.ActorFragmentPerson.Summary }
+func (v *FullEventOrganizerActorPerson) GetSummary() *string { return v.ActorFragmentPerson.Summary }
 
 // GetUrl returns FullEventOrganizerActorPerson.Url, and is useful for accessing the field via an interface.
-func (v *FullEventOrganizerActorPerson) GetUrl() string { return v.ActorFragmentPerson.Url }
+func (v *FullEventOrganizerActorPerson) GetUrl() *string { return v.ActorFragmentPerson.Url }
 
 func (v *FullEventOrganizerActorPerson) UnmarshalJSON(b []byte) error {
 
@@ -2878,23 +2876,23 @@ func (v *FullEventOrganizerActorPerson) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventOrganizerActorPerson struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *FullEventOrganizerActorPerson) MarshalJSON() ([]byte, error) {
@@ -2926,25 +2924,25 @@ func (v *FullEventOrganizerActorPerson) __premarshalJSON() (*__premarshalFullEve
 // Participation statistics
 type FullEventParticipantStats struct {
 	// The number of approved participants
-	Going int `json:"going"`
+	Going *int `json:"going"`
 	// The number of not approved participants
-	NotApproved int `json:"notApproved"`
+	NotApproved *int `json:"notApproved"`
 	// The number of simple participants (excluding creators)
-	Participant int    `json:"participant"`
-	Typename    string `json:"__typename"`
+	Participant *int    `json:"participant"`
+	Typename    *string `json:"__typename"`
 }
 
 // GetGoing returns FullEventParticipantStats.Going, and is useful for accessing the field via an interface.
-func (v *FullEventParticipantStats) GetGoing() int { return v.Going }
+func (v *FullEventParticipantStats) GetGoing() *int { return v.Going }
 
 // GetNotApproved returns FullEventParticipantStats.NotApproved, and is useful for accessing the field via an interface.
-func (v *FullEventParticipantStats) GetNotApproved() int { return v.NotApproved }
+func (v *FullEventParticipantStats) GetNotApproved() *int { return v.NotApproved }
 
 // GetParticipant returns FullEventParticipantStats.Participant, and is useful for accessing the field via an interface.
-func (v *FullEventParticipantStats) GetParticipant() int { return v.Participant }
+func (v *FullEventParticipantStats) GetParticipant() *int { return v.Participant }
 
 // GetTypename returns FullEventParticipantStats.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventParticipantStats) GetTypename() string { return v.Typename }
+func (v *FullEventParticipantStats) GetTypename() *string { return v.Typename }
 
 // FullEventPhysicalAddress includes the requested fields of the GraphQL type Address.
 // The GraphQL type's documentation follows.
@@ -2952,47 +2950,47 @@ func (v *FullEventParticipantStats) GetTypename() string { return v.Typename }
 // An address object
 type FullEventPhysicalAddress struct {
 	AdressFragment `json:"-"`
-	Typename       string `json:"__typename"`
+	Typename       *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventPhysicalAddress.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetTypename() string { return v.Typename }
+func (v *FullEventPhysicalAddress) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventPhysicalAddress.Id, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetId() string { return v.AdressFragment.Id }
+func (v *FullEventPhysicalAddress) GetId() *string { return v.AdressFragment.Id }
 
 // GetDescription returns FullEventPhysicalAddress.Description, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetDescription() string { return v.AdressFragment.Description }
+func (v *FullEventPhysicalAddress) GetDescription() *string { return v.AdressFragment.Description }
 
 // GetGeom returns FullEventPhysicalAddress.Geom, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetGeom() string { return v.AdressFragment.Geom }
+func (v *FullEventPhysicalAddress) GetGeom() *string { return v.AdressFragment.Geom }
 
 // GetStreet returns FullEventPhysicalAddress.Street, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetStreet() string { return v.AdressFragment.Street }
+func (v *FullEventPhysicalAddress) GetStreet() *string { return v.AdressFragment.Street }
 
 // GetLocality returns FullEventPhysicalAddress.Locality, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetLocality() string { return v.AdressFragment.Locality }
+func (v *FullEventPhysicalAddress) GetLocality() *string { return v.AdressFragment.Locality }
 
 // GetPostalCode returns FullEventPhysicalAddress.PostalCode, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetPostalCode() string { return v.AdressFragment.PostalCode }
+func (v *FullEventPhysicalAddress) GetPostalCode() *string { return v.AdressFragment.PostalCode }
 
 // GetRegion returns FullEventPhysicalAddress.Region, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetRegion() string { return v.AdressFragment.Region }
+func (v *FullEventPhysicalAddress) GetRegion() *string { return v.AdressFragment.Region }
 
 // GetCountry returns FullEventPhysicalAddress.Country, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetCountry() string { return v.AdressFragment.Country }
+func (v *FullEventPhysicalAddress) GetCountry() *string { return v.AdressFragment.Country }
 
 // GetType returns FullEventPhysicalAddress.Type, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetType() string { return v.AdressFragment.Type }
+func (v *FullEventPhysicalAddress) GetType() *string { return v.AdressFragment.Type }
 
 // GetUrl returns FullEventPhysicalAddress.Url, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetUrl() string { return v.AdressFragment.Url }
+func (v *FullEventPhysicalAddress) GetUrl() *string { return v.AdressFragment.Url }
 
 // GetOriginId returns FullEventPhysicalAddress.OriginId, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetOriginId() string { return v.AdressFragment.OriginId }
+func (v *FullEventPhysicalAddress) GetOriginId() *string { return v.AdressFragment.OriginId }
 
 // GetTimezone returns FullEventPhysicalAddress.Timezone, and is useful for accessing the field via an interface.
-func (v *FullEventPhysicalAddress) GetTimezone() string { return v.AdressFragment.Timezone }
+func (v *FullEventPhysicalAddress) GetTimezone() *string { return v.AdressFragment.Timezone }
 
 func (v *FullEventPhysicalAddress) UnmarshalJSON(b []byte) error {
 
@@ -3020,31 +3018,31 @@ func (v *FullEventPhysicalAddress) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventPhysicalAddress struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
-	Geom string `json:"geom"`
+	Geom *string `json:"geom"`
 
-	Street string `json:"street"`
+	Street *string `json:"street"`
 
-	Locality string `json:"locality"`
+	Locality *string `json:"locality"`
 
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 
-	Region string `json:"region"`
+	Region *string `json:"region"`
 
-	Country string `json:"country"`
+	Country *string `json:"country"`
 
-	Type string `json:"type"`
+	Type *string `json:"type"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 
-	OriginId string `json:"originId"`
+	OriginId *string `json:"originId"`
 
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 }
 
 func (v *FullEventPhysicalAddress) MarshalJSON() ([]byte, error) {
@@ -3080,30 +3078,30 @@ func (v *FullEventPhysicalAddress) __premarshalJSON() (*__premarshalFullEventPhy
 // A media
 type FullEventPictureMedia struct {
 	// The media items UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 	// The media's full URL
-	Url string `json:"url"`
+	Url *string `json:"url"`
 	// The media's name
-	Name string `json:"name"`
+	Name *string `json:"name"`
 	// The media's metadata
-	Metadata FullEventPictureMediaMetadata `json:"metadata"`
-	Typename string                        `json:"__typename"`
+	Metadata *FullEventPictureMediaMetadata `json:"metadata"`
+	Typename *string                        `json:"__typename"`
 }
 
 // GetUuid returns FullEventPictureMedia.Uuid, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMedia) GetUuid() uuid.UUID { return v.Uuid }
+func (v *FullEventPictureMedia) GetUuid() *uuid.UUID { return v.Uuid }
 
 // GetUrl returns FullEventPictureMedia.Url, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMedia) GetUrl() string { return v.Url }
+func (v *FullEventPictureMedia) GetUrl() *string { return v.Url }
 
 // GetName returns FullEventPictureMedia.Name, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMedia) GetName() string { return v.Name }
+func (v *FullEventPictureMedia) GetName() *string { return v.Name }
 
 // GetMetadata returns FullEventPictureMedia.Metadata, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMedia) GetMetadata() FullEventPictureMediaMetadata { return v.Metadata }
+func (v *FullEventPictureMedia) GetMetadata() *FullEventPictureMediaMetadata { return v.Metadata }
 
 // GetTypename returns FullEventPictureMedia.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMedia) GetTypename() string { return v.Typename }
+func (v *FullEventPictureMedia) GetTypename() *string { return v.Typename }
 
 // FullEventPictureMediaMetadata includes the requested fields of the GraphQL type MediaMetadata.
 // The GraphQL type's documentation follows.
@@ -3111,25 +3109,25 @@ func (v *FullEventPictureMedia) GetTypename() string { return v.Typename }
 // Some metadata associated with a media
 type FullEventPictureMediaMetadata struct {
 	// The media width (if a picture)
-	Width int `json:"width"`
+	Width *int `json:"width"`
 	// The media width (if a height)
-	Height int `json:"height"`
+	Height *int `json:"height"`
 	// The media blurhash (if a picture
-	Blurhash string `json:"blurhash"`
-	Typename string `json:"__typename"`
+	Blurhash *string `json:"blurhash"`
+	Typename *string `json:"__typename"`
 }
 
 // GetWidth returns FullEventPictureMediaMetadata.Width, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMediaMetadata) GetWidth() int { return v.Width }
+func (v *FullEventPictureMediaMetadata) GetWidth() *int { return v.Width }
 
 // GetHeight returns FullEventPictureMediaMetadata.Height, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMediaMetadata) GetHeight() int { return v.Height }
+func (v *FullEventPictureMediaMetadata) GetHeight() *int { return v.Height }
 
 // GetBlurhash returns FullEventPictureMediaMetadata.Blurhash, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMediaMetadata) GetBlurhash() string { return v.Blurhash }
+func (v *FullEventPictureMediaMetadata) GetBlurhash() *string { return v.Blurhash }
 
 // GetTypename returns FullEventPictureMediaMetadata.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventPictureMediaMetadata) GetTypename() string { return v.Typename }
+func (v *FullEventPictureMediaMetadata) GetTypename() *string { return v.Typename }
 
 // FullEventTagsTag includes the requested fields of the GraphQL type Tag.
 // The GraphQL type's documentation follows.
@@ -3137,20 +3135,20 @@ func (v *FullEventPictureMediaMetadata) GetTypename() string { return v.Typename
 // A tag
 type FullEventTagsTag struct {
 	TagFragment `json:"-"`
-	Typename    string `json:"__typename"`
+	Typename    *string `json:"__typename"`
 }
 
 // GetTypename returns FullEventTagsTag.Typename, and is useful for accessing the field via an interface.
-func (v *FullEventTagsTag) GetTypename() string { return v.Typename }
+func (v *FullEventTagsTag) GetTypename() *string { return v.Typename }
 
 // GetId returns FullEventTagsTag.Id, and is useful for accessing the field via an interface.
-func (v *FullEventTagsTag) GetId() string { return v.TagFragment.Id }
+func (v *FullEventTagsTag) GetId() *string { return v.TagFragment.Id }
 
 // GetSlug returns FullEventTagsTag.Slug, and is useful for accessing the field via an interface.
-func (v *FullEventTagsTag) GetSlug() string { return v.TagFragment.Slug }
+func (v *FullEventTagsTag) GetSlug() *string { return v.TagFragment.Slug }
 
 // GetTitle returns FullEventTagsTag.Title, and is useful for accessing the field via an interface.
-func (v *FullEventTagsTag) GetTitle() string { return v.TagFragment.Title }
+func (v *FullEventTagsTag) GetTitle() *string { return v.TagFragment.Title }
 
 func (v *FullEventTagsTag) UnmarshalJSON(b []byte) error {
 
@@ -3178,13 +3176,13 @@ func (v *FullEventTagsTag) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalFullEventTagsTag struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Slug string `json:"slug"`
+	Slug *string `json:"slug"`
 
-	Title string `json:"title"`
+	Title *string `json:"title"`
 }
 
 func (v *FullEventTagsTag) MarshalJSON() ([]byte, error) {
@@ -3212,61 +3210,63 @@ func (v *FullEventTagsTag) __premarshalJSON() (*__premarshalFullEventTagsTag, er
 type GroupMinimalFields struct {
 	ActorFragmentGroup `json:"-"`
 	// If the actor is suspended
-	Suspended bool `json:"suspended"`
+	Suspended *bool `json:"suspended"`
 	// Whether the group can be found and/or promoted
-	Visibility GroupVisibility `json:"visibility"`
+	Visibility *GroupVisibility `json:"visibility"`
 	// Whether the group is opened to all or has restricted access
-	Openness Openness `json:"openness"`
+	Openness *Openness `json:"openness"`
 	// Whether the actors manually approves followers
-	ManuallyApprovesFollowers bool `json:"manuallyApprovesFollowers"`
+	ManuallyApprovesFollowers *bool `json:"manuallyApprovesFollowers"`
 	// Whether the group default is to allow participants to see one another
-	AllowSeeParticipants bool   `json:"allowSeeParticipants"`
-	Typename             string `json:"__typename"`
+	AllowSeeParticipants *bool   `json:"allowSeeParticipants"`
+	Typename             *string `json:"__typename"`
 }
 
 // GetSuspended returns GroupMinimalFields.Suspended, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetSuspended() bool { return v.Suspended }
+func (v *GroupMinimalFields) GetSuspended() *bool { return v.Suspended }
 
 // GetVisibility returns GroupMinimalFields.Visibility, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetVisibility() GroupVisibility { return v.Visibility }
+func (v *GroupMinimalFields) GetVisibility() *GroupVisibility { return v.Visibility }
 
 // GetOpenness returns GroupMinimalFields.Openness, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetOpenness() Openness { return v.Openness }
+func (v *GroupMinimalFields) GetOpenness() *Openness { return v.Openness }
 
 // GetManuallyApprovesFollowers returns GroupMinimalFields.ManuallyApprovesFollowers, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetManuallyApprovesFollowers() bool { return v.ManuallyApprovesFollowers }
+func (v *GroupMinimalFields) GetManuallyApprovesFollowers() *bool { return v.ManuallyApprovesFollowers }
 
 // GetAllowSeeParticipants returns GroupMinimalFields.AllowSeeParticipants, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetAllowSeeParticipants() bool { return v.AllowSeeParticipants }
+func (v *GroupMinimalFields) GetAllowSeeParticipants() *bool { return v.AllowSeeParticipants }
 
 // GetTypename returns GroupMinimalFields.Typename, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetTypename() string { return v.Typename }
+func (v *GroupMinimalFields) GetTypename() *string { return v.Typename }
 
 // GetId returns GroupMinimalFields.Id, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetId() string { return v.ActorFragmentGroup.Id }
+func (v *GroupMinimalFields) GetId() *string { return v.ActorFragmentGroup.Id }
 
 // GetAvatar returns GroupMinimalFields.Avatar, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetAvatar() ActorFragmentAvatarMedia { return v.ActorFragmentGroup.Avatar }
+func (v *GroupMinimalFields) GetAvatar() *ActorFragmentAvatarMedia {
+	return v.ActorFragmentGroup.Avatar
+}
 
 // GetType returns GroupMinimalFields.Type, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetType() ActorType { return v.ActorFragmentGroup.Type }
+func (v *GroupMinimalFields) GetType() *ActorType { return v.ActorFragmentGroup.Type }
 
 // GetPreferredUsername returns GroupMinimalFields.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetPreferredUsername() string {
+func (v *GroupMinimalFields) GetPreferredUsername() *string {
 	return v.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns GroupMinimalFields.Name, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetName() string { return v.ActorFragmentGroup.Name }
+func (v *GroupMinimalFields) GetName() *string { return v.ActorFragmentGroup.Name }
 
 // GetDomain returns GroupMinimalFields.Domain, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetDomain() string { return v.ActorFragmentGroup.Domain }
+func (v *GroupMinimalFields) GetDomain() *string { return v.ActorFragmentGroup.Domain }
 
 // GetSummary returns GroupMinimalFields.Summary, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetSummary() string { return v.ActorFragmentGroup.Summary }
+func (v *GroupMinimalFields) GetSummary() *string { return v.ActorFragmentGroup.Summary }
 
 // GetUrl returns GroupMinimalFields.Url, and is useful for accessing the field via an interface.
-func (v *GroupMinimalFields) GetUrl() string { return v.ActorFragmentGroup.Url }
+func (v *GroupMinimalFields) GetUrl() *string { return v.ActorFragmentGroup.Url }
 
 func (v *GroupMinimalFields) UnmarshalJSON(b []byte) error {
 
@@ -3294,33 +3294,33 @@ func (v *GroupMinimalFields) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalGroupMinimalFields struct {
-	Suspended bool `json:"suspended"`
+	Suspended *bool `json:"suspended"`
 
-	Visibility GroupVisibility `json:"visibility"`
+	Visibility *GroupVisibility `json:"visibility"`
 
-	Openness Openness `json:"openness"`
+	Openness *Openness `json:"openness"`
 
-	ManuallyApprovesFollowers bool `json:"manuallyApprovesFollowers"`
+	ManuallyApprovesFollowers *bool `json:"manuallyApprovesFollowers"`
 
-	AllowSeeParticipants bool `json:"allowSeeParticipants"`
+	AllowSeeParticipants *bool `json:"allowSeeParticipants"`
 
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *GroupMinimalFields) MarshalJSON() ([]byte, error) {
@@ -3371,41 +3371,12 @@ var AllGroupVisibility = []GroupVisibility{
 
 // An attached media or a link to a media
 type MediaInput struct {
-	// A full media attached
-	Media MediaInputObject `json:"media"`
-	// The ID of an existing media
-	MediaId string `json:"mediaId"`
 	// The UUIDID of an existing media
-	MediaUuid uuid.UUID `json:"mediaUuid"`
+	MediaUuid *uuid.UUID `json:"mediaUuid"`
 }
-
-// GetMedia returns MediaInput.Media, and is useful for accessing the field via an interface.
-func (v *MediaInput) GetMedia() MediaInputObject { return v.Media }
-
-// GetMediaId returns MediaInput.MediaId, and is useful for accessing the field via an interface.
-func (v *MediaInput) GetMediaId() string { return v.MediaId }
 
 // GetMediaUuid returns MediaInput.MediaUuid, and is useful for accessing the field via an interface.
-func (v *MediaInput) GetMediaUuid() uuid.UUID { return v.MediaUuid }
-
-// An attached media
-type MediaInputObject struct {
-	// The media's name
-	Name string `json:"name"`
-	// The media's alternative text
-	Alt string `json:"alt"`
-	// The media owner
-	ActorId string `json:"actorId"`
-}
-
-// GetName returns MediaInputObject.Name, and is useful for accessing the field via an interface.
-func (v *MediaInputObject) GetName() string { return v.Name }
-
-// GetAlt returns MediaInputObject.Alt, and is useful for accessing the field via an interface.
-func (v *MediaInputObject) GetAlt() string { return v.Alt }
-
-// GetActorId returns MediaInputObject.ActorId, and is useful for accessing the field via an interface.
-func (v *MediaInputObject) GetActorId() string { return v.ActorId }
+func (v *MediaInput) GetMediaUuid() *uuid.UUID { return v.MediaUuid }
 
 // Describes how an actor is opened to follows
 type Openness string
@@ -3445,22 +3416,22 @@ func (v *RefreshAuthTokensRefreshTokenRefreshedToken) GetRefreshToken() string {
 // RefreshAuthTokensResponse is returned by RefreshAuthTokens on success.
 type RefreshAuthTokensResponse struct {
 	// Refresh a token
-	RefreshToken RefreshAuthTokensRefreshTokenRefreshedToken `json:"refreshToken"`
+	RefreshToken *RefreshAuthTokensRefreshTokenRefreshedToken `json:"refreshToken"`
 }
 
 // GetRefreshToken returns RefreshAuthTokensResponse.RefreshToken, and is useful for accessing the field via an interface.
-func (v *RefreshAuthTokensResponse) GetRefreshToken() RefreshAuthTokensRefreshTokenRefreshedToken {
+func (v *RefreshAuthTokensResponse) GetRefreshToken() *RefreshAuthTokensRefreshTokenRefreshedToken {
 	return v.RefreshToken
 }
 
 // SearchAddressResponse is returned by SearchAddress on success.
 type SearchAddressResponse struct {
 	// Search for an address
-	SearchAddress []SearchAddressSearchAddress `json:"searchAddress"`
+	SearchAddress []*SearchAddressSearchAddress `json:"searchAddress"`
 }
 
 // GetSearchAddress returns SearchAddressResponse.SearchAddress, and is useful for accessing the field via an interface.
-func (v *SearchAddressResponse) GetSearchAddress() []SearchAddressSearchAddress {
+func (v *SearchAddressResponse) GetSearchAddress() []*SearchAddressSearchAddress {
 	return v.SearchAddress
 }
 
@@ -3470,47 +3441,47 @@ func (v *SearchAddressResponse) GetSearchAddress() []SearchAddressSearchAddress 
 // An address object
 type SearchAddressSearchAddress struct {
 	AdressFragment `json:"-"`
-	Typename       string `json:"__typename"`
+	Typename       *string `json:"__typename"`
 }
 
 // GetTypename returns SearchAddressSearchAddress.Typename, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetTypename() string { return v.Typename }
+func (v *SearchAddressSearchAddress) GetTypename() *string { return v.Typename }
 
 // GetId returns SearchAddressSearchAddress.Id, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetId() string { return v.AdressFragment.Id }
+func (v *SearchAddressSearchAddress) GetId() *string { return v.AdressFragment.Id }
 
 // GetDescription returns SearchAddressSearchAddress.Description, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetDescription() string { return v.AdressFragment.Description }
+func (v *SearchAddressSearchAddress) GetDescription() *string { return v.AdressFragment.Description }
 
 // GetGeom returns SearchAddressSearchAddress.Geom, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetGeom() string { return v.AdressFragment.Geom }
+func (v *SearchAddressSearchAddress) GetGeom() *string { return v.AdressFragment.Geom }
 
 // GetStreet returns SearchAddressSearchAddress.Street, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetStreet() string { return v.AdressFragment.Street }
+func (v *SearchAddressSearchAddress) GetStreet() *string { return v.AdressFragment.Street }
 
 // GetLocality returns SearchAddressSearchAddress.Locality, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetLocality() string { return v.AdressFragment.Locality }
+func (v *SearchAddressSearchAddress) GetLocality() *string { return v.AdressFragment.Locality }
 
 // GetPostalCode returns SearchAddressSearchAddress.PostalCode, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetPostalCode() string { return v.AdressFragment.PostalCode }
+func (v *SearchAddressSearchAddress) GetPostalCode() *string { return v.AdressFragment.PostalCode }
 
 // GetRegion returns SearchAddressSearchAddress.Region, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetRegion() string { return v.AdressFragment.Region }
+func (v *SearchAddressSearchAddress) GetRegion() *string { return v.AdressFragment.Region }
 
 // GetCountry returns SearchAddressSearchAddress.Country, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetCountry() string { return v.AdressFragment.Country }
+func (v *SearchAddressSearchAddress) GetCountry() *string { return v.AdressFragment.Country }
 
 // GetType returns SearchAddressSearchAddress.Type, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetType() string { return v.AdressFragment.Type }
+func (v *SearchAddressSearchAddress) GetType() *string { return v.AdressFragment.Type }
 
 // GetUrl returns SearchAddressSearchAddress.Url, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetUrl() string { return v.AdressFragment.Url }
+func (v *SearchAddressSearchAddress) GetUrl() *string { return v.AdressFragment.Url }
 
 // GetOriginId returns SearchAddressSearchAddress.OriginId, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetOriginId() string { return v.AdressFragment.OriginId }
+func (v *SearchAddressSearchAddress) GetOriginId() *string { return v.AdressFragment.OriginId }
 
 // GetTimezone returns SearchAddressSearchAddress.Timezone, and is useful for accessing the field via an interface.
-func (v *SearchAddressSearchAddress) GetTimezone() string { return v.AdressFragment.Timezone }
+func (v *SearchAddressSearchAddress) GetTimezone() *string { return v.AdressFragment.Timezone }
 
 func (v *SearchAddressSearchAddress) UnmarshalJSON(b []byte) error {
 
@@ -3538,31 +3509,31 @@ func (v *SearchAddressSearchAddress) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalSearchAddressSearchAddress struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
-	Geom string `json:"geom"`
+	Geom *string `json:"geom"`
 
-	Street string `json:"street"`
+	Street *string `json:"street"`
 
-	Locality string `json:"locality"`
+	Locality *string `json:"locality"`
 
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 
-	Region string `json:"region"`
+	Region *string `json:"region"`
 
-	Country string `json:"country"`
+	Country *string `json:"country"`
 
-	Type string `json:"type"`
+	Type *string `json:"type"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 
-	OriginId string `json:"originId"`
+	OriginId *string `json:"originId"`
 
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 }
 
 func (v *SearchAddressSearchAddress) MarshalJSON() ([]byte, error) {
@@ -3595,11 +3566,11 @@ func (v *SearchAddressSearchAddress) __premarshalJSON() (*__premarshalSearchAddr
 // SearchEventsResponse is returned by SearchEvents on success.
 type SearchEventsResponse struct {
 	// Search events
-	SearchEvents SearchEventsSearchEvents `json:"searchEvents"`
+	SearchEvents *SearchEventsSearchEvents `json:"searchEvents"`
 }
 
 // GetSearchEvents returns SearchEventsResponse.SearchEvents, and is useful for accessing the field via an interface.
-func (v *SearchEventsResponse) GetSearchEvents() SearchEventsSearchEvents { return v.SearchEvents }
+func (v *SearchEventsResponse) GetSearchEvents() *SearchEventsSearchEvents { return v.SearchEvents }
 
 // SearchEventsSearchEvents includes the requested fields of the GraphQL type Events.
 // The GraphQL type's documentation follows.
@@ -3609,20 +3580,20 @@ type SearchEventsSearchEvents struct {
 	// Total elements
 	Total int `json:"total"`
 	// Event elements
-	Elements []SearchEventsSearchEventsElementsEvent `json:"elements"`
-	Typename string                                  `json:"__typename"`
+	Elements []*SearchEventsSearchEventsElementsEvent `json:"elements"`
+	Typename *string                                  `json:"__typename"`
 }
 
 // GetTotal returns SearchEventsSearchEvents.Total, and is useful for accessing the field via an interface.
 func (v *SearchEventsSearchEvents) GetTotal() int { return v.Total }
 
 // GetElements returns SearchEventsSearchEvents.Elements, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEvents) GetElements() []SearchEventsSearchEventsElementsEvent {
+func (v *SearchEventsSearchEvents) GetElements() []*SearchEventsSearchEventsElementsEvent {
 	return v.Elements
 }
 
 // GetTypename returns SearchEventsSearchEvents.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEvents) GetTypename() string { return v.Typename }
+func (v *SearchEventsSearchEvents) GetTypename() *string { return v.Typename }
 
 // SearchEventsSearchEventsElementsEvent includes the requested fields of the GraphQL type Event.
 // The GraphQL type's documentation follows.
@@ -3630,77 +3601,77 @@ func (v *SearchEventsSearchEvents) GetTypename() string { return v.Typename }
 // An event
 type SearchEventsSearchEventsElementsEvent struct {
 	// Internal ID for this event
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The event's title
-	Title string `json:"title"`
+	Title *string `json:"title"`
 	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 	// Datetime for when the event begins
-	BeginsOn time.Time `json:"beginsOn"`
+	BeginsOn *time.Time `json:"beginsOn"`
 	// The event's picture
-	Picture SearchEventsSearchEventsElementsEventPictureMedia `json:"picture"`
+	Picture *SearchEventsSearchEventsElementsEventPictureMedia `json:"picture"`
 	// Status of the event
-	Status EventStatus `json:"status"`
+	Status *EventStatus `json:"status"`
 	// The event's tags
-	Tags []SearchEventsSearchEventsElementsEventTagsTag `json:"tags"`
+	Tags []*SearchEventsSearchEventsElementsEventTagsTag `json:"tags"`
 	// The event's physical address
-	PhysicalAddress SearchEventsSearchEventsElementsEventPhysicalAddress `json:"physicalAddress"`
+	PhysicalAddress *SearchEventsSearchEventsElementsEventPhysicalAddress `json:"physicalAddress"`
 	// The event's organizer (as a person)
-	OrganizerActor SearchEventsSearchEventsElementsEventOrganizerActor `json:"-"`
+	OrganizerActor *SearchEventsSearchEventsElementsEventOrganizerActor `json:"-"`
 	// Who the event is attributed to (often a group)
-	AttributedTo SearchEventsSearchEventsElementsEventAttributedToActor `json:"-"`
+	AttributedTo *SearchEventsSearchEventsElementsEventAttributedToActor `json:"-"`
 	// The event options
-	Options  SearchEventsSearchEventsElementsEventOptions `json:"options"`
-	Typename string                                       `json:"__typename"`
+	Options  *SearchEventsSearchEventsElementsEventOptions `json:"options"`
+	Typename *string                                       `json:"__typename"`
 }
 
 // GetId returns SearchEventsSearchEventsElementsEvent.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetId() string { return v.Id }
+func (v *SearchEventsSearchEventsElementsEvent) GetId() *string { return v.Id }
 
 // GetTitle returns SearchEventsSearchEventsElementsEvent.Title, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetTitle() string { return v.Title }
+func (v *SearchEventsSearchEventsElementsEvent) GetTitle() *string { return v.Title }
 
 // GetUuid returns SearchEventsSearchEventsElementsEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetUuid() uuid.UUID { return v.Uuid }
+func (v *SearchEventsSearchEventsElementsEvent) GetUuid() *uuid.UUID { return v.Uuid }
 
 // GetBeginsOn returns SearchEventsSearchEventsElementsEvent.BeginsOn, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetBeginsOn() time.Time { return v.BeginsOn }
+func (v *SearchEventsSearchEventsElementsEvent) GetBeginsOn() *time.Time { return v.BeginsOn }
 
 // GetPicture returns SearchEventsSearchEventsElementsEvent.Picture, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetPicture() SearchEventsSearchEventsElementsEventPictureMedia {
+func (v *SearchEventsSearchEventsElementsEvent) GetPicture() *SearchEventsSearchEventsElementsEventPictureMedia {
 	return v.Picture
 }
 
 // GetStatus returns SearchEventsSearchEventsElementsEvent.Status, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetStatus() EventStatus { return v.Status }
+func (v *SearchEventsSearchEventsElementsEvent) GetStatus() *EventStatus { return v.Status }
 
 // GetTags returns SearchEventsSearchEventsElementsEvent.Tags, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetTags() []SearchEventsSearchEventsElementsEventTagsTag {
+func (v *SearchEventsSearchEventsElementsEvent) GetTags() []*SearchEventsSearchEventsElementsEventTagsTag {
 	return v.Tags
 }
 
 // GetPhysicalAddress returns SearchEventsSearchEventsElementsEvent.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetPhysicalAddress() SearchEventsSearchEventsElementsEventPhysicalAddress {
+func (v *SearchEventsSearchEventsElementsEvent) GetPhysicalAddress() *SearchEventsSearchEventsElementsEventPhysicalAddress {
 	return v.PhysicalAddress
 }
 
 // GetOrganizerActor returns SearchEventsSearchEventsElementsEvent.OrganizerActor, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetOrganizerActor() SearchEventsSearchEventsElementsEventOrganizerActor {
+func (v *SearchEventsSearchEventsElementsEvent) GetOrganizerActor() *SearchEventsSearchEventsElementsEventOrganizerActor {
 	return v.OrganizerActor
 }
 
 // GetAttributedTo returns SearchEventsSearchEventsElementsEvent.AttributedTo, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetAttributedTo() SearchEventsSearchEventsElementsEventAttributedToActor {
+func (v *SearchEventsSearchEventsElementsEvent) GetAttributedTo() *SearchEventsSearchEventsElementsEventAttributedToActor {
 	return v.AttributedTo
 }
 
 // GetOptions returns SearchEventsSearchEventsElementsEvent.Options, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetOptions() SearchEventsSearchEventsElementsEventOptions {
+func (v *SearchEventsSearchEventsElementsEvent) GetOptions() *SearchEventsSearchEventsElementsEventOptions {
 	return v.Options
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEvent.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEvent) GetTypename() string { return v.Typename }
+func (v *SearchEventsSearchEventsElementsEvent) GetTypename() *string { return v.Typename }
 
 func (v *SearchEventsSearchEventsElementsEvent) UnmarshalJSON(b []byte) error {
 
@@ -3725,8 +3696,9 @@ func (v *SearchEventsSearchEventsElementsEvent) UnmarshalJSON(b []byte) error {
 		dst := &v.OrganizerActor
 		src := firstPass.OrganizerActor
 		if len(src) != 0 && string(src) != "null" {
+			*dst = new(SearchEventsSearchEventsElementsEventOrganizerActor)
 			err = __unmarshalSearchEventsSearchEventsElementsEventOrganizerActor(
-				src, dst)
+				src, *dst)
 			if err != nil {
 				return fmt.Errorf(
 					"unable to unmarshal SearchEventsSearchEventsElementsEvent.OrganizerActor: %w", err)
@@ -3738,8 +3710,9 @@ func (v *SearchEventsSearchEventsElementsEvent) UnmarshalJSON(b []byte) error {
 		dst := &v.AttributedTo
 		src := firstPass.AttributedTo
 		if len(src) != 0 && string(src) != "null" {
+			*dst = new(SearchEventsSearchEventsElementsEventAttributedToActor)
 			err = __unmarshalSearchEventsSearchEventsElementsEventAttributedToActor(
-				src, dst)
+				src, *dst)
 			if err != nil {
 				return fmt.Errorf(
 					"unable to unmarshal SearchEventsSearchEventsElementsEvent.AttributedTo: %w", err)
@@ -3750,29 +3723,29 @@ func (v *SearchEventsSearchEventsElementsEvent) UnmarshalJSON(b []byte) error {
 }
 
 type __premarshalSearchEventsSearchEventsElementsEvent struct {
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Title string `json:"title"`
+	Title *string `json:"title"`
 
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 
-	BeginsOn time.Time `json:"beginsOn"`
+	BeginsOn *time.Time `json:"beginsOn"`
 
-	Picture SearchEventsSearchEventsElementsEventPictureMedia `json:"picture"`
+	Picture *SearchEventsSearchEventsElementsEventPictureMedia `json:"picture"`
 
-	Status EventStatus `json:"status"`
+	Status *EventStatus `json:"status"`
 
-	Tags []SearchEventsSearchEventsElementsEventTagsTag `json:"tags"`
+	Tags []*SearchEventsSearchEventsElementsEventTagsTag `json:"tags"`
 
-	PhysicalAddress SearchEventsSearchEventsElementsEventPhysicalAddress `json:"physicalAddress"`
+	PhysicalAddress *SearchEventsSearchEventsElementsEventPhysicalAddress `json:"physicalAddress"`
 
 	OrganizerActor json.RawMessage `json:"organizerActor"`
 
 	AttributedTo json.RawMessage `json:"attributedTo"`
 
-	Options SearchEventsSearchEventsElementsEventOptions `json:"options"`
+	Options *SearchEventsSearchEventsElementsEventOptions `json:"options"`
 
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 }
 
 func (v *SearchEventsSearchEventsElementsEvent) MarshalJSON() ([]byte, error) {
@@ -3798,24 +3771,28 @@ func (v *SearchEventsSearchEventsElementsEvent) __premarshalJSON() (*__premarsha
 
 		dst := &retval.OrganizerActor
 		src := v.OrganizerActor
-		var err error
-		*dst, err = __marshalSearchEventsSearchEventsElementsEventOrganizerActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal SearchEventsSearchEventsElementsEvent.OrganizerActor: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalSearchEventsSearchEventsElementsEventOrganizerActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal SearchEventsSearchEventsElementsEvent.OrganizerActor: %w", err)
+			}
 		}
 	}
 	{
 
 		dst := &retval.AttributedTo
 		src := v.AttributedTo
-		var err error
-		*dst, err = __marshalSearchEventsSearchEventsElementsEventAttributedToActor(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal SearchEventsSearchEventsElementsEvent.AttributedTo: %w", err)
+		if src != nil {
+			var err error
+			*dst, err = __marshalSearchEventsSearchEventsElementsEventAttributedToActor(
+				src)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"unable to marshal SearchEventsSearchEventsElementsEvent.AttributedTo: %w", err)
+			}
 		}
 	}
 	retval.Options = v.Options
@@ -3836,7 +3813,7 @@ type SearchEventsSearchEventsElementsEventAttributedToActor interface {
 	implementsGraphQLInterfaceSearchEventsSearchEventsElementsEventAttributedToActor()
 	ActorFragment
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) implementsGraphQLInterfaceSearchEventsSearchEventsElementsEventAttributedToActor() {
@@ -3932,51 +3909,51 @@ func __marshalSearchEventsSearchEventsElementsEventAttributedToActor(v *SearchEv
 // Represents an application
 type SearchEventsSearchEventsElementsEventAttributedToApplication struct {
 	ActorFragmentApplication `json:"-"`
-	Typename                 string `json:"__typename"`
+	Typename                 *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventAttributedToApplication.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventAttributedToApplication.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetId() *string {
 	return v.ActorFragmentApplication.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventAttributedToApplication.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentApplication.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventAttributedToApplication.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetType() *ActorType {
 	return v.ActorFragmentApplication.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventAttributedToApplication.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetPreferredUsername() *string {
 	return v.ActorFragmentApplication.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventAttributedToApplication.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetName() *string {
 	return v.ActorFragmentApplication.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventAttributedToApplication.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetDomain() *string {
 	return v.ActorFragmentApplication.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventAttributedToApplication.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetSummary() *string {
 	return v.ActorFragmentApplication.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventAttributedToApplication.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) GetUrl() *string {
 	return v.ActorFragmentApplication.Url
 }
 
@@ -4006,23 +3983,23 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) Unmarshal
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventAttributedToApplication struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) MarshalJSON() ([]byte, error) {
@@ -4054,51 +4031,51 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToApplication) __premars
 // Represents a group of actors
 type SearchEventsSearchEventsElementsEventAttributedToGroup struct {
 	ActorFragmentGroup `json:"-"`
-	Typename           string `json:"__typename"`
+	Typename           *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventAttributedToGroup.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventAttributedToGroup.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetId() *string {
 	return v.ActorFragmentGroup.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventAttributedToGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentGroup.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventAttributedToGroup.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetType() *ActorType {
 	return v.ActorFragmentGroup.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventAttributedToGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetPreferredUsername() *string {
 	return v.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventAttributedToGroup.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetName() *string {
 	return v.ActorFragmentGroup.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventAttributedToGroup.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetDomain() *string {
 	return v.ActorFragmentGroup.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventAttributedToGroup.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetSummary() *string {
 	return v.ActorFragmentGroup.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventAttributedToGroup.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) GetUrl() *string {
 	return v.ActorFragmentGroup.Url
 }
 
@@ -4128,23 +4105,23 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) UnmarshalJSON(b
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventAttributedToGroup struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) MarshalJSON() ([]byte, error) {
@@ -4176,51 +4153,51 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToGroup) __premarshalJSO
 // Represents a person identity
 type SearchEventsSearchEventsElementsEventAttributedToPerson struct {
 	ActorFragmentPerson `json:"-"`
-	Typename            string `json:"__typename"`
+	Typename            *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventAttributedToPerson.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventAttributedToPerson.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetId() *string {
 	return v.ActorFragmentPerson.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventAttributedToPerson.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentPerson.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventAttributedToPerson.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetType() *ActorType {
 	return v.ActorFragmentPerson.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventAttributedToPerson.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetPreferredUsername() *string {
 	return v.ActorFragmentPerson.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventAttributedToPerson.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetName() *string {
 	return v.ActorFragmentPerson.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventAttributedToPerson.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetDomain() *string {
 	return v.ActorFragmentPerson.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventAttributedToPerson.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetSummary() *string {
 	return v.ActorFragmentPerson.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventAttributedToPerson.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) GetUrl() *string {
 	return v.ActorFragmentPerson.Url
 }
 
@@ -4250,23 +4227,23 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) UnmarshalJSON(
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventAttributedToPerson struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) MarshalJSON() ([]byte, error) {
@@ -4298,89 +4275,89 @@ func (v *SearchEventsSearchEventsElementsEventAttributedToPerson) __premarshalJS
 // Event options
 type SearchEventsSearchEventsElementsEventOptions struct {
 	EventOptions `json:"-"`
-	Typename     string `json:"__typename"`
+	Typename     *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventOptions.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetTypename() string { return v.Typename }
+func (v *SearchEventsSearchEventsElementsEventOptions) GetTypename() *string { return v.Typename }
 
 // GetMaximumAttendeeCapacity returns SearchEventsSearchEventsElementsEventOptions.MaximumAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetMaximumAttendeeCapacity() int {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetMaximumAttendeeCapacity() *int {
 	return v.EventOptions.MaximumAttendeeCapacity
 }
 
 // GetRemainingAttendeeCapacity returns SearchEventsSearchEventsElementsEventOptions.RemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetRemainingAttendeeCapacity() int {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetRemainingAttendeeCapacity() *int {
 	return v.EventOptions.RemainingAttendeeCapacity
 }
 
 // GetShowRemainingAttendeeCapacity returns SearchEventsSearchEventsElementsEventOptions.ShowRemainingAttendeeCapacity, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetShowRemainingAttendeeCapacity() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetShowRemainingAttendeeCapacity() *bool {
 	return v.EventOptions.ShowRemainingAttendeeCapacity
 }
 
 // GetAnonymousParticipation returns SearchEventsSearchEventsElementsEventOptions.AnonymousParticipation, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetAnonymousParticipation() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetAnonymousParticipation() *bool {
 	return v.EventOptions.AnonymousParticipation
 }
 
 // GetHideNumberOfParticipants returns SearchEventsSearchEventsElementsEventOptions.HideNumberOfParticipants, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetHideNumberOfParticipants() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetHideNumberOfParticipants() *bool {
 	return v.EventOptions.HideNumberOfParticipants
 }
 
 // GetShowStartTime returns SearchEventsSearchEventsElementsEventOptions.ShowStartTime, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetShowStartTime() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetShowStartTime() *bool {
 	return v.EventOptions.ShowStartTime
 }
 
 // GetShowEndTime returns SearchEventsSearchEventsElementsEventOptions.ShowEndTime, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetShowEndTime() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetShowEndTime() *bool {
 	return v.EventOptions.ShowEndTime
 }
 
 // GetTimezone returns SearchEventsSearchEventsElementsEventOptions.Timezone, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetTimezone() string {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetTimezone() *string {
 	return v.EventOptions.Timezone
 }
 
 // GetOffers returns SearchEventsSearchEventsElementsEventOptions.Offers, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetOffers() []EventOptionsOffersEventOffer {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetOffers() []*EventOptionsOffersEventOffer {
 	return v.EventOptions.Offers
 }
 
 // GetParticipationConditions returns SearchEventsSearchEventsElementsEventOptions.ParticipationConditions, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetParticipationConditions() []EventOptionsParticipationConditionsEventParticipationCondition {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetParticipationConditions() []*EventOptionsParticipationConditionsEventParticipationCondition {
 	return v.EventOptions.ParticipationConditions
 }
 
 // GetAttendees returns SearchEventsSearchEventsElementsEventOptions.Attendees, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetAttendees() []string {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetAttendees() []*string {
 	return v.EventOptions.Attendees
 }
 
 // GetProgram returns SearchEventsSearchEventsElementsEventOptions.Program, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetProgram() string {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetProgram() *string {
 	return v.EventOptions.Program
 }
 
 // GetCommentModeration returns SearchEventsSearchEventsElementsEventOptions.CommentModeration, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetCommentModeration() EventCommentModeration {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetCommentModeration() *EventCommentModeration {
 	return v.EventOptions.CommentModeration
 }
 
 // GetShowParticipationPrice returns SearchEventsSearchEventsElementsEventOptions.ShowParticipationPrice, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetShowParticipationPrice() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetShowParticipationPrice() *bool {
 	return v.EventOptions.ShowParticipationPrice
 }
 
 // GetHideOrganizerWhenGroupEvent returns SearchEventsSearchEventsElementsEventOptions.HideOrganizerWhenGroupEvent, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetHideOrganizerWhenGroupEvent() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetHideOrganizerWhenGroupEvent() *bool {
 	return v.EventOptions.HideOrganizerWhenGroupEvent
 }
 
 // GetIsOnline returns SearchEventsSearchEventsElementsEventOptions.IsOnline, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOptions) GetIsOnline() bool {
+func (v *SearchEventsSearchEventsElementsEventOptions) GetIsOnline() *bool {
 	return v.EventOptions.IsOnline
 }
 
@@ -4410,39 +4387,39 @@ func (v *SearchEventsSearchEventsElementsEventOptions) UnmarshalJSON(b []byte) e
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventOptions struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	MaximumAttendeeCapacity int `json:"maximumAttendeeCapacity"`
+	MaximumAttendeeCapacity *int `json:"maximumAttendeeCapacity"`
 
-	RemainingAttendeeCapacity int `json:"remainingAttendeeCapacity"`
+	RemainingAttendeeCapacity *int `json:"remainingAttendeeCapacity"`
 
-	ShowRemainingAttendeeCapacity bool `json:"showRemainingAttendeeCapacity"`
+	ShowRemainingAttendeeCapacity *bool `json:"showRemainingAttendeeCapacity"`
 
-	AnonymousParticipation bool `json:"anonymousParticipation"`
+	AnonymousParticipation *bool `json:"anonymousParticipation"`
 
-	HideNumberOfParticipants bool `json:"hideNumberOfParticipants"`
+	HideNumberOfParticipants *bool `json:"hideNumberOfParticipants"`
 
-	ShowStartTime bool `json:"showStartTime"`
+	ShowStartTime *bool `json:"showStartTime"`
 
-	ShowEndTime bool `json:"showEndTime"`
+	ShowEndTime *bool `json:"showEndTime"`
 
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 
-	Offers []EventOptionsOffersEventOffer `json:"offers"`
+	Offers []*EventOptionsOffersEventOffer `json:"offers"`
 
-	ParticipationConditions []EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
+	ParticipationConditions []*EventOptionsParticipationConditionsEventParticipationCondition `json:"participationConditions"`
 
-	Attendees []string `json:"attendees"`
+	Attendees []*string `json:"attendees"`
 
-	Program string `json:"program"`
+	Program *string `json:"program"`
 
-	CommentModeration EventCommentModeration `json:"commentModeration"`
+	CommentModeration *EventCommentModeration `json:"commentModeration"`
 
-	ShowParticipationPrice bool `json:"showParticipationPrice"`
+	ShowParticipationPrice *bool `json:"showParticipationPrice"`
 
-	HideOrganizerWhenGroupEvent bool `json:"hideOrganizerWhenGroupEvent"`
+	HideOrganizerWhenGroupEvent *bool `json:"hideOrganizerWhenGroupEvent"`
 
-	IsOnline bool `json:"isOnline"`
+	IsOnline *bool `json:"isOnline"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventOptions) MarshalJSON() ([]byte, error) {
@@ -4489,7 +4466,7 @@ type SearchEventsSearchEventsElementsEventOrganizerActor interface {
 	implementsGraphQLInterfaceSearchEventsSearchEventsElementsEventOrganizerActor()
 	ActorFragment
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
-	GetTypename() string
+	GetTypename() *string
 }
 
 func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) implementsGraphQLInterfaceSearchEventsSearchEventsElementsEventOrganizerActor() {
@@ -4585,51 +4562,51 @@ func __marshalSearchEventsSearchEventsElementsEventOrganizerActor(v *SearchEvent
 // Represents an application
 type SearchEventsSearchEventsElementsEventOrganizerActorApplication struct {
 	ActorFragmentApplication `json:"-"`
-	Typename                 string `json:"__typename"`
+	Typename                 *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetId() *string {
 	return v.ActorFragmentApplication.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentApplication.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetType() *ActorType {
 	return v.ActorFragmentApplication.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetPreferredUsername() *string {
 	return v.ActorFragmentApplication.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetName() *string {
 	return v.ActorFragmentApplication.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetDomain() *string {
 	return v.ActorFragmentApplication.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetSummary() *string {
 	return v.ActorFragmentApplication.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventOrganizerActorApplication.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) GetUrl() *string {
 	return v.ActorFragmentApplication.Url
 }
 
@@ -4659,23 +4636,23 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) Unmarsh
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventOrganizerActorApplication struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) MarshalJSON() ([]byte, error) {
@@ -4707,51 +4684,51 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorApplication) __prema
 // Represents a group of actors
 type SearchEventsSearchEventsElementsEventOrganizerActorGroup struct {
 	ActorFragmentGroup `json:"-"`
-	Typename           string `json:"__typename"`
+	Typename           *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetId() *string {
 	return v.ActorFragmentGroup.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentGroup.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetType() *ActorType {
 	return v.ActorFragmentGroup.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetPreferredUsername() *string {
 	return v.ActorFragmentGroup.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetName() *string {
 	return v.ActorFragmentGroup.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetDomain() *string {
 	return v.ActorFragmentGroup.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetSummary() *string {
 	return v.ActorFragmentGroup.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventOrganizerActorGroup.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) GetUrl() *string {
 	return v.ActorFragmentGroup.Url
 }
 
@@ -4781,23 +4758,23 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) UnmarshalJSON
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventOrganizerActorGroup struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) MarshalJSON() ([]byte, error) {
@@ -4829,51 +4806,51 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorGroup) __premarshalJ
 // Represents a person identity
 type SearchEventsSearchEventsElementsEventOrganizerActorPerson struct {
 	ActorFragmentPerson `json:"-"`
-	Typename            string `json:"__typename"`
+	Typename            *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetId() *string {
 	return v.ActorFragmentPerson.Id
 }
 
 // GetAvatar returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Avatar, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetAvatar() ActorFragmentAvatarMedia {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetAvatar() *ActorFragmentAvatarMedia {
 	return v.ActorFragmentPerson.Avatar
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetType() ActorType {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetType() *ActorType {
 	return v.ActorFragmentPerson.Type
 }
 
 // GetPreferredUsername returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.PreferredUsername, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetPreferredUsername() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetPreferredUsername() *string {
 	return v.ActorFragmentPerson.PreferredUsername
 }
 
 // GetName returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Name, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetName() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetName() *string {
 	return v.ActorFragmentPerson.Name
 }
 
 // GetDomain returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Domain, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetDomain() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetDomain() *string {
 	return v.ActorFragmentPerson.Domain
 }
 
 // GetSummary returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Summary, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetSummary() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetSummary() *string {
 	return v.ActorFragmentPerson.Summary
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventOrganizerActorPerson.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) GetUrl() *string {
 	return v.ActorFragmentPerson.Url
 }
 
@@ -4903,23 +4880,23 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) UnmarshalJSO
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventOrganizerActorPerson struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Avatar ActorFragmentAvatarMedia `json:"avatar"`
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
 
-	Type ActorType `json:"type"`
+	Type *ActorType `json:"type"`
 
-	PreferredUsername string `json:"preferredUsername"`
+	PreferredUsername *string `json:"preferredUsername"`
 
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
-	Domain string `json:"domain"`
+	Domain *string `json:"domain"`
 
-	Summary string `json:"summary"`
+	Summary *string `json:"summary"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) MarshalJSON() ([]byte, error) {
@@ -4951,71 +4928,71 @@ func (v *SearchEventsSearchEventsElementsEventOrganizerActorPerson) __premarshal
 // An address object
 type SearchEventsSearchEventsElementsEventPhysicalAddress struct {
 	AdressFragment `json:"-"`
-	Typename       string `json:"__typename"`
+	Typename       *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventPhysicalAddress.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetTypename() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetTypename() *string {
 	return v.Typename
 }
 
 // GetId returns SearchEventsSearchEventsElementsEventPhysicalAddress.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetId() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetId() *string {
 	return v.AdressFragment.Id
 }
 
 // GetDescription returns SearchEventsSearchEventsElementsEventPhysicalAddress.Description, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetDescription() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetDescription() *string {
 	return v.AdressFragment.Description
 }
 
 // GetGeom returns SearchEventsSearchEventsElementsEventPhysicalAddress.Geom, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetGeom() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetGeom() *string {
 	return v.AdressFragment.Geom
 }
 
 // GetStreet returns SearchEventsSearchEventsElementsEventPhysicalAddress.Street, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetStreet() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetStreet() *string {
 	return v.AdressFragment.Street
 }
 
 // GetLocality returns SearchEventsSearchEventsElementsEventPhysicalAddress.Locality, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetLocality() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetLocality() *string {
 	return v.AdressFragment.Locality
 }
 
 // GetPostalCode returns SearchEventsSearchEventsElementsEventPhysicalAddress.PostalCode, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetPostalCode() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetPostalCode() *string {
 	return v.AdressFragment.PostalCode
 }
 
 // GetRegion returns SearchEventsSearchEventsElementsEventPhysicalAddress.Region, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetRegion() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetRegion() *string {
 	return v.AdressFragment.Region
 }
 
 // GetCountry returns SearchEventsSearchEventsElementsEventPhysicalAddress.Country, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetCountry() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetCountry() *string {
 	return v.AdressFragment.Country
 }
 
 // GetType returns SearchEventsSearchEventsElementsEventPhysicalAddress.Type, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetType() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetType() *string {
 	return v.AdressFragment.Type
 }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventPhysicalAddress.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetUrl() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetUrl() *string {
 	return v.AdressFragment.Url
 }
 
 // GetOriginId returns SearchEventsSearchEventsElementsEventPhysicalAddress.OriginId, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetOriginId() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetOriginId() *string {
 	return v.AdressFragment.OriginId
 }
 
 // GetTimezone returns SearchEventsSearchEventsElementsEventPhysicalAddress.Timezone, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetTimezone() string {
+func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) GetTimezone() *string {
 	return v.AdressFragment.Timezone
 }
 
@@ -5045,31 +5022,31 @@ func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) UnmarshalJSON(b [
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventPhysicalAddress struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Description string `json:"description"`
+	Description *string `json:"description"`
 
-	Geom string `json:"geom"`
+	Geom *string `json:"geom"`
 
-	Street string `json:"street"`
+	Street *string `json:"street"`
 
-	Locality string `json:"locality"`
+	Locality *string `json:"locality"`
 
-	PostalCode string `json:"postalCode"`
+	PostalCode *string `json:"postalCode"`
 
-	Region string `json:"region"`
+	Region *string `json:"region"`
 
-	Country string `json:"country"`
+	Country *string `json:"country"`
 
-	Type string `json:"type"`
+	Type *string `json:"type"`
 
-	Url string `json:"url"`
+	Url *string `json:"url"`
 
-	OriginId string `json:"originId"`
+	OriginId *string `json:"originId"`
 
-	Timezone string `json:"timezone"`
+	Timezone *string `json:"timezone"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) MarshalJSON() ([]byte, error) {
@@ -5105,20 +5082,20 @@ func (v *SearchEventsSearchEventsElementsEventPhysicalAddress) __premarshalJSON(
 // A media
 type SearchEventsSearchEventsElementsEventPictureMedia struct {
 	// The media items UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 	// The media's full URL
-	Url      string `json:"url"`
-	Typename string `json:"__typename"`
+	Url      *string `json:"url"`
+	Typename *string `json:"__typename"`
 }
 
 // GetUuid returns SearchEventsSearchEventsElementsEventPictureMedia.Uuid, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetUuid() uuid.UUID { return v.Uuid }
+func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetUuid() *uuid.UUID { return v.Uuid }
 
 // GetUrl returns SearchEventsSearchEventsElementsEventPictureMedia.Url, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetUrl() string { return v.Url }
+func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetUrl() *string { return v.Url }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventPictureMedia.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetTypename() string { return v.Typename }
+func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetTypename() *string { return v.Typename }
 
 // SearchEventsSearchEventsElementsEventTagsTag includes the requested fields of the GraphQL type Tag.
 // The GraphQL type's documentation follows.
@@ -5126,20 +5103,20 @@ func (v *SearchEventsSearchEventsElementsEventPictureMedia) GetTypename() string
 // A tag
 type SearchEventsSearchEventsElementsEventTagsTag struct {
 	TagFragment `json:"-"`
-	Typename    string `json:"__typename"`
+	Typename    *string `json:"__typename"`
 }
 
 // GetTypename returns SearchEventsSearchEventsElementsEventTagsTag.Typename, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventTagsTag) GetTypename() string { return v.Typename }
+func (v *SearchEventsSearchEventsElementsEventTagsTag) GetTypename() *string { return v.Typename }
 
 // GetId returns SearchEventsSearchEventsElementsEventTagsTag.Id, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventTagsTag) GetId() string { return v.TagFragment.Id }
+func (v *SearchEventsSearchEventsElementsEventTagsTag) GetId() *string { return v.TagFragment.Id }
 
 // GetSlug returns SearchEventsSearchEventsElementsEventTagsTag.Slug, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventTagsTag) GetSlug() string { return v.TagFragment.Slug }
+func (v *SearchEventsSearchEventsElementsEventTagsTag) GetSlug() *string { return v.TagFragment.Slug }
 
 // GetTitle returns SearchEventsSearchEventsElementsEventTagsTag.Title, and is useful for accessing the field via an interface.
-func (v *SearchEventsSearchEventsElementsEventTagsTag) GetTitle() string { return v.TagFragment.Title }
+func (v *SearchEventsSearchEventsElementsEventTagsTag) GetTitle() *string { return v.TagFragment.Title }
 
 func (v *SearchEventsSearchEventsElementsEventTagsTag) UnmarshalJSON(b []byte) error {
 
@@ -5167,13 +5144,13 @@ func (v *SearchEventsSearchEventsElementsEventTagsTag) UnmarshalJSON(b []byte) e
 }
 
 type __premarshalSearchEventsSearchEventsElementsEventTagsTag struct {
-	Typename string `json:"__typename"`
+	Typename *string `json:"__typename"`
 
-	Id string `json:"id"`
+	Id *string `json:"id"`
 
-	Slug string `json:"slug"`
+	Slug *string `json:"slug"`
 
-	Title string `json:"title"`
+	Title *string `json:"title"`
 }
 
 func (v *SearchEventsSearchEventsElementsEventTagsTag) MarshalJSON() ([]byte, error) {
@@ -5200,34 +5177,34 @@ func (v *SearchEventsSearchEventsElementsEventTagsTag) __premarshalJSON() (*__pr
 // A tag
 type TagFragment struct {
 	// The tag's ID
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The tags's slug
-	Slug string `json:"slug"`
+	Slug *string `json:"slug"`
 	// The tag's title
-	Title    string `json:"title"`
-	Typename string `json:"__typename"`
+	Title    *string `json:"title"`
+	Typename *string `json:"__typename"`
 }
 
 // GetId returns TagFragment.Id, and is useful for accessing the field via an interface.
-func (v *TagFragment) GetId() string { return v.Id }
+func (v *TagFragment) GetId() *string { return v.Id }
 
 // GetSlug returns TagFragment.Slug, and is useful for accessing the field via an interface.
-func (v *TagFragment) GetSlug() string { return v.Slug }
+func (v *TagFragment) GetSlug() *string { return v.Slug }
 
 // GetTitle returns TagFragment.Title, and is useful for accessing the field via an interface.
-func (v *TagFragment) GetTitle() string { return v.Title }
+func (v *TagFragment) GetTitle() *string { return v.Title }
 
 // GetTypename returns TagFragment.Typename, and is useful for accessing the field via an interface.
-func (v *TagFragment) GetTypename() string { return v.Typename }
+func (v *TagFragment) GetTypename() *string { return v.Typename }
 
 // UpdateEventResponse is returned by UpdateEvent on success.
 type UpdateEventResponse struct {
 	// Update an event
-	UpdateEvent UpdateEventUpdateEvent `json:"updateEvent"`
+	UpdateEvent *UpdateEventUpdateEvent `json:"updateEvent"`
 }
 
 // GetUpdateEvent returns UpdateEventResponse.UpdateEvent, and is useful for accessing the field via an interface.
-func (v *UpdateEventResponse) GetUpdateEvent() UpdateEventUpdateEvent { return v.UpdateEvent }
+func (v *UpdateEventResponse) GetUpdateEvent() *UpdateEventUpdateEvent { return v.UpdateEvent }
 
 // UpdateEventUpdateEvent includes the requested fields of the GraphQL type Event.
 // The GraphQL type's documentation follows.
@@ -5235,45 +5212,44 @@ func (v *UpdateEventResponse) GetUpdateEvent() UpdateEventUpdateEvent { return v
 // An event
 type UpdateEventUpdateEvent struct {
 	// Internal ID for this event
-	Id string `json:"id"`
+	Id *string `json:"id"`
 	// The Event UUID
-	Uuid uuid.UUID `json:"uuid"`
+	Uuid *uuid.UUID `json:"uuid"`
 }
 
 // GetId returns UpdateEventUpdateEvent.Id, and is useful for accessing the field via an interface.
-func (v *UpdateEventUpdateEvent) GetId() string { return v.Id }
+func (v *UpdateEventUpdateEvent) GetId() *string { return v.Id }
 
 // GetUuid returns UpdateEventUpdateEvent.Uuid, and is useful for accessing the field via an interface.
-func (v *UpdateEventUpdateEvent) GetUuid() uuid.UUID { return v.Uuid }
+func (v *UpdateEventUpdateEvent) GetUuid() *uuid.UUID { return v.Uuid }
 
 // __CreateEventInput is used internally by genqlient
 type __CreateEventInput struct {
-	OrganizerActorId         string               `json:"organizerActorId"`
-	AttributedToId           string               `json:"attributedToId"`
-	Title                    string               `json:"title"`
-	Description              string               `json:"description"`
-	BeginsOn                 time.Time            `json:"beginsOn"`
-	EndsOn                   time.Time            `json:"endsOn"`
-	Status                   EventStatus          `json:"status"`
-	Visibility               EventVisibility      `json:"visibility"`
-	JoinOptions              EventJoinOptions     `json:"joinOptions"`
-	ExternalParticipationUrl string               `json:"externalParticipationUrl"`
-	Draft                    bool                 `json:"draft"`
-	Tags                     []string             `json:"tags"`
-	Picture                  MediaInput           `json:"picture"`
-	OnlineAddress            string               `json:"onlineAddress"`
-	Category                 EventCategory        `json:"category"`
-	PhysicalAddress          AddressInput         `json:"physicalAddress"`
-	Options                  EventOptionsInput    `json:"options"`
-	Contacts                 []Contact            `json:"contacts"`
-	Metadata                 []EventMetadataInput `json:"metadata"`
+	OrganizerActorId         string             `json:"organizerActorId"`
+	AttributedToId           *string            `json:"attributedToId"`
+	Title                    string             `json:"title"`
+	Description              string             `json:"description"`
+	BeginsOn                 time.Time          `json:"beginsOn"`
+	EndsOn                   *time.Time         `json:"endsOn"`
+	Status                   *EventStatus       `json:"status"`
+	Visibility               *EventVisibility   `json:"visibility"`
+	JoinOptions              *EventJoinOptions  `json:"joinOptions"`
+	ExternalParticipationUrl *string            `json:"externalParticipationUrl"`
+	Draft                    *bool              `json:"draft"`
+	Tags                     []*string          `json:"tags"`
+	Picture                  *MediaInput        `json:"picture"`
+	OnlineAddress            *string            `json:"onlineAddress"`
+	Category                 *EventCategory     `json:"category"`
+	PhysicalAddress          *AddressInput      `json:"physicalAddress"`
+	Options                  *EventOptionsInput `json:"options"`
+	Contacts                 []*Contact         `json:"contacts"`
 }
 
 // GetOrganizerActorId returns __CreateEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
 func (v *__CreateEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
 
 // GetAttributedToId returns __CreateEventInput.AttributedToId, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetAttributedToId() string { return v.AttributedToId }
+func (v *__CreateEventInput) GetAttributedToId() *string { return v.AttributedToId }
 
 // GetTitle returns __CreateEventInput.Title, and is useful for accessing the field via an interface.
 func (v *__CreateEventInput) GetTitle() string { return v.Title }
@@ -5285,46 +5261,43 @@ func (v *__CreateEventInput) GetDescription() string { return v.Description }
 func (v *__CreateEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
 
 // GetEndsOn returns __CreateEventInput.EndsOn, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetEndsOn() time.Time { return v.EndsOn }
+func (v *__CreateEventInput) GetEndsOn() *time.Time { return v.EndsOn }
 
 // GetStatus returns __CreateEventInput.Status, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetStatus() EventStatus { return v.Status }
+func (v *__CreateEventInput) GetStatus() *EventStatus { return v.Status }
 
 // GetVisibility returns __CreateEventInput.Visibility, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetVisibility() EventVisibility { return v.Visibility }
+func (v *__CreateEventInput) GetVisibility() *EventVisibility { return v.Visibility }
 
 // GetJoinOptions returns __CreateEventInput.JoinOptions, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
+func (v *__CreateEventInput) GetJoinOptions() *EventJoinOptions { return v.JoinOptions }
 
 // GetExternalParticipationUrl returns __CreateEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
+func (v *__CreateEventInput) GetExternalParticipationUrl() *string { return v.ExternalParticipationUrl }
 
 // GetDraft returns __CreateEventInput.Draft, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetDraft() bool { return v.Draft }
+func (v *__CreateEventInput) GetDraft() *bool { return v.Draft }
 
 // GetTags returns __CreateEventInput.Tags, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetTags() []string { return v.Tags }
+func (v *__CreateEventInput) GetTags() []*string { return v.Tags }
 
 // GetPicture returns __CreateEventInput.Picture, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetPicture() MediaInput { return v.Picture }
+func (v *__CreateEventInput) GetPicture() *MediaInput { return v.Picture }
 
 // GetOnlineAddress returns __CreateEventInput.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetOnlineAddress() string { return v.OnlineAddress }
+func (v *__CreateEventInput) GetOnlineAddress() *string { return v.OnlineAddress }
 
 // GetCategory returns __CreateEventInput.Category, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetCategory() EventCategory { return v.Category }
+func (v *__CreateEventInput) GetCategory() *EventCategory { return v.Category }
 
 // GetPhysicalAddress returns __CreateEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
+func (v *__CreateEventInput) GetPhysicalAddress() *AddressInput { return v.PhysicalAddress }
 
 // GetOptions returns __CreateEventInput.Options, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetOptions() EventOptionsInput { return v.Options }
+func (v *__CreateEventInput) GetOptions() *EventOptionsInput { return v.Options }
 
 // GetContacts returns __CreateEventInput.Contacts, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetContacts() []Contact { return v.Contacts }
-
-// GetMetadata returns __CreateEventInput.Metadata, and is useful for accessing the field via an interface.
-func (v *__CreateEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
+func (v *__CreateEventInput) GetContacts() []*Contact { return v.Contacts }
 
 // __FetchEventInput is used internally by genqlient
 type __FetchEventInput struct {
@@ -5352,104 +5325,100 @@ func (v *__SearchAddressInput) GetQuery() string { return v.Query }
 
 // __SearchEventsInput is used internally by genqlient
 type __SearchEventsInput struct {
-	Term     string    `json:"term"`
-	BeginsOn time.Time `json:"beginsOn"`
+	Term     *string    `json:"term"`
+	BeginsOn *time.Time `json:"beginsOn"`
 }
 
 // GetTerm returns __SearchEventsInput.Term, and is useful for accessing the field via an interface.
-func (v *__SearchEventsInput) GetTerm() string { return v.Term }
+func (v *__SearchEventsInput) GetTerm() *string { return v.Term }
 
 // GetBeginsOn returns __SearchEventsInput.BeginsOn, and is useful for accessing the field via an interface.
-func (v *__SearchEventsInput) GetBeginsOn() time.Time { return v.BeginsOn }
+func (v *__SearchEventsInput) GetBeginsOn() *time.Time { return v.BeginsOn }
 
 // __UpdateEventInput is used internally by genqlient
 type __UpdateEventInput struct {
-	Id                       string               `json:"id"`
-	Title                    string               `json:"title"`
-	Description              string               `json:"description"`
-	BeginsOn                 time.Time            `json:"beginsOn"`
-	EndsOn                   time.Time            `json:"endsOn"`
-	Status                   EventStatus          `json:"status"`
-	Visibility               EventVisibility      `json:"visibility"`
-	JoinOptions              EventJoinOptions     `json:"joinOptions"`
-	ExternalParticipationUrl string               `json:"externalParticipationUrl"`
-	Draft                    bool                 `json:"draft"`
-	Tags                     []string             `json:"tags"`
-	Picture                  MediaInput           `json:"picture"`
-	OnlineAddress            string               `json:"onlineAddress"`
-	OrganizerActorId         string               `json:"organizerActorId"`
-	AttributedToId           string               `json:"attributedToId"`
-	Category                 EventCategory        `json:"category"`
-	PhysicalAddress          AddressInput         `json:"physicalAddress"`
-	Options                  EventOptionsInput    `json:"options"`
-	Contacts                 []Contact            `json:"contacts"`
-	Metadata                 []EventMetadataInput `json:"metadata"`
+	Id                       string             `json:"id"`
+	Title                    *string            `json:"title"`
+	Description              *string            `json:"description"`
+	BeginsOn                 *time.Time         `json:"beginsOn"`
+	EndsOn                   *time.Time         `json:"endsOn"`
+	Status                   *EventStatus       `json:"status"`
+	Visibility               *EventVisibility   `json:"visibility"`
+	JoinOptions              *EventJoinOptions  `json:"joinOptions"`
+	ExternalParticipationUrl *string            `json:"externalParticipationUrl"`
+	Draft                    *bool              `json:"draft"`
+	Tags                     []*string          `json:"tags"`
+	Picture                  *MediaInput        `json:"picture"`
+	OnlineAddress            *string            `json:"onlineAddress"`
+	OrganizerActorId         *string            `json:"organizerActorId"`
+	AttributedToId           *string            `json:"attributedToId"`
+	Category                 *EventCategory     `json:"category"`
+	PhysicalAddress          *AddressInput      `json:"physicalAddress"`
+	Options                  *EventOptionsInput `json:"options"`
+	Contacts                 []*Contact         `json:"contacts"`
 }
 
 // GetId returns __UpdateEventInput.Id, and is useful for accessing the field via an interface.
 func (v *__UpdateEventInput) GetId() string { return v.Id }
 
 // GetTitle returns __UpdateEventInput.Title, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetTitle() string { return v.Title }
+func (v *__UpdateEventInput) GetTitle() *string { return v.Title }
 
 // GetDescription returns __UpdateEventInput.Description, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetDescription() string { return v.Description }
+func (v *__UpdateEventInput) GetDescription() *string { return v.Description }
 
 // GetBeginsOn returns __UpdateEventInput.BeginsOn, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetBeginsOn() time.Time { return v.BeginsOn }
+func (v *__UpdateEventInput) GetBeginsOn() *time.Time { return v.BeginsOn }
 
 // GetEndsOn returns __UpdateEventInput.EndsOn, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetEndsOn() time.Time { return v.EndsOn }
+func (v *__UpdateEventInput) GetEndsOn() *time.Time { return v.EndsOn }
 
 // GetStatus returns __UpdateEventInput.Status, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetStatus() EventStatus { return v.Status }
+func (v *__UpdateEventInput) GetStatus() *EventStatus { return v.Status }
 
 // GetVisibility returns __UpdateEventInput.Visibility, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetVisibility() EventVisibility { return v.Visibility }
+func (v *__UpdateEventInput) GetVisibility() *EventVisibility { return v.Visibility }
 
 // GetJoinOptions returns __UpdateEventInput.JoinOptions, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetJoinOptions() EventJoinOptions { return v.JoinOptions }
+func (v *__UpdateEventInput) GetJoinOptions() *EventJoinOptions { return v.JoinOptions }
 
 // GetExternalParticipationUrl returns __UpdateEventInput.ExternalParticipationUrl, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetExternalParticipationUrl() string { return v.ExternalParticipationUrl }
+func (v *__UpdateEventInput) GetExternalParticipationUrl() *string { return v.ExternalParticipationUrl }
 
 // GetDraft returns __UpdateEventInput.Draft, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetDraft() bool { return v.Draft }
+func (v *__UpdateEventInput) GetDraft() *bool { return v.Draft }
 
 // GetTags returns __UpdateEventInput.Tags, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetTags() []string { return v.Tags }
+func (v *__UpdateEventInput) GetTags() []*string { return v.Tags }
 
 // GetPicture returns __UpdateEventInput.Picture, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetPicture() MediaInput { return v.Picture }
+func (v *__UpdateEventInput) GetPicture() *MediaInput { return v.Picture }
 
 // GetOnlineAddress returns __UpdateEventInput.OnlineAddress, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetOnlineAddress() string { return v.OnlineAddress }
+func (v *__UpdateEventInput) GetOnlineAddress() *string { return v.OnlineAddress }
 
 // GetOrganizerActorId returns __UpdateEventInput.OrganizerActorId, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetOrganizerActorId() string { return v.OrganizerActorId }
+func (v *__UpdateEventInput) GetOrganizerActorId() *string { return v.OrganizerActorId }
 
 // GetAttributedToId returns __UpdateEventInput.AttributedToId, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetAttributedToId() string { return v.AttributedToId }
+func (v *__UpdateEventInput) GetAttributedToId() *string { return v.AttributedToId }
 
 // GetCategory returns __UpdateEventInput.Category, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetCategory() EventCategory { return v.Category }
+func (v *__UpdateEventInput) GetCategory() *EventCategory { return v.Category }
 
 // GetPhysicalAddress returns __UpdateEventInput.PhysicalAddress, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetPhysicalAddress() AddressInput { return v.PhysicalAddress }
+func (v *__UpdateEventInput) GetPhysicalAddress() *AddressInput { return v.PhysicalAddress }
 
 // GetOptions returns __UpdateEventInput.Options, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetOptions() EventOptionsInput { return v.Options }
+func (v *__UpdateEventInput) GetOptions() *EventOptionsInput { return v.Options }
 
 // GetContacts returns __UpdateEventInput.Contacts, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetContacts() []Contact { return v.Contacts }
-
-// GetMetadata returns __UpdateEventInput.Metadata, and is useful for accessing the field via an interface.
-func (v *__UpdateEventInput) GetMetadata() []EventMetadataInput { return v.Metadata }
+func (v *__UpdateEventInput) GetContacts() []*Contact { return v.Contacts }
 
 // The mutation executed by CreateEvent.
 const CreateEvent_Operation = `
-mutation CreateEvent ($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
-	createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts, metadata: $metadata) {
+mutation CreateEvent ($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact]) {
+	createEvent(organizerActorId: $organizerActorId, attributedToId: $attributedToId, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts) {
 		id
 		uuid
 	}
@@ -5460,24 +5429,23 @@ func CreateEvent(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	organizerActorId string,
-	attributedToId string,
+	attributedToId *string,
 	title string,
 	description string,
 	beginsOn time.Time,
-	endsOn time.Time,
-	status EventStatus,
-	visibility EventVisibility,
-	joinOptions EventJoinOptions,
-	externalParticipationUrl string,
-	draft bool,
-	tags []string,
-	picture MediaInput,
-	onlineAddress string,
-	category EventCategory,
-	physicalAddress AddressInput,
-	options EventOptionsInput,
-	contacts []Contact,
-	metadata []EventMetadataInput,
+	endsOn *time.Time,
+	status *EventStatus,
+	visibility *EventVisibility,
+	joinOptions *EventJoinOptions,
+	externalParticipationUrl *string,
+	draft *bool,
+	tags []*string,
+	picture *MediaInput,
+	onlineAddress *string,
+	category *EventCategory,
+	physicalAddress *AddressInput,
+	options *EventOptionsInput,
+	contacts []*Contact,
 ) (data_ *CreateEventResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "CreateEvent",
@@ -5501,7 +5469,6 @@ func CreateEvent(
 			PhysicalAddress:          physicalAddress,
 			Options:                  options,
 			Contacts:                 contacts,
-			Metadata:                 metadata,
 		},
 	}
 
@@ -5892,8 +5859,8 @@ fragment EventOptions on EventOptions {
 func SearchEvents(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	term string,
-	beginsOn time.Time,
+	term *string,
+	beginsOn *time.Time,
 ) (data_ *SearchEventsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "SearchEvents",
@@ -5918,8 +5885,8 @@ func SearchEvents(
 
 // The mutation executed by UpdateEvent.
 const UpdateEvent_Operation = `
-mutation UpdateEvent ($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact], $metadata: [EventMetadataInput]) {
-	updateEvent(eventId: $id, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, organizerActorId: $organizerActorId, attributedToId: $attributedToId, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts, metadata: $metadata) {
+mutation UpdateEvent ($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact]) {
+	updateEvent(eventId: $id, title: $title, description: $description, beginsOn: $beginsOn, endsOn: $endsOn, status: $status, visibility: $visibility, joinOptions: $joinOptions, externalParticipationUrl: $externalParticipationUrl, draft: $draft, tags: $tags, picture: $picture, onlineAddress: $onlineAddress, organizerActorId: $organizerActorId, attributedToId: $attributedToId, category: $category, physicalAddress: $physicalAddress, options: $options, contacts: $contacts) {
 		id
 		uuid
 	}
@@ -5930,25 +5897,24 @@ func UpdateEvent(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	id string,
-	title string,
-	description string,
-	beginsOn time.Time,
-	endsOn time.Time,
-	status EventStatus,
-	visibility EventVisibility,
-	joinOptions EventJoinOptions,
-	externalParticipationUrl string,
-	draft bool,
-	tags []string,
-	picture MediaInput,
-	onlineAddress string,
-	organizerActorId string,
-	attributedToId string,
-	category EventCategory,
-	physicalAddress AddressInput,
-	options EventOptionsInput,
-	contacts []Contact,
-	metadata []EventMetadataInput,
+	title *string,
+	description *string,
+	beginsOn *time.Time,
+	endsOn *time.Time,
+	status *EventStatus,
+	visibility *EventVisibility,
+	joinOptions *EventJoinOptions,
+	externalParticipationUrl *string,
+	draft *bool,
+	tags []*string,
+	picture *MediaInput,
+	onlineAddress *string,
+	organizerActorId *string,
+	attributedToId *string,
+	category *EventCategory,
+	physicalAddress *AddressInput,
+	options *EventOptionsInput,
+	contacts []*Contact,
 ) (data_ *UpdateEventResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "UpdateEvent",
@@ -5973,7 +5939,6 @@ func UpdateEvent(
 			PhysicalAddress:          physicalAddress,
 			Options:                  options,
 			Contacts:                 contacts,
-			Metadata:                 metadata,
 		},
 	}
 
