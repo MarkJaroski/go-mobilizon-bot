@@ -251,6 +251,7 @@ func fetchAddr(ctx context.Context, e concertcloud.Event) {
 
 	if len(found) == 0 {
 		Log.Info("Address not found", "query", query)
+		return
 	}
 
 	// no fuss, let's just use the first one
@@ -386,7 +387,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			Category:                 populateCategory(e),
 			Visibility:               mobilizon.EventVisibilityPublic,
 			JoinOptions:              mobilizon.EventJoinOptionsExternal,
-			PhysicalAddress:          addressToAddressInput(e),
+			PhysicalAddress:          addrs[addrKey(e)],
 			OnlineAddress:            e.URL,
 			ExternalParticipationURL: e.URL,
 			Draft:                    *opts.Draft,
@@ -431,7 +432,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 		// if the source event has changes add the UUID so the client knows
 		// to do an update operation instead of a create operation
 		if uuid != nil {
-			if !reflect.DeepEqual(e, existing[eventKey(e)]) {
+			if !reflect.DeepEqual(e, existing[eventKey(e)].Event) {
 				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
 				vars.UUID = uuid
 				if _, err := mobClient.UpdateEvent(ctx, vars); err != nil {

@@ -234,15 +234,18 @@ func (c *Client) CreateEvent(
 	params EventParams,
 ) (*uuid.UUID, error) {
 
-	var picture MediaInput
+	var picture *MediaInput = nil
 
 	if params.ImageURL != "" {
+		var mi MediaInput
 		if path, err := downloadFile(params.ImageURL); err == nil {
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
-				picture.MediaUuid = uuid
+				mi.MediaUuid = uuid
+				picture = &mi
 			}
 		}
 	}
+
 	endDate := strconv.Itoa(params.AttributedToId)
 
 	// Create the event with the media UUID
@@ -261,7 +264,7 @@ func (c *Client) CreateEvent(
 		&params.ExternalParticipationURL,
 		&params.Draft,
 		params.Tags,
-		&picture,
+		picture,
 		&params.OnlineAddress,
 		&params.Category,
 		&params.PhysicalAddress,
