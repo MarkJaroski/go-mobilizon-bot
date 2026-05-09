@@ -241,6 +241,7 @@ func fetchAddr(ctx context.Context, e concertcloud.Event) {
 	Log.Debug("Searching for: ", "location", e.Location)
 	if _, ok := addrs[addrKey(e)]; ok {
 		Log.Debug("Skipping cached location", "location", e.Location)
+		return
 	}
 
 	query := e.Location + " " + e.City
@@ -256,7 +257,6 @@ func fetchAddr(ctx context.Context, e concertcloud.Event) {
 
 	// no fuss, let's just use the first one
 	addrs[addrKey(e)] = found[0]
-
 }
 
 func loadAddresses() {
@@ -409,7 +409,8 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 		// guard clauses
 		if _, ok := existing[eventKey(e)]; ok {
 
-			Log.Debug("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
+			Log.Debug("Found a cached event", "key", eventKey(e))
+			Log.Trace("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
 			*uuid = existing[eventKey(e)].UUID
 			created[eventKey(e)] = existing[eventKey(e)]
 
