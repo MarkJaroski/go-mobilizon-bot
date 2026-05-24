@@ -226,39 +226,6 @@ func main() {
 	createEvents(ctx, events)
 }
 
-func fetchAddrs(ctx context.Context, events []concertcloud.Event) {
-	loadAddresses()
-	for i := 0; i < len(events); i++ {
-		fetchAddr(ctx, events[i])
-	}
-	saveAddresses()
-}
-
-// fetchAddr searches for a existing address in Mobilizon. If we don't do
-// this Mobilizon will create a new row in the addresses table for every
-// event
-func fetchAddr(ctx context.Context, e concertcloud.Event) {
-	Log.Debug("Searching for: ", "location", e.Location)
-	if _, ok := addrs[addrKey(e)]; ok {
-		Log.Debug("Skipping cached location", "location", e.Location)
-		return
-	}
-
-	query := e.Location + " " + e.City
-	found, err := mobClient.FetchAddr(ctx, query)
-	if err != nil {
-		Log.Error("Error attempting to look up address", "query", query)
-	}
-
-	if len(found) == 0 {
-		Log.Info("Address not found", "query", query)
-		return
-	}
-
-	// no fuss, let's just use the first one
-	addrs[addrKey(e)] = found[0]
-}
-
 func loadAddresses() {
 	dat, err := os.ReadFile(addrsFile)
 	if err != nil {
