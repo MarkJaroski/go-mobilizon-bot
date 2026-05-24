@@ -222,7 +222,7 @@ func main() {
 		events = resp.Data
 	}
 
-	fetchAddrs(ctx, events)
+	// fetchAddrs(ctx, events)
 	createEvents(ctx, events)
 }
 
@@ -324,11 +324,12 @@ func addrKey(e concertcloud.Event) string {
 
 // Convert the concert cloud Address from an event into AddressInput for Mobilizon
 func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
-	geo := e.Address.Geolocacation.Coordinates
+	geo := e.Address.Geolocacation.MongoGeolocation.Coordinates
 	// offset := time.Duration(e.Offset * int(time.Second))
 	// tzName := "UTC" + fmt.Sprintf("%+.0f", offset.Hours())
 	latlong := strconv.FormatFloat(geo[0], 'f', 8, 64) + ";" + strconv.FormatFloat(geo[1], 'f', 8, 64)
 	street := e.Address.HouseNumber + " " + e.Address.Street
+	originId := "nominatim:" + strconv.FormatInt(e.Address.Geolocacation.OsmID, 10)
 	return mobilizon.AddressInput{
 		Geom:        &latlong,
 		Street:      &street,
@@ -337,6 +338,7 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 		Region:      &e.Address.State,
 		Country:     &e.Address.Country,
 		Description: &e.Location,
+		OriginId:    &originId,
 		Url:         &e.SourceURL,
 	}
 }
@@ -387,7 +389,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			Category:                 populateCategory(e),
 			Visibility:               mobilizon.EventVisibilityPublic,
 			JoinOptions:              mobilizon.EventJoinOptionsExternal,
-			PhysicalAddress:          addrs[addrKey(e)],
+			PhysicalAddress:          addressToAddressInput(e),
 			OnlineAddress:            e.URL,
 			ExternalParticipationURL: e.URL,
 			Draft:                    *opts.Draft,
@@ -402,7 +404,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			vars.ImageURL = e.ImageURL
 		}
 
-		var uuid = &uuid.UUID{}
+		var existingUuid = &uuid.UUID{}
 
 		Log.Debug("Checking for existing event", "eventKey", eventKey(e))
 
@@ -411,7 +413,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 			Log.Debug("Found a cached event", "key", eventKey(e))
 			Log.Trace("Found a cached event", "event", spew.Sdump(existing[eventKey(e)].UUID))
-			*uuid = existing[eventKey(e)].UUID
+			*existingUuid = existing[eventKey(e)].UUID
 			created[eventKey(e)] = existing[eventKey(e)]
 
 		} else {
@@ -422,26 +424,14 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 				e.Location,
 				e.Date,
 			)
+
 			if err != nil {
 				Log.Error("Error searching for a matching event", "error", err)
 			}
+
 			if exists {
 				created[eventKey(e)] = ExistingEvent{*uuid, e}
-			}
-		}
-
-		// if the source event has changes add the UUID so the client knows
-		// to do an update operation instead of a create operation
-		if uuid != nil {
-			if !reflect.DeepEqual(e, existing[eventKey(e)].Event) {
-				Log.Debug("Update", "saved", spew.Sdump(existing[eventKey(e)]), "event", spew.Sdump(e))
-				vars.UUID = uuid
-				if _, err := mobClient.UpdateEvent(ctx, vars); err != nil {
-					Log.Error("Error updating event", "error", err)
-				}
-			} else {
-				// the event hasn't changed, there's nothing to do
-				continue
+				existingUuid = uuid
 			}
 		}
 
@@ -449,14 +439,39 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			continue
 		}
 
+		// if the source event has changes add the UUID so the client knows
+		// to do an update operation instead of a create operation
+		if *existingUuid != uuid.Nil {
+			if !reflect.DeepEqual(e, existing[eventKey(e)].Event) {
+				Log.Debug("Update", "uuid", existingUuid)
+				Log.Trace("Update", "saved", spew.Sdump(existing[eventKey(e)].Event), "event", spew.Sdump(e))
+				vars.UUID = existingUuid
+				if _, err := mobClient.UpdateEvent(ctx, vars); err != nil {
+					Log.Error("Error updating event", "error", err)
+					// it could be a transient error, cache the cached version
+					// again so that we try to update again next time
+					created[eventKey(e)] = existing[eventKey(e)]
+				} else {
+					// cache the updated event
+					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
+				}
+				continue
+			} else {
+				// the event hasn't changed, there's nothing to do
+				continue
+			}
+		}
+
 		uuid, err := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
+			Log.Debug("Created", "uuid", *uuid)
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}
 	}
-	Log.Debug("Saving existing events list", "events", spew.Sdump(created))
+	Log.Debug("Saving existing events list")
+	Log.Trace("Saving existing events list", "events", spew.Sdump(created))
 	saveExistingEvents()
 }
 

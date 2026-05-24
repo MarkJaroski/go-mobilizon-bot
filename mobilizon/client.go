@@ -284,15 +284,19 @@ func (c *Client) UpdateEvent(
 	params EventParams,
 ) (*uuid.UUID, error) {
 
-	var picture MediaInput
+	var picture *MediaInput = nil
 
 	if params.ImageURL != "" {
+		var mi MediaInput
 		if path, err := downloadFile(params.ImageURL); err == nil {
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
-				picture.MediaUuid = uuid
+				mi.MediaUuid = uuid
+				picture = &mi
 			}
 		}
 	}
+
+	// get the existing event ID using the UUID
 	fre, err := FetchEvent(ctx, c.gqlClient, *params.UUID)
 	if err != nil {
 		return nil, err
@@ -316,7 +320,7 @@ func (c *Client) UpdateEvent(
 		&params.ExternalParticipationURL,
 		&params.Draft,
 		params.Tags,
-		&picture,
+		picture,
 		&params.OnlineAddress,
 		&organizer,
 		&attribute,
@@ -332,13 +336,13 @@ func (c *Client) UpdateEvent(
 	return resp.UpdateEvent.Uuid, nil
 }
 
-// CreateOrUpdateEvent creates an event if params.UUID is nil, otherwise updates it
-func (c *Client) CreateOrUpdateEvent(ctx context.Context, params EventParams) (*uuid.UUID, error) {
-	if params.UUID != nil {
-		return c.UpdateEvent(ctx, params)
-	}
-	return c.CreateEvent(ctx, params)
-}
+// // CreateOrUpdateEvent creates an event if params.UUID is nil, otherwise updates it
+// func (c *Client) CreateOrUpdateEvent(ctx context.Context, params EventParams) (*uuid.UUID, error) {
+// 	if params.UUID != nil {
+// 		return c.UpdateEvent(ctx, params)
+// 	}
+// 	return c.CreateEvent(ctx, params)
+// }
 
 // SearchForEvents searches for events by term
 func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time.Time) ([]Event, error) {
@@ -366,16 +370,24 @@ func (c *Client) EventExists(ctx context.Context, title string, location string,
 		return false, nil, err
 	}
 
-	elems := resp.SearchEvents.Elements
 	// no result, the event does not exist
-	if len(elems) < 1 {
+	if resp.SearchEvents.Total == 0 {
 		return false, nil, nil
+	}
+
+	// get the list of events found
+	elems := resp.SearchEvents.Elements
+
+	id := elems[0].Uuid
+
+	if *id == uuid.Nil {
+		return false, nil, errors.New("Empty UUID returned from SearchEvents")
 	}
 
 	// choosing between multiple matching events is going to be very
 	// difficult, and the first one will always be the best match for the
 	// date so that's the one we'll return
-	return true, elems[0].Uuid, nil
+	return true, id, nil
 }
 
 func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, error) {
