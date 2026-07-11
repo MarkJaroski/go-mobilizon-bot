@@ -1,0 +1,261 @@
+fragment EventOptions on EventOptions {
+  maximumAttendeeCapacity
+  remainingAttendeeCapacity
+  showRemainingAttendeeCapacity
+  anonymousParticipation
+  hideNumberOfParticipants
+  showStartTime
+  showEndTime
+  timezone
+  offers {
+    price
+    priceCurrency
+    url
+    __typename
+  }
+  participationConditions {
+    title
+    content
+    url
+    __typename
+  }
+  attendees
+  program
+  commentModeration
+  showParticipationPrice
+  hideOrganizerWhenGroupEvent
+  isOnline
+  __typename
+}
+
+fragment TagFragment on Tag {
+  id
+  slug
+  title
+  __typename
+}
+
+fragment AdressFragment on Address {
+  id
+  description
+  geom
+  street
+  locality
+  postalCode
+  region
+  country
+  type
+  url
+  originId
+  timezone
+  __typename
+}
+
+fragment ActorFragment on Actor {
+  id
+  avatar {
+    uuid
+    url
+    __typename
+  }
+  type
+  preferredUsername
+  name
+  domain
+  summary
+  url
+  __typename
+}
+
+
+fragment FullEvent on Event {
+  id
+  uuid
+  url
+  local
+  title
+  description
+  beginsOn
+  endsOn
+  status
+  visibility
+  joinOptions
+  externalParticipationUrl
+  draft
+  language
+  category
+  picture {
+    uuid
+    url
+    name
+    metadata {
+      width
+      height
+      blurhash
+      __typename
+    }
+    __typename
+  }
+  publishAt
+  onlineAddress
+  phoneAddress
+  physicalAddress {
+    ...AdressFragment
+    __typename
+  }
+  organizerActor {
+    ...ActorFragment
+    __typename
+  }
+  contacts {
+    ...ActorFragment
+    __typename
+  }
+  attributedTo {
+    ...GroupMinimalFields
+    __typename
+  }
+  participantStats {
+    going
+    notApproved
+    participant
+    __typename
+  }
+  tags {
+    ...TagFragment
+    __typename
+  }
+  options {
+    ...EventOptions
+    __typename
+  }
+  metadata {
+    key
+    title
+    value
+    type
+    __typename
+  }
+  __typename
+}
+
+fragment GroupMinimalFields on Group {
+  ...ActorFragment
+  suspended
+  visibility
+  openness
+  manuallyApprovesFollowers
+  allowSeeParticipants
+  __typename
+}
+
+query FetchEvent($uuid: UUID!) {
+  event(uuid: $uuid) {
+    ...FullEvent
+    __typename
+  }
+}
+
+query SearchAddress($query: String!) {
+  searchAddress(query: $query) {
+    ...AdressFragment
+    __typename
+  }
+}
+
+query SearchEvents($term: String, $beginsOn: DateTime) {
+  searchEvents(
+    term: $term
+    beginsOn: $beginsOn
+  ) {
+    total
+    elements {
+      id
+      title
+      uuid
+      beginsOn
+      picture {
+        uuid
+        url
+        __typename
+      }
+      status
+      tags {
+        ...TagFragment
+        __typename
+      }
+      physicalAddress {
+        ...AdressFragment
+        __typename
+      }
+      organizerActor {
+        ...ActorFragment
+        __typename
+      }
+      attributedTo {
+        ...ActorFragment
+        __typename
+      }
+      options {
+        ...EventOptions
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+mutation CreateEvent($organizerActorId: ID!, $attributedToId: ID, $title: String!, $description: String!, $beginsOn: DateTime!, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact]) {
+  createEvent(
+    organizerActorId: $organizerActorId
+    attributedToId: $attributedToId
+    title: $title
+    description: $description
+    beginsOn: $beginsOn
+    endsOn: $endsOn
+    status: $status
+    visibility: $visibility
+    joinOptions: $joinOptions
+    externalParticipationUrl: $externalParticipationUrl
+    draft: $draft
+    tags: $tags
+    picture: $picture
+    onlineAddress: $onlineAddress
+    category: $category
+    physicalAddress: $physicalAddress
+    options: $options
+    contacts: $contacts
+  ) {id,uuid}
+}
+
+
+mutation UpdateEvent($id: ID!, $title: String, $description: String, $beginsOn: DateTime, $endsOn: DateTime, $status: EventStatus, $visibility: EventVisibility, $joinOptions: EventJoinOptions, $externalParticipationUrl: String, $draft: Boolean, $tags: [String], $picture: MediaInput, $onlineAddress: String, $organizerActorId: ID, $attributedToId: ID, $category: EventCategory, $physicalAddress: AddressInput, $options: EventOptionsInput, $contacts: [Contact]) {
+  updateEvent(
+    eventId: $id
+    title: $title
+    description: $description
+    beginsOn: $beginsOn
+    endsOn: $endsOn
+    status: $status
+    visibility: $visibility
+    joinOptions: $joinOptions
+    externalParticipationUrl: $externalParticipationUrl
+    draft: $draft
+    tags: $tags
+    picture: $picture
+    onlineAddress: $onlineAddress
+    organizerActorId: $organizerActorId
+    attributedToId: $attributedToId
+    category: $category
+    physicalAddress: $physicalAddress
+    options: $options
+    contacts: $contacts
+  ) {id,uuid}
+}
+
+mutation RefreshAuthTokens($rt:String!){
+  refreshToken(
+    refreshToken: $rt
+  ) {accessToken,refreshToken}
+}
