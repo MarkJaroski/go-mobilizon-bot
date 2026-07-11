@@ -242,7 +242,11 @@ func (c *Client) CreateEvent(
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
 				mi.MediaUuid = uuid
 				picture = &mi
+			} else {
+				return nil, errors.New("Error uploading image: " + path)
 			}
+		} else {
+			return nil, errors.New("Error Downloading image: " + params.ImageURL)
 		}
 	}
 
