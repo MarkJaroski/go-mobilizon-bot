@@ -17,23 +17,25 @@ Unless you have go configured to do something else the binary will be in ~/go/bi
 ## Usage
 
 ```
-Usage of ./go-mobilizon-bot:
-      --actor string          The Mobilizon actor ID to use as the event organizer.
+Usage of go-mobilizon-bot:
+      --actor int             The Mobilizon actor ID to use as the event organizer. (default -1)
+      --appname string        The name of your client app (default "Concert Cloud")
+      --appurl string         Your client app's about page (default "https://concertcloud.live")
       --authconfig string     Use this file for authorization tokens. (default "/home/mark/.config/mobilizon/auth.json")
       --authorize             Authorize this bot and quit. An auth token and renew token will be output.
-      --city string           The concertcloud API param 'city' (default "X")
+      --city string           The concertcloud API param 'city'
       --config string         Use this directory for configuration. (default "/home/mark/.config/mobilizon")
       --country string        The concertcloud API param 'country'
       --date string           The concertcloud API param 'date'
       --debug                 Debug mode.
       --draft                 Create events in draft mode.
       --file string           Instead of fetching from concertcloud, use local file.
-      --group string          The Mobilizon group ID to use for the event attribution.
-      --limit string          The concertcloud API param 'limit'
+      --group int             The Mobilizon group ID to use for the event attribution. (default -1)
+      --limit int             The concertcloud API param 'limit' (default 10)
       --mobilizonurl string   Your Mobilizon base URL (default "https://mobilisons.ch")
       --noop                  Gather all required information and report on it, but do not create events in Mobilizòn.
-      --page string           The concertcloud API param 'page'
-      --radius string         The concertcloud API param 'radius'
+      --page int              The concertcloud API param 'page'
+      --radius int            The concertcloud API param 'radius' (default 25)
       --register              Register this bot and quit. A client id will be output.
       --timezone string       The timezone to use for the event attribution. (default "Europe/Zurich")
 ```
@@ -43,7 +45,7 @@ Once you've built the bot you'll need to register it.
 
 ```bash
 
-./go/bin/go-mobilizon-bot --mobilizonurl <your-mobilizon-instance> --register
+./go/bin/go-mobilizon-bot --mobilizonurl <your-mobilizon-instance> --appname <whatever-you-want-to-call-it> --appurl <your-website> --register
 
 ```
 
