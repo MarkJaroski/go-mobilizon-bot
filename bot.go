@@ -306,7 +306,7 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 		Country:     &e.Address.Country,
 		Description: &e.Location,
 		OriginId:    &originId,
-		Url:         &e.SourceURL,
+		/* Url:         &e.SourceURL, */
 	}
 }
 
@@ -436,6 +436,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}
+		time.Sleep(30000)
 	}
 	Log.Debug("Saving existing events list")
 	Log.Trace("Saving existing events list", "events", spew.Sdump(created))
