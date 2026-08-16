@@ -2,7 +2,6 @@
 package mobilizon
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"image"
@@ -31,10 +30,7 @@ func loadFileContents(path string) ([]byte, fs.FileInfo, error) {
 		if err != nil {
 			return nil, nil, err
 		}
-		fileContents, err = base64.StdEncoding.DecodeString(dataURL.String())
-		if err != nil {
-			return nil, nil, err
-		}
+		fileContents = dataURL.Data
 	} else {
 
 		// grab the file
