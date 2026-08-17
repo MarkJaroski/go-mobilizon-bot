@@ -196,7 +196,7 @@ func (c *Client) UploadMediaFile(ctx context.Context, filepath string) (*uuid.UU
 
 	// TODO make this a template string or something to avoid the long line
 	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { uuid } }")
-	writer.WriteField("variables", "{\"name\":\""+fi.Name()+"\",\"file\":\"image1\"}")
+	writer.WriteField("variables", "{\"name\":\"promotional image\",\"file\":\"image1\"}")
 
 	part, err := writer.CreateFormFile("image1", fi.Name())
 	if err != nil {
