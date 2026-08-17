@@ -186,7 +186,7 @@ func (c *Client) HTTPClient(ctx context.Context) *http.Client {
 // UploadMediaFile uploads a file and returns the media UUID
 func (c *Client) UploadMediaFile(ctx context.Context, filepath string) (*uuid.UUID, error) {
 	// Load the file
-	fileContents, fi, err := loadFileContents(filepath)
+	fileContents, _, err := loadFileContents(filepath)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func (c *Client) UploadMediaFile(ctx context.Context, filepath string) (*uuid.UU
 	writer.WriteField("query", "mutation uploadMedia($file: Upload!, $name: String!) { uploadMedia(file: $file, name: $name) { uuid } }")
 	writer.WriteField("variables", "{\"name\":\"promotional image\",\"file\":\"image1\"}")
 
-	part, err := writer.CreateFormFile("image1", fi.Name())
+	part, err := writer.CreateFormFile("image1", "promotional image")
 	if err != nil {
 		return nil, err
 	}
