@@ -434,11 +434,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
 			Log.Debug("Created", "uuid", *uuid)
 		} else if err.Error() == "returned error 401: {\"data\":null}" {
-			// do the authorization
-			if err = mobClient.EnsureAuthorization(ctx, *opts.AuthConfig); err != nil {
-				Log.Error("error", err)
-				panic(*opts.AppName + " not Authorized")
-			}
+			mobClient.RefreshToken(ctx, *opts.AuthConfig)
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}

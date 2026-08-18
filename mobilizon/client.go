@@ -70,9 +70,7 @@ func (c *Client) initGraphQLClient(ctx context.Context) {
 // This also handles token renewal
 func (c *Client) EnsureAuthorization(ctx context.Context, tokenPath string) error {
 	if err := c.LoadToken(tokenPath); err == nil {
-		if err := c.RefreshToken(ctx); err == nil {
-			c.SaveToken(tokenPath)
-			c.initGraphQLClient(ctx)
+		if err := c.RefreshToken(ctx, tokenPath); err == nil {
 			return nil
 		}
 	}
@@ -158,7 +156,7 @@ func (c *Client) LoadToken(filepath string) error {
 	return nil
 }
 
-func (c *Client) RefreshToken(ctx context.Context) error {
+func (c *Client) RefreshToken(ctx context.Context, tokenPath string) error {
 	resp, err := RefreshAuthTokens(ctx, c.gqlClient, c.token.RefreshToken)
 	if err != nil {
 		return err
@@ -168,6 +166,8 @@ func (c *Client) RefreshToken(ctx context.Context) error {
 		RefreshToken: resp.RefreshToken.RefreshToken,
 		Expiry:       time.Now().Add(time.Hour * 8),
 	}
+	c.SaveToken(tokenPath)
+	c.initGraphQLClient(ctx)
 	return nil
 }
 
@@ -427,7 +427,7 @@ func (c *Client) FetchEvent(uuid.UUID) (*Event, error) {
 	return nil, errors.New("FetchEvents() not implemented.")
 }
 
-// mobilizònRetryPolicy impements the RetryPolicy interface from
+// mobilizònRetryPolicy implements the RetryPolicy interface from
 // hashicorp.retryablehttp, which captures the main failure modes cause by
 // an ephemeral crash of the Mobilizòn server process
 func RetryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
