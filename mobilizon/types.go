@@ -56,4 +56,17 @@ type UploadMediaResponse struct {
 			UUID uuid.UUID `json:"uuid"`
 		} `json:"uploadMedia"`
 	} `json:"data"`
+	Errors []MediaUploadError `json:"errors"`
+}
+
+type MediaUploadError struct {
+	Code      string   `json:"code"`
+	Field     string   `json:"string"`
+	Message   string   `json:"message"`
+	Path      []string `json:"path"`
+	Locations []struct {
+		Column int `json:"column"`
+		Line   int `json:"line"`
+	} `json:"locations"`
+	StatusCode int `json:"status_code"`
 }
