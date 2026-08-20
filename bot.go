@@ -50,6 +50,7 @@ type Options struct {
 	Authorize    *bool
 	Draft        *bool
 	Debug        *bool
+	Trace        *bool
 	AddrsFile    *string
 	ExistsFile   *string
 	AppName      *string
@@ -128,11 +129,15 @@ func main() {
 	opts.Authorize = pflag.Bool("authorize", false, "Authorize this bot and quit. An auth token and renew token will be output.")
 	opts.Draft = pflag.Bool("draft", false, "Create events in draft mode.")
 	opts.Debug = pflag.Bool("debug", false, "Debug mode.")
+	opts.Trace = pflag.Bool("trace", false, "Trace mode.")
 
 	pflag.Parse()
 
 	if *opts.Debug {
 		Log.SetLevel(hclog.LevelFromString("DEBUG"))
+	}
+	if *opts.Trace {
+		Log.SetLevel(hclog.LevelFromString("TRACE"))
 	}
 
 	if *opts.Register {
@@ -438,6 +443,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 				} else {
 					// cache the updated event
 					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
+					Log.Info("Updated", "eventKey", eventKey(e))
 				}
 				continue
 			} else {
@@ -446,10 +452,12 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 			}
 		}
 
+		Log.Trace("Creating", "event", vars)
+
 		uuid, err := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
-			Log.Debug("Created", "uuid", *uuid)
+			Log.Info("Created", "eventKey", eventKey(e))
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}
