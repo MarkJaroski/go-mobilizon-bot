@@ -28,7 +28,7 @@ import (
 
 const CC_PLUG = "Help promote your favourite venues with: https://concertcloud.live/contribute"
 const ADDR_FILE = "addrs.json"
-const EXISTS_FILE = "exists.json"
+const EVENT_CACHE_FILE = "event_cache.json"
 
 // Options represents the full set of command-line options for the bot
 type Options struct {
@@ -190,7 +190,7 @@ func main() {
 	groupID = *opts.GroupID
 
 	addrsFile = *opts.Config + "/" + ADDR_FILE
-	existsFile = *opts.Config + "/" + EXISTS_FILE
+	existsFile = *opts.Config + "/" + EVENT_CACHE_FILE
 
 	// this will hold our json object whether local or from ConcertCloud
 	var events []concertcloud.Event
