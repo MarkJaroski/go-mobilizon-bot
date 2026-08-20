@@ -394,7 +394,16 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 				e.Date,
 			)
 
-			if err != nil {
+			if err != nil && err.Error() == "returned error 401: {\"data\":null}" {
+				mobClient.RefreshToken(ctx, *opts.AuthConfig)
+				Log.Info("Authorization Token Refreshed")
+				exists, uuid, err = mobClient.EventExists(
+					ctx,
+					e.Title,
+					e.Location,
+					e.Date,
+				)
+			} else if err != nil {
 				Log.Error("Error searching for a matching event", "error", err)
 			}
 
@@ -435,8 +444,6 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
 			Log.Debug("Created", "uuid", *uuid)
-		} else if err.Error() == "returned error 401: {\"data\":null}" {
-			mobClient.RefreshToken(ctx, *opts.AuthConfig)
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}

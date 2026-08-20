@@ -157,7 +157,9 @@ func (c *Client) LoadToken(filepath string) error {
 }
 
 func (c *Client) RefreshToken(ctx context.Context, tokenPath string) error {
-	resp, err := RefreshAuthTokens(ctx, c.gqlClient, c.token.RefreshToken)
+	refreshToken := c.token.RefreshToken
+	c.gqlClient = graphql.NewClient(c.baseURL+"/api", http.DefaultClient)
+	resp, err := RefreshAuthTokens(ctx, c.gqlClient, refreshToken)
 	if err != nil {
 		return err
 	}

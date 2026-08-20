@@ -143,7 +143,7 @@ func TestRefreshToken_Success(t *testing.T) {
 	c := clientWithMock(mock)
 	c.token = &oauth2.Token{RefreshToken: "old-refresh"}
 
-	if err := c.RefreshToken(context.Background()); err != nil {
+	if err := c.RefreshToken(context.Background(), "/tmp/should-not-be-created.json"); err != nil {
 		t.Fatalf("RefreshToken: %v", err)
 	}
 	if c.token.AccessToken != "new-access" {
@@ -163,7 +163,7 @@ func TestRefreshToken_Error(t *testing.T) {
 	c := clientWithMock(mock)
 	c.token = &oauth2.Token{RefreshToken: "old-refresh"}
 
-	if err := c.RefreshToken(context.Background()); err == nil {
+	if err := c.RefreshToken(context.Background(), "/tmp/should-not-be-created.json"); err == nil {
 		t.Fatal("expected error, got nil")
 	}
 }
@@ -448,7 +448,7 @@ func TestCreateEvent_Success(t *testing.T) {
 		JoinOptions:      EventJoinOptionsExternal,
 	}
 
-	uid, err := c.CreateOrUpdateEvent(context.Background(), params)
+	uid, err := c.CreateEvent(context.Background(), params)
 	if err != nil {
 		t.Fatalf("CreateEvent: %v", err)
 	}
@@ -465,7 +465,7 @@ func TestCreateEvent_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	_, err := c.CreateOrUpdateEvent(context.Background(), EventParams{
+	_, err := c.CreateEvent(context.Background(), EventParams{
 		Title:    "Test",
 		BeginsOn: time.Now(),
 	})
