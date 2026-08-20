@@ -390,7 +390,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 		var existingUuid = &uuid.UUID{}
 
-		Log.Debug("Checking for existing event", "eventKey", eventKey(e), "count", i)
+		Log.Debug("Checking for existing event", "eventKey", eventKey(e), "index", i)
 
 		// guard clauses
 		if _, ok := existing[eventKey(e)]; ok {
