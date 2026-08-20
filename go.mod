@@ -12,16 +12,16 @@ require (
 	github.com/jakopako/event-api v0.0.0-20260711053045-67a1c14ffdde
 	github.com/spf13/pflag v1.0.10
 	github.com/vincent-petithory/dataurl v1.0.0
-	golang.org/x/image v0.44.0
+	golang.org/x/image v0.45.0
 	golang.org/x/oauth2 v0.36.0
 )
 
 require (
-	github.com/ebitengine/purego v0.10.1 // indirect
+	github.com/ebitengine/purego v0.10.2 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
-	github.com/mattn/go-isatty v0.0.22 // indirect
+	github.com/mattn/go-isatty v0.0.24 // indirect
 	github.com/tetratelabs/wazero v1.12.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.36 // indirect
 	golang.org/x/sys v0.47.0 // indirect
