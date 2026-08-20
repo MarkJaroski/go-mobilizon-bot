@@ -251,7 +251,7 @@ func TestEventExists_NotFound(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", "Some City", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -278,7 +278,7 @@ func TestEventExists_Found(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "My Concert", "Some Venue", "Some City", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -307,7 +307,7 @@ func TestEventExists_MultipleResults_ReturnsFirst(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", "City", time.Now())
 	if err != nil {
 		t.Fatalf("EventExists: %v", err)
 	}
@@ -327,7 +327,7 @@ func TestEventExists_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", time.Now())
+	exists, uid, err := c.EventExists(context.Background(), "Concert", "Venue", "City", time.Now())
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

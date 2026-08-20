@@ -395,6 +395,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 				ctx,
 				e.Title,
 				e.Location,
+				e.City,
 				e.Date,
 			)
 
@@ -405,6 +406,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 					ctx,
 					e.Title,
 					e.Location,
+					e.City,
 					e.Date,
 				)
 			} else if err != nil {

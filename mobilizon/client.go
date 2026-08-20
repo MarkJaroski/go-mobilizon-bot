@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"slices"
 	"strconv"
 	"time"
 
@@ -370,9 +371,9 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 	return events, nil
 }
 
-func (c *Client) EventExists(ctx context.Context, title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
+func (c *Client) EventExists(ctx context.Context, title string, location string, city string, beginsOn time.Time) (bool, *uuid.UUID, error) {
 
-	term := title + " " + location
+	term := title
 
 	resp, err := SearchEvents(ctx, c.gqlClient, &term, &beginsOn)
 	if err != nil {
@@ -387,16 +388,23 @@ func (c *Client) EventExists(ctx context.Context, title string, location string,
 	// get the list of events found
 	elems := resp.SearchEvents.Elements
 
-	id := elems[0].Uuid
-
-	if *id == uuid.Nil {
-		return false, nil, errors.New("Empty UUID returned from SearchEvents")
+	// Go through the list of events and look for one with the tags
+	// that we created. If we find one that's our matching event.
+	// TODO: this implies that we need to bring the tag building into this
+	// library from the bot for guaranteed consistancy.
+	for _, e := range elems {
+		tags := make([]string, len(e.Tags))
+		// first jump through the hoops required by the API
+		for i, t := range e.Tags {
+			tags[i] = *t.TagFragment.Title
+		}
+		// now check for our tags
+		if slices.Contains(tags, city) && slices.Contains(tags, location) {
+			return true, e.Uuid, nil
+		}
 	}
 
-	// choosing between multiple matching events is going to be very
-	// difficult, and the first one will always be the best match for the
-	// date so that's the one we'll return
-	return true, id, nil
+	return false, nil, nil
 }
 
 func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, error) {
