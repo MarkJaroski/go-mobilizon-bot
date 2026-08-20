@@ -329,7 +329,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 	loadExistingEvents()
 
-	for _, e := range events {
+	for count, e := range events {
 
 		// break if the context is cancelled
 		if ctx.Err() != nil {
@@ -390,7 +390,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 		var existingUuid = &uuid.UUID{}
 
-		Log.Debug("Checking for existing event", "eventKey", eventKey(e))
+		Log.Debug("Checking for existing event", "eventKey", eventKey(e), "count", count)
 
 		// guard clauses
 		if _, ok := existing[eventKey(e)]; ok {
@@ -449,7 +449,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 				} else {
 					// cache the updated event
 					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
-					Log.Info("Updated", "eventKey", eventKey(e))
+					Log.Info("Updated", "eventKey", eventKey(e), "count", count)
 				}
 				continue
 			} else {
@@ -463,7 +463,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 		uuid, err := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
 			created[eventKey(e)] = ExistingEvent{*uuid, e}
-			Log.Info("Created", "eventKey", eventKey(e))
+			Log.Info("Created", "eventKey", eventKey(e), "count", count)
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}
