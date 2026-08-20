@@ -301,7 +301,13 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 	// tzName := "UTC" + fmt.Sprintf("%+.0f", offset.Hours())
 	latlong := strconv.FormatFloat(geo[0], 'f', 8, 64) + ";" + strconv.FormatFloat(geo[1], 'f', 8, 64)
 	street := e.Address.HouseNumber + " " + e.Address.Street
-	originId := "nominatim:" + strconv.FormatInt(e.Address.Geolocacation.OsmID, 10)
+	nId := "nominatim:" + strconv.FormatInt(e.Address.Geolocacation.OsmID, 10)
+	var originId *string
+	if e.Address.Geolocacation.OsmID != 0 {
+		originId = &nId
+	} else {
+		originId = nil
+	}
 	return mobilizon.AddressInput{
 		Geom:        &latlong,
 		Street:      &street,
@@ -310,7 +316,7 @@ func addressToAddressInput(e concertcloud.Event) mobilizon.AddressInput {
 		Region:      &e.Address.State,
 		Country:     &e.Address.Country,
 		Description: &e.Location,
-		OriginId:    &originId,
+		OriginId:    originId,
 		/* Url:         &e.SourceURL, */
 	}
 }
