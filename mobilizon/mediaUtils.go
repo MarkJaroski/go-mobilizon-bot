@@ -108,7 +108,13 @@ func downloadFile(URL string) (string, error) {
 	}
 
 	//Get the response bytes from the url
-	response, err := http.Get(URL)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", strings.Split(URL, "?")[0], nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36")
+	response, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}
