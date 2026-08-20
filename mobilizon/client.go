@@ -371,7 +371,10 @@ func (c *Client) SearchForEvents(ctx context.Context, term string, beginsOn time
 }
 
 func (c *Client) EventExists(ctx context.Context, title string, location string, beginsOn time.Time) (bool, *uuid.UUID, error) {
-	resp, err := SearchEvents(ctx, c.gqlClient, &title, &beginsOn)
+
+	term := title + " " + location
+
+	resp, err := SearchEvents(ctx, c.gqlClient, &term, &beginsOn)
 	if err != nil {
 		return false, nil, err
 	}
