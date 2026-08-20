@@ -240,15 +240,15 @@ func (c *Client) CreateEvent(
 
 	if params.ImageURL != "" {
 		var mi MediaInput
-		if path, err := downloadFile(params.ImageURL); err == nil {
+		if path, err := downloadFile(params.ImageURL); err != nil {
+			return nil, errors.New("Error Downloading image: " + params.ImageURL + "error: " + err.Error())
+		} else {
 			if uuid, err := c.UploadMediaFile(ctx, path); err == nil {
 				mi.MediaUuid = uuid
 				picture = &mi
 			} else {
 				return nil, errors.New("Error uploading image: " + path)
 			}
-		} else {
-			return nil, errors.New("Error Downloading image: " + params.ImageURL)
 		}
 	}
 
