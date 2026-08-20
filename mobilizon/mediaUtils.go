@@ -17,6 +17,7 @@ import (
 	"github.com/gen2brain/avif"
 	"github.com/vincent-petithory/dataurl"
 	"golang.org/x/image/draw"
+	"golang.org/x/image/webp"
 )
 
 const MAX_IMG_SIZE = 1024 * 800 // 800kb
@@ -65,12 +66,16 @@ func thumbnail(r io.Reader, w io.Writer, mimetype string, width int) error {
 	var err error
 
 	switch mimetype {
+	case "image/jpg":
+		src, err = jpeg.Decode(r)
 	case "image/jpeg":
 		src, err = jpeg.Decode(r)
 	case "image/png":
 		src, err = png.Decode(r)
 	case "image/avif":
 		src, err = avif.Decode(r)
+	case "image/webp":
+		src, err = webp.Decode(r)
 	default:
 		err = errors.New("Unknown MIME Type " + mimetype)
 	}
