@@ -321,6 +321,10 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 	for _, e := range events {
 
 		// break if the context is cancelled
+		if ctx.Err() != nil {
+			Log.Info("Context cancelled: ", ctx.Err())
+			continue
+		}
 
 		// Do not upload events from bejazz.ch. They don't like us.
 		//
