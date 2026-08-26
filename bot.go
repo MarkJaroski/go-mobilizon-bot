@@ -447,12 +447,15 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 					// again so that we try to update again next time
 					created[eventKey(e)] = existing[eventKey(e)]
 				} else {
-					// cache the updated event
-					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
+					// output info and cache the updated event
 					Log.Info("Updated", "index", i, "URL", *opts.MobilizonUrl+"/events/"+existingUuid.String())
 					if warn != nil {
 						Log.Warn("Update completed with warnings.", "message", warn)
+						// guarantee that this will be updated until there
+						// are no more warnings
+						e.Comment = "Warnings: " + warn.Error()
 					}
+					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
 				}
 				continue
 			} else {
@@ -465,11 +468,15 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 		uuid, err, warn := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
-			created[eventKey(e)] = ExistingEvent{*uuid, e}
+					// output info and cache the updated event
 			Log.Info("Created", "index", i, "URL", *opts.MobilizonUrl+"/events/"+uuid.String())
 			if warn != nil {
 				Log.Warn("Creation completed with warnings.", "message", warn)
+				// guarantee that this will be updated until there
+				// are no more warnings
+				e.Comment = "Warnings: " + warn.Error()
 			}
+			created[eventKey(e)] = ExistingEvent{*uuid, e}
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}
