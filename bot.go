@@ -468,7 +468,7 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 		uuid, err, warn := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
-					// output info and cache the updated event
+			// output info and cache the updated event
 			Log.Info("Created", "index", i, "URL", *opts.MobilizonUrl+"/events/"+uuid.String())
 			if warn != nil {
 				Log.Warn("Creation completed with warnings.", "message", warn)
