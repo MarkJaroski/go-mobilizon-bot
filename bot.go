@@ -33,6 +33,7 @@ const EVENT_CACHE_FILE = "event_cache.json"
 // Options represents the full set of command-line options for the bot
 type Options struct {
 	MobilizonUrl *string
+	CcBaseUrl    *string
 	City         *string
 	Country      *string
 	Limit        *int
@@ -112,6 +113,7 @@ func main() {
 	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.AppName = pflag.String("appname", "Concert Cloud", "The name of your client app")
 	opts.AppURL = pflag.String("appurl", "https://concertcloud.live", "Your client app's about page")
+	opts.CcBaseUrl = pflag.String("ccbaseurl", "https://concertcloud.live", "The baseURL of the ConcertCloud event API we'll be calling")
 	opts.City = pflag.String("city", "", "The concertcloud API param 'city'")
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Limit = pflag.Int("limit", 10, "The concertcloud API param 'limit'")
@@ -206,6 +208,7 @@ func main() {
 		json.Unmarshal(dat, &events)
 	} else {
 		ccConfig := concertcloud.Config{
+			BaseURL:    *opts.CcBaseUrl,
 			Logger:     Log,
 			HTTPClient: mobClient.HTTPClient(ctx),
 		}
