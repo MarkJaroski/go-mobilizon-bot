@@ -28,10 +28,11 @@ type EventResponse struct {
 
 // QueryParams holds parameters for event API queries
 type QueryParams struct {
-	City    string
-	Country string
-	Limit   int
-	Page    int
-	Radius  int
-	Date    string
+	City     string
+	Country  string
+	Limit    int
+	Page     int
+	Radius   int
+	Date     string
+	Location string
 }

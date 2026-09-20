@@ -36,6 +36,7 @@ type Options struct {
 	CcBaseUrl    *string
 	City         *string
 	Country      *string
+	Location     *string
 	Limit        *int
 	Page         *int
 	Radius       *int
@@ -116,6 +117,7 @@ func main() {
 	opts.CcBaseUrl = pflag.String("ccbaseurl", "https://concertcloud.live", "The baseURL of the ConcertCloud event API we'll be calling")
 	opts.City = pflag.String("city", "", "The concertcloud API param 'city'")
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
+	opts.Location = pflag.String("location", "", "The concertcloud API param 'location'")
 	opts.Limit = pflag.Int("limit", 10, "The concertcloud API param 'limit'")
 	opts.Page = pflag.Int("page", 0, "The concertcloud API param 'page'")
 	opts.Radius = pflag.Int("radius", 25, "The concertcloud API param 'radius'")
@@ -214,12 +216,13 @@ func main() {
 		}
 		ccClient, err := concertcloud.NewClient(ccConfig)
 		params := concertcloud.QueryParams{
-			City:    *opts.City,
-			Country: *opts.Country,
-			Limit:   *opts.Limit,
-			Page:    *opts.Page,
-			Radius:  *opts.Radius,
-			Date:    *opts.Date,
+			City:     *opts.City,
+			Country:  *opts.Country,
+			Location: *opts.Location,
+			Limit:    *opts.Limit,
+			Page:     *opts.Page,
+			Radius:   *opts.Radius,
+			Date:     *opts.Date,
 		}
 		resp, err := ccClient.GetEvents(ctx, params)
 		// Fetch some concerts from Concert Cloud
