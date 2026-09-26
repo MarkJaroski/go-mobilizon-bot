@@ -3369,6 +3369,300 @@ var AllGroupVisibility = []GroupVisibility{
 	GroupVisibilityPrivate,
 }
 
+// LoggedUserQueryLoggedUser includes the requested fields of the GraphQL type User.
+// The GraphQL type's documentation follows.
+//
+// A local user of Mobilizon
+type LoggedUserQueryLoggedUser struct {
+	// The user's ID
+	Id *string `json:"id"`
+	// The user's email
+	Email string `json:"email"`
+	// The user's locale
+	Locale *string `json:"locale"`
+	// The user's login provider
+	Provider *string `json:"provider"`
+	// The user's default actor
+	DefaultActor *LoggedUserQueryLoggedUserDefaultActorPerson `json:"defaultActor"`
+	// The list of settings for this user
+	Settings *LoggedUserQueryLoggedUserSettings `json:"settings"`
+	Typename *string                            `json:"__typename"`
+}
+
+// GetId returns LoggedUserQueryLoggedUser.Id, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetId() *string { return v.Id }
+
+// GetEmail returns LoggedUserQueryLoggedUser.Email, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetEmail() string { return v.Email }
+
+// GetLocale returns LoggedUserQueryLoggedUser.Locale, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetLocale() *string { return v.Locale }
+
+// GetProvider returns LoggedUserQueryLoggedUser.Provider, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetProvider() *string { return v.Provider }
+
+// GetDefaultActor returns LoggedUserQueryLoggedUser.DefaultActor, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetDefaultActor() *LoggedUserQueryLoggedUserDefaultActorPerson {
+	return v.DefaultActor
+}
+
+// GetSettings returns LoggedUserQueryLoggedUser.Settings, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetSettings() *LoggedUserQueryLoggedUserSettings {
+	return v.Settings
+}
+
+// GetTypename returns LoggedUserQueryLoggedUser.Typename, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUser) GetTypename() *string { return v.Typename }
+
+// LoggedUserQueryLoggedUserDefaultActorPerson includes the requested fields of the GraphQL type Person.
+// The GraphQL type's documentation follows.
+//
+// Represents a person identity
+type LoggedUserQueryLoggedUserDefaultActorPerson struct {
+	ActorFragmentPerson `json:"-"`
+	Typename            *string `json:"__typename"`
+}
+
+// GetTypename returns LoggedUserQueryLoggedUserDefaultActorPerson.Typename, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetTypename() *string { return v.Typename }
+
+// GetId returns LoggedUserQueryLoggedUserDefaultActorPerson.Id, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetId() *string {
+	return v.ActorFragmentPerson.Id
+}
+
+// GetAvatar returns LoggedUserQueryLoggedUserDefaultActorPerson.Avatar, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetAvatar() *ActorFragmentAvatarMedia {
+	return v.ActorFragmentPerson.Avatar
+}
+
+// GetType returns LoggedUserQueryLoggedUserDefaultActorPerson.Type, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetType() *ActorType {
+	return v.ActorFragmentPerson.Type
+}
+
+// GetPreferredUsername returns LoggedUserQueryLoggedUserDefaultActorPerson.PreferredUsername, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetPreferredUsername() *string {
+	return v.ActorFragmentPerson.PreferredUsername
+}
+
+// GetName returns LoggedUserQueryLoggedUserDefaultActorPerson.Name, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetName() *string {
+	return v.ActorFragmentPerson.Name
+}
+
+// GetDomain returns LoggedUserQueryLoggedUserDefaultActorPerson.Domain, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetDomain() *string {
+	return v.ActorFragmentPerson.Domain
+}
+
+// GetSummary returns LoggedUserQueryLoggedUserDefaultActorPerson.Summary, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetSummary() *string {
+	return v.ActorFragmentPerson.Summary
+}
+
+// GetUrl returns LoggedUserQueryLoggedUserDefaultActorPerson.Url, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) GetUrl() *string {
+	return v.ActorFragmentPerson.Url
+}
+
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*LoggedUserQueryLoggedUserDefaultActorPerson
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.LoggedUserQueryLoggedUserDefaultActorPerson = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.ActorFragmentPerson)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalLoggedUserQueryLoggedUserDefaultActorPerson struct {
+	Typename *string `json:"__typename"`
+
+	Id *string `json:"id"`
+
+	Avatar *ActorFragmentAvatarMedia `json:"avatar"`
+
+	Type *ActorType `json:"type"`
+
+	PreferredUsername *string `json:"preferredUsername"`
+
+	Name *string `json:"name"`
+
+	Domain *string `json:"domain"`
+
+	Summary *string `json:"summary"`
+
+	Url *string `json:"url"`
+}
+
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *LoggedUserQueryLoggedUserDefaultActorPerson) __premarshalJSON() (*__premarshalLoggedUserQueryLoggedUserDefaultActorPerson, error) {
+	var retval __premarshalLoggedUserQueryLoggedUserDefaultActorPerson
+
+	retval.Typename = v.Typename
+	retval.Id = v.ActorFragmentPerson.Id
+	retval.Avatar = v.ActorFragmentPerson.Avatar
+	retval.Type = v.ActorFragmentPerson.Type
+	retval.PreferredUsername = v.ActorFragmentPerson.PreferredUsername
+	retval.Name = v.ActorFragmentPerson.Name
+	retval.Domain = v.ActorFragmentPerson.Domain
+	retval.Summary = v.ActorFragmentPerson.Summary
+	retval.Url = v.ActorFragmentPerson.Url
+	return &retval, nil
+}
+
+// LoggedUserQueryLoggedUserSettings includes the requested fields of the GraphQL type UserSettings.
+// The GraphQL type's documentation follows.
+//
+// A set of user settings
+type LoggedUserQueryLoggedUserSettings struct {
+	UserSettingFragment `json:"-"`
+	Typename            *string `json:"__typename"`
+}
+
+// GetTypename returns LoggedUserQueryLoggedUserSettings.Typename, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetTypename() *string { return v.Typename }
+
+// GetTimezone returns LoggedUserQueryLoggedUserSettings.Timezone, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetTimezone() *string {
+	return v.UserSettingFragment.Timezone
+}
+
+// GetNotificationOnDay returns LoggedUserQueryLoggedUserSettings.NotificationOnDay, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetNotificationOnDay() *bool {
+	return v.UserSettingFragment.NotificationOnDay
+}
+
+// GetNotificationEachWeek returns LoggedUserQueryLoggedUserSettings.NotificationEachWeek, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetNotificationEachWeek() *bool {
+	return v.UserSettingFragment.NotificationEachWeek
+}
+
+// GetNotificationBeforeEvent returns LoggedUserQueryLoggedUserSettings.NotificationBeforeEvent, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetNotificationBeforeEvent() *bool {
+	return v.UserSettingFragment.NotificationBeforeEvent
+}
+
+// GetNotificationPendingParticipation returns LoggedUserQueryLoggedUserSettings.NotificationPendingParticipation, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetNotificationPendingParticipation() *NotificationPendingEnum {
+	return v.UserSettingFragment.NotificationPendingParticipation
+}
+
+// GetNotificationPendingMembership returns LoggedUserQueryLoggedUserSettings.NotificationPendingMembership, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetNotificationPendingMembership() *NotificationPendingEnum {
+	return v.UserSettingFragment.NotificationPendingMembership
+}
+
+// GetGroupNotifications returns LoggedUserQueryLoggedUserSettings.GroupNotifications, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetGroupNotifications() *NotificationPendingEnum {
+	return v.UserSettingFragment.GroupNotifications
+}
+
+// GetLocation returns LoggedUserQueryLoggedUserSettings.Location, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryLoggedUserSettings) GetLocation() *UserSettingFragmentLocation {
+	return v.UserSettingFragment.Location
+}
+
+func (v *LoggedUserQueryLoggedUserSettings) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*LoggedUserQueryLoggedUserSettings
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.LoggedUserQueryLoggedUserSettings = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserSettingFragment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalLoggedUserQueryLoggedUserSettings struct {
+	Typename *string `json:"__typename"`
+
+	Timezone *string `json:"timezone"`
+
+	NotificationOnDay *bool `json:"notificationOnDay"`
+
+	NotificationEachWeek *bool `json:"notificationEachWeek"`
+
+	NotificationBeforeEvent *bool `json:"notificationBeforeEvent"`
+
+	NotificationPendingParticipation *NotificationPendingEnum `json:"notificationPendingParticipation"`
+
+	NotificationPendingMembership *NotificationPendingEnum `json:"notificationPendingMembership"`
+
+	GroupNotifications *NotificationPendingEnum `json:"groupNotifications"`
+
+	Location *UserSettingFragmentLocation `json:"location"`
+}
+
+func (v *LoggedUserQueryLoggedUserSettings) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *LoggedUserQueryLoggedUserSettings) __premarshalJSON() (*__premarshalLoggedUserQueryLoggedUserSettings, error) {
+	var retval __premarshalLoggedUserQueryLoggedUserSettings
+
+	retval.Typename = v.Typename
+	retval.Timezone = v.UserSettingFragment.Timezone
+	retval.NotificationOnDay = v.UserSettingFragment.NotificationOnDay
+	retval.NotificationEachWeek = v.UserSettingFragment.NotificationEachWeek
+	retval.NotificationBeforeEvent = v.UserSettingFragment.NotificationBeforeEvent
+	retval.NotificationPendingParticipation = v.UserSettingFragment.NotificationPendingParticipation
+	retval.NotificationPendingMembership = v.UserSettingFragment.NotificationPendingMembership
+	retval.GroupNotifications = v.UserSettingFragment.GroupNotifications
+	retval.Location = v.UserSettingFragment.Location
+	return &retval, nil
+}
+
+// LoggedUserQueryResponse is returned by LoggedUserQuery on success.
+type LoggedUserQueryResponse struct {
+	// Get the current user
+	LoggedUser *LoggedUserQueryLoggedUser `json:"loggedUser"`
+}
+
+// GetLoggedUser returns LoggedUserQueryResponse.LoggedUser, and is useful for accessing the field via an interface.
+func (v *LoggedUserQueryResponse) GetLoggedUser() *LoggedUserQueryLoggedUser { return v.LoggedUser }
+
 // An attached media or a link to a media
 type MediaInput struct {
 	// The UUIDID of an existing media
@@ -3377,6 +3671,30 @@ type MediaInput struct {
 
 // GetMediaUuid returns MediaInput.MediaUuid, and is useful for accessing the field via an interface.
 func (v *MediaInput) GetMediaUuid() *uuid.UUID { return v.MediaUuid }
+
+// The list of values the for pending notification settings
+type NotificationPendingEnum string
+
+const (
+	// None. The notification won't be sent.
+	NotificationPendingEnumNone NotificationPendingEnum = "NONE"
+	// Direct. The notification will be sent right away each time.
+	NotificationPendingEnumDirect NotificationPendingEnum = "DIRECT"
+	// One hour. Notifications will be sent at most each hour
+	NotificationPendingEnumOneHour NotificationPendingEnum = "ONE_HOUR"
+	// One day. Notifications will be sent at most each day
+	NotificationPendingEnumOneDay NotificationPendingEnum = "ONE_DAY"
+	// One Week. Notifications will be sent at most each week
+	NotificationPendingEnumOneWeek NotificationPendingEnum = "ONE_WEEK"
+)
+
+var AllNotificationPendingEnum = []NotificationPendingEnum{
+	NotificationPendingEnumNone,
+	NotificationPendingEnumDirect,
+	NotificationPendingEnumOneHour,
+	NotificationPendingEnumOneDay,
+	NotificationPendingEnumOneWeek,
+}
 
 // Describes how an actor is opened to follows
 type Openness string
@@ -5223,6 +5541,86 @@ func (v *UpdateEventUpdateEvent) GetId() *string { return v.Id }
 // GetUuid returns UpdateEventUpdateEvent.Uuid, and is useful for accessing the field via an interface.
 func (v *UpdateEventUpdateEvent) GetUuid() *uuid.UUID { return v.Uuid }
 
+// UserSettingFragment includes the GraphQL fields of UserSettings requested by the fragment UserSettingFragment.
+// The GraphQL type's documentation follows.
+//
+// A set of user settings
+type UserSettingFragment struct {
+	// The timezone for this user
+	Timezone *string `json:"timezone"`
+	// Whether this user will receive an email at the start of the day of an event.
+	NotificationOnDay *bool `json:"notificationOnDay"`
+	// Whether this user will receive an weekly event recap
+	NotificationEachWeek *bool `json:"notificationEachWeek"`
+	// Whether this user will receive a notification right before event
+	NotificationBeforeEvent *bool `json:"notificationBeforeEvent"`
+	// When does the user receives a notification about new pending participations
+	NotificationPendingParticipation *NotificationPendingEnum `json:"notificationPendingParticipation"`
+	// When does the user receives a notification about a new pending membership in one of the group they're admin for
+	NotificationPendingMembership *NotificationPendingEnum `json:"notificationPendingMembership"`
+	// When does the user receives a notification about new activity
+	GroupNotifications *NotificationPendingEnum `json:"groupNotifications"`
+	// The user's preferred location, where they want to be suggested events
+	Location *UserSettingFragmentLocation `json:"location"`
+	Typename *string                      `json:"__typename"`
+}
+
+// GetTimezone returns UserSettingFragment.Timezone, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetTimezone() *string { return v.Timezone }
+
+// GetNotificationOnDay returns UserSettingFragment.NotificationOnDay, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetNotificationOnDay() *bool { return v.NotificationOnDay }
+
+// GetNotificationEachWeek returns UserSettingFragment.NotificationEachWeek, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetNotificationEachWeek() *bool { return v.NotificationEachWeek }
+
+// GetNotificationBeforeEvent returns UserSettingFragment.NotificationBeforeEvent, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetNotificationBeforeEvent() *bool { return v.NotificationBeforeEvent }
+
+// GetNotificationPendingParticipation returns UserSettingFragment.NotificationPendingParticipation, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetNotificationPendingParticipation() *NotificationPendingEnum {
+	return v.NotificationPendingParticipation
+}
+
+// GetNotificationPendingMembership returns UserSettingFragment.NotificationPendingMembership, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetNotificationPendingMembership() *NotificationPendingEnum {
+	return v.NotificationPendingMembership
+}
+
+// GetGroupNotifications returns UserSettingFragment.GroupNotifications, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetGroupNotifications() *NotificationPendingEnum {
+	return v.GroupNotifications
+}
+
+// GetLocation returns UserSettingFragment.Location, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetLocation() *UserSettingFragmentLocation { return v.Location }
+
+// GetTypename returns UserSettingFragment.Typename, and is useful for accessing the field via an interface.
+func (v *UserSettingFragment) GetTypename() *string { return v.Typename }
+
+// UserSettingFragmentLocation includes the requested fields of the GraphQL type Location.
+type UserSettingFragmentLocation struct {
+	// The range in kilometers the user wants to see events
+	Range *int `json:"range"`
+	// A geohash representing the user's preferred location
+	Geohash *string `json:"geohash"`
+	// A string describing the user's preferred  location
+	Name     *string `json:"name"`
+	Typename *string `json:"__typename"`
+}
+
+// GetRange returns UserSettingFragmentLocation.Range, and is useful for accessing the field via an interface.
+func (v *UserSettingFragmentLocation) GetRange() *int { return v.Range }
+
+// GetGeohash returns UserSettingFragmentLocation.Geohash, and is useful for accessing the field via an interface.
+func (v *UserSettingFragmentLocation) GetGeohash() *string { return v.Geohash }
+
+// GetName returns UserSettingFragmentLocation.Name, and is useful for accessing the field via an interface.
+func (v *UserSettingFragmentLocation) GetName() *string { return v.Name }
+
+// GetTypename returns UserSettingFragmentLocation.Typename, and is useful for accessing the field via an interface.
+func (v *UserSettingFragmentLocation) GetTypename() *string { return v.Typename }
+
 // __CreateEventInput is used internally by genqlient
 type __CreateEventInput struct {
 	OrganizerActorId         string             `json:"organizerActorId"`
@@ -5652,6 +6050,79 @@ func FetchEvent(
 	}
 
 	data_ = &FetchEventResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by LoggedUserQuery.
+const LoggedUserQuery_Operation = `
+query LoggedUserQuery {
+	loggedUser {
+		id
+		email
+		locale
+		provider
+		defaultActor {
+			... ActorFragment
+			__typename
+		}
+		settings {
+			... UserSettingFragment
+			__typename
+		}
+		__typename
+	}
+}
+fragment ActorFragment on Actor {
+	id
+	avatar {
+		uuid
+		url
+		__typename
+	}
+	type
+	preferredUsername
+	name
+	domain
+	summary
+	url
+	__typename
+}
+fragment UserSettingFragment on UserSettings {
+	timezone
+	notificationOnDay
+	notificationEachWeek
+	notificationBeforeEvent
+	notificationPendingParticipation
+	notificationPendingMembership
+	groupNotifications
+	location {
+		range
+		geohash
+		name
+		__typename
+	}
+	__typename
+}
+`
+
+func LoggedUserQuery(
+	ctx_ context.Context,
+	client_ graphql.Client,
+) (data_ *LoggedUserQueryResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "LoggedUserQuery",
+		Query:  LoggedUserQuery_Operation,
+	}
+
+	data_ = &LoggedUserQueryResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

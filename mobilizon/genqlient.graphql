@@ -259,3 +259,38 @@ mutation RefreshAuthTokens($rt:String!){
     refreshToken: $rt
   ) {accessToken,refreshToken}
 }
+
+query LoggedUserQuery {
+  loggedUser {
+    id
+    email
+    locale
+    provider
+    defaultActor {
+      ...ActorFragment
+      __typename
+    }
+    settings {
+      ...UserSettingFragment
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment UserSettingFragment on UserSettings {
+  timezone
+  notificationOnDay
+  notificationEachWeek
+  notificationBeforeEvent
+  notificationPendingParticipation
+  notificationPendingMembership
+  groupNotifications
+  location {
+    range
+    geohash
+    name
+    __typename
+  }
+  __typename
+}

@@ -440,6 +440,17 @@ func (c *Client) FetchAddr(ctx context.Context, query string) ([]AddressInput, e
 	return addrs, nil
 }
 
+func (c *Client) FetchLoggedInUser(ctx context.Context) (*User, error) {
+	resp, err := LoggedUserQuery(ctx, c.gqlClient)
+	if err != nil {
+		return nil, err
+	}
+	// typecast the returned LoggedUserQueryLoggedUser to User for convenience
+	var user User
+	user = User(*resp.LoggedUser)
+	return &user, nil
+}
+
 func (c *Client) FetchEvent(uuid.UUID) (*Event, error) {
 	return nil, errors.New("FetchEvents() not implemented.")
 }
