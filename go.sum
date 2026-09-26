@@ -18,8 +18,8 @@ github.com/hashicorp/go-hclog v1.6.3 h1:Qr2kF+eVWjTiYmU7Y31tYlP1h0q/X3Nl3tPGdaB1
 github.com/hashicorp/go-hclog v1.6.3/go.mod h1:W4Qnvbt70Wk/zYJryRzDRU/4r0kIg0PVHBcfoyhpF5M=
 github.com/hashicorp/go-retryablehttp v0.7.8 h1:ylXZWnqa7Lhqpk0L1P1LzDtGcCR0rPVUrx/c8Unxc48=
 github.com/hashicorp/go-retryablehttp v0.7.8/go.mod h1:rjiScheydd+CxvumBsIrFKlx3iS0jrZ7LvzFGFmuKbw=
-github.com/jakopako/event-api v0.0.0-20260711053045-67a1c14ffdde h1:x7wmK5OnEqeNx0DbGo6SPVWugwpNSAnZUl4z44vke1A=
-github.com/jakopako/event-api v0.0.0-20260711053045-67a1c14ffdde/go.mod h1:fOJm7S8CxK7k5Iob1MHatrgTd4iW2hZiGwwlh+eHuTQ=
+github.com/jakopako/event-api v0.0.0-20260918144049-ddcec231c57e h1:eS0sIUWvwL/4oFnslWR1EOXnuT/iC2amAAT/Dm1wv3U=
+github.com/jakopako/event-api v0.0.0-20260918144049-ddcec231c57e/go.mod h1:+yArXU+0J1dJekE6b9ZrfJK55P/1LT9c0JLCERD8ZuM=
 github.com/mattn/go-colorable v0.1.9/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
 github.com/mattn/go-colorable v0.1.12/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=
 github.com/mattn/go-colorable v0.1.15 h1:+u9SLTRGnXv73cEsnsmoZBom+dMU88B2M0aDcWy0/jY=
