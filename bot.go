@@ -115,7 +115,7 @@ func main() {
 	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.AppName = pflag.String("appname", "Concert Cloud", "The name of your client app")
 	opts.AppURL = pflag.String("appurl", "https://concertcloud.live", "Your client app's about page")
-	opts.CcBaseUrl = pflag.String("ccbaseurl", "https://concertcloud.live", "The baseURL of the ConcertCloud event API we'll be calling")
+	opts.CcBaseUrl = pflag.String("ccbaseurl", "https://api.concertcloud.live", "The baseURL of the ConcertCloud event API we'll be calling")
 	opts.City = pflag.String("city", "", "The concertcloud API param 'city'")
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
 	opts.Location = pflag.String("location", "", "The concertcloud API param 'location'")
@@ -220,8 +220,8 @@ func main() {
 		params := concertcloud.QueryParams{
 			City:     *opts.City,
 			Country:  *opts.Country,
-      Location: *opts.Location,
-      Limit:    *opts.Limit,
+			Location: *opts.Location,
+			Limit:    *opts.Limit,
 			Page:     *opts.Page,
 			Radius:   *opts.Radius,
 			FromTime: *opts.FromTime,
