@@ -68,3 +68,5 @@ type UploadMediaResponse struct {
 		StatusCode int `json:"status_code"`
 	} `json:"errors"`
 }
+
+type User LoggedUserQueryLoggedUser

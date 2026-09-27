@@ -35,4 +35,5 @@ type QueryParams struct {
 	Radius   int
 	FromTime string
 	ToTime   string
+  Location string
 }

@@ -56,6 +56,9 @@ func (c *Client) GetEvents(ctx context.Context, params QueryParams) (*EventRespo
 	if params.Country != "" {
 		query.Set("country", params.Country)
 	}
+	if params.Location != "" {
+		query.Set("location", params.Location)
+	}
 	if params.Limit > 0 {
 		query.Set("limit", fmt.Sprintf("%d", params.Limit))
 	}

@@ -33,8 +33,10 @@ const EVENT_CACHE_FILE = "event_cache.json"
 // Options represents the full set of command-line options for the bot
 type Options struct {
 	MobilizonUrl *string
+	CcBaseUrl    *string
 	City         *string
 	Country      *string
+	Location     *string
 	Limit        *int
 	Page         *int
 	Radius       *int
@@ -113,8 +115,10 @@ func main() {
 	opts.MobilizonUrl = pflag.String("mobilizonurl", "https://mobilisons.ch", "Your Mobilizon base URL")
 	opts.AppName = pflag.String("appname", "Concert Cloud", "The name of your client app")
 	opts.AppURL = pflag.String("appurl", "https://concertcloud.live", "Your client app's about page")
+	opts.CcBaseUrl = pflag.String("ccbaseurl", "https://concertcloud.live", "The baseURL of the ConcertCloud event API we'll be calling")
 	opts.City = pflag.String("city", "", "The concertcloud API param 'city'")
 	opts.Country = pflag.String("country", "", "The concertcloud API param 'country'")
+	opts.Location = pflag.String("location", "", "The concertcloud API param 'location'")
 	opts.Limit = pflag.Int("limit", 10, "The concertcloud API param 'limit'")
 	opts.Page = pflag.Int("page", 0, "The concertcloud API param 'page'")
 	opts.Radius = pflag.Int("radius", 25, "The concertcloud API param 'radius'")
@@ -208,6 +212,7 @@ func main() {
 		json.Unmarshal(dat, &events)
 	} else {
 		ccConfig := concertcloud.Config{
+			BaseURL:    *opts.CcBaseUrl,
 			Logger:     Log,
 			HTTPClient: mobClient.HTTPClient(ctx),
 		}
@@ -215,7 +220,8 @@ func main() {
 		params := concertcloud.QueryParams{
 			City:     *opts.City,
 			Country:  *opts.Country,
-			Limit:    *opts.Limit,
+      Location: *opts.Location,
+      Limit:    *opts.Limit,
 			Page:     *opts.Page,
 			Radius:   *opts.Radius,
 			FromTime: *opts.FromTime,
@@ -450,12 +456,15 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 					// again so that we try to update again next time
 					created[eventKey(e)] = existing[eventKey(e)]
 				} else {
-					// cache the updated event
-					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
+					// output info and cache the updated event
 					Log.Info("Updated", "index", i, "URL", *opts.MobilizonUrl+"/events/"+existingUuid.String())
 					if warn != nil {
 						Log.Warn("Update completed with warnings.", "message", warn)
+						// guarantee that this will be updated until there
+						// are no more warnings
+						e.Comment = "Warnings: " + warn.Error()
 					}
+					created[eventKey(e)] = ExistingEvent{*existingUuid, e}
 				}
 				continue
 			} else {
@@ -468,11 +477,15 @@ func createEvents(ctx context.Context, events []concertcloud.Event) {
 
 		uuid, err, warn := mobClient.CreateEvent(ctx, vars)
 		if err == nil {
-			created[eventKey(e)] = ExistingEvent{*uuid, e}
+			// output info and cache the updated event
 			Log.Info("Created", "index", i, "URL", *opts.MobilizonUrl+"/events/"+uuid.String())
 			if warn != nil {
 				Log.Warn("Creation completed with warnings.", "message", warn)
+				// guarantee that this will be updated until there
+				// are no more warnings
+				e.Comment = "Warnings: " + warn.Error()
 			}
+			created[eventKey(e)] = ExistingEvent{*uuid, e}
 		} else {
 			Log.Error("Error creating event", "error", err)
 		}

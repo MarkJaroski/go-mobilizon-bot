@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-retryablehttp v0.7.8
-	github.com/jakopako/event-api v0.0.0-20260711053045-67a1c14ffdde
+	github.com/jakopako/event-api v0.0.0-20260918144049-ddcec231c57e
 	github.com/spf13/pflag v1.0.10
 	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/image v0.45.0

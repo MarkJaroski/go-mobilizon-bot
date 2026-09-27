@@ -114,6 +114,7 @@ func downloadFile(URL string) (string, error) {
 		return "", err
 	}
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "image/avif,image/webp,image/apng,image/jpg,image/jpeg,/image/png,application/octet-stream")
 	response, err := client.Do(req)
 	if err != nil {
 		return "", err
@@ -137,9 +138,13 @@ func downloadFile(URL string) (string, error) {
 	}
 	defer file.Close()
 
+	mimetype := response.Header.Get("Content-Type")
+	if mimetype == "application/octet-stream" {
+		mimetype = "image/png"
+	}
 	//Write the bytes to the file
-	if response.ContentLength > MAX_IMG_SIZE || strings.HasSuffix(URL, ".avif") {
-		err = thumbnail(response.Body, file, response.Header.Get("Content-Type"), IMAGE_RESIZE_WIDTH)
+	if response.ContentLength > MAX_IMG_SIZE || mimetype == "image/avif" {
+		err = thumbnail(response.Body, file, mimetype, IMAGE_RESIZE_WIDTH)
 	} else {
 		_, err = io.Copy(file, response.Body)
 	}
