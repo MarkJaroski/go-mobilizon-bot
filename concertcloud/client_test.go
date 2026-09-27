@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"reflect"
 	"testing"
 	"time"
 
@@ -113,6 +115,56 @@ func TestClient_GetEvents(t *testing.T) {
 
 	if resp.Data[0].Title != "Test Event" {
 		t.Errorf("Expected title 'Test Event', got '%s'", resp.Data[0].Title)
+	}
+}
+
+func TestClient_GetEventsTimeFilters(t *testing.T) {
+	tests := []struct {
+		name   string
+		params QueryParams
+		want   url.Values
+	}{
+		{
+			name:   "no time filters",
+			params: QueryParams{},
+			want:   url.Values{},
+		},
+		{
+			name: "from and to time filters",
+			params: QueryParams{
+				FromTime: "2026-09-14T12:00:00Z",
+				ToTime:   "2026-09-15T12:00:00Z",
+			},
+			want: url.Values{
+				"fromTime": {"2026-09-14T12:00:00Z"},
+				"toTime":   {"2026-09-15T12:00:00Z"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if got := r.URL.Query(); !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("query parameters = %v, want %v", got, tt.want)
+				}
+				if got := r.URL.Query().Get("date"); got != "" {
+					t.Errorf("deprecated date parameter = %q, want empty", got)
+				}
+
+				w.Header().Set("Content-Type", "application/json")
+				w.Write([]byte(`{"data": [], "page": 1, "limit": 10, "total": 0, "last_page": 0}`))
+			}))
+			defer server.Close()
+
+			client, err := NewClient(Config{BaseURL: server.URL})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := client.GetEvents(context.Background(), tt.params); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
 

@@ -129,27 +129,38 @@ func TestIntegration_RealAPI(t *testing.T) {
 		}
 	})
 
-	t.Run("date filter", func(t *testing.T) {
-		// Test future date filter
-		futureDate := time.Now().AddDate(0, 6, 0).Format("2006-01-02T15:04:05Z07:00")
+	t.Run("time filters", func(t *testing.T) {
+		fromTime := time.Now().AddDate(0, 6, 0).Format(time.RFC3339)
+		toTime := time.Now().AddDate(0, 7, 0).Format(time.RFC3339)
 
 		resp, err := client.GetEvents(ctx, concertcloud.QueryParams{
-			City:  "Geneva",
-			Date:  futureDate,
-			Limit: 20,
+			City:     "Geneva",
+			FromTime: fromTime,
+			ToTime:   toTime,
+			Limit:    20,
 		})
 		if err != nil {
-			t.Fatalf("Date filter failed: %v", err)
+			t.Fatalf("Time filters failed: %v", err)
 		}
 
-		t.Logf("Found %d events after %s", len(resp.Data), futureDate)
+		t.Logf("Found %d events between %s and %s", len(resp.Data), fromTime, toTime)
 
-		// All returned events should be on or after the filter date
-		filterTime, _ := time.Parse("2006-01-02", futureDate)
+		filterTime, err := time.Parse(time.RFC3339, fromTime)
+		if err != nil {
+			t.Fatal(err)
+		}
+		endTime, err := time.Parse(time.RFC3339, toTime)
+		if err != nil {
+			t.Fatal(err)
+		}
 		for i, event := range resp.Data {
 			if event.Date.Before(filterTime) {
-				t.Errorf("Event %d (%s) is before filter date %s",
-					i, event.Date.Format("2006-01-02"), futureDate)
+				t.Errorf("Event %d (%s) is before fromTime %s",
+					i, event.Date.Format(time.RFC3339), fromTime)
+			}
+			if event.Date.After(endTime) {
+				t.Errorf("Event %d (%s) is after toTime %s",
+					i, event.Date.Format(time.RFC3339), toTime)
 			}
 		}
 	})

@@ -33,6 +33,7 @@ type QueryParams struct {
 	Limit    int
 	Page     int
 	Radius   int
-	Date     string
-	Location string
+	FromTime string
+	ToTime   string
+  Location string
 }

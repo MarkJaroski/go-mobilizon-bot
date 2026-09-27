@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
 	"time"
 )
@@ -224,15 +225,15 @@ func TestQueryParamsEdgeCases(t *testing.T) {
 		{
 			name: "only optional parameters",
 			params: QueryParams{
-				Radius: 100,
-				Date:   "2024-12-31",
+				Radius:   100,
+				FromTime: "2024-12-31T00:00:00Z",
 			},
 			checkQuery: func(t *testing.T, query string) {
 				if !contains(query, "radius=100") {
 					t.Error("Expected radius parameter")
 				}
-				if !contains(query, "date=2024-12-31") {
-					t.Error("Expected date parameter")
+				if !contains(query, "fromTime=2024-12-31T00%3A00%3A00Z") {
+					t.Error("Expected fromTime parameter")
 				}
 			},
 		},
@@ -296,8 +297,11 @@ func TestQueryParamsEdgeCases(t *testing.T) {
 // TestConcurrentRequests tests that the client handles concurrent requests safely
 func TestConcurrentRequests(t *testing.T) {
 	requestCount := 0
+	var requestCountMu sync.Mutex
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestCountMu.Lock()
 		requestCount++
+		requestCountMu.Unlock()
 		time.Sleep(10 * time.Millisecond) // Simulate some processing time
 		response := EventResponse{
 			Data:     []Event{{Title: "Event", Location: "Venue", City: "City", URL: "https://e.com"}},
@@ -332,6 +336,8 @@ func TestConcurrentRequests(t *testing.T) {
 		}
 	}
 
+	requestCountMu.Lock()
+	defer requestCountMu.Unlock()
 	if requestCount != numRequests {
 		t.Errorf("Expected %d requests, got %d", numRequests, requestCount)
 	}

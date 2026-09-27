@@ -448,9 +448,12 @@ func TestCreateEvent_Success(t *testing.T) {
 		JoinOptions:      EventJoinOptionsExternal,
 	}
 
-	uid, err := c.CreateEvent(context.Background(), params)
+	uid, err, warn := c.CreateEvent(context.Background(), params)
 	if err != nil {
 		t.Fatalf("CreateEvent: %v", err)
+	}
+	if warn != nil {
+		t.Fatalf("CreateEvent warning: %v", warn)
 	}
 	if uid == nil || *uid != expectedUUID {
 		t.Errorf("UUID = %v, want %v", uid, expectedUUID)
@@ -465,7 +468,7 @@ func TestCreateEvent_Error(t *testing.T) {
 	}
 	c := clientWithMock(mock)
 
-	_, err := c.CreateEvent(context.Background(), EventParams{
+	_, err, _ := c.CreateEvent(context.Background(), EventParams{
 		Title:    "Test",
 		BeginsOn: time.Now(),
 	})

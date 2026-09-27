@@ -40,7 +40,8 @@ type Options struct {
 	Limit        *int
 	Page         *int
 	Radius       *int
-	Date         *string
+	FromTime     *string
+	ToTime       *string
 	File         *string
 	AuthConfig   *string
 	Config       *string
@@ -121,7 +122,8 @@ func main() {
 	opts.Limit = pflag.Int("limit", 10, "The concertcloud API param 'limit'")
 	opts.Page = pflag.Int("page", 0, "The concertcloud API param 'page'")
 	opts.Radius = pflag.Int("radius", 25, "The concertcloud API param 'radius'")
-	opts.Date = pflag.String("date", "", "The concertcloud API param 'date'")
+	opts.FromTime = pflag.String("fromTime", "", "The concertcloud API param 'fromTime'")
+	opts.ToTime = pflag.String("toTime", "", "The concertcloud API param 'toTime'")
 	opts.File = pflag.String("file", "", "Instead of fetching from concertcloud, use local file.")
 	opts.ActorID = pflag.Int("actor", -1, "The Mobilizon actor ID to use as the event organizer.")
 	opts.GroupID = pflag.Int("group", -1, "The Mobilizon group ID to use for the event attribution.")
@@ -218,11 +220,12 @@ func main() {
 		params := concertcloud.QueryParams{
 			City:     *opts.City,
 			Country:  *opts.Country,
-			Location: *opts.Location,
-			Limit:    *opts.Limit,
+      Location: *opts.Location,
+      Limit:    *opts.Limit,
 			Page:     *opts.Page,
 			Radius:   *opts.Radius,
-			Date:     *opts.Date,
+			FromTime: *opts.FromTime,
+			ToTime:   *opts.ToTime,
 		}
 		resp, err := ccClient.GetEvents(ctx, params)
 		// Fetch some concerts from Concert Cloud

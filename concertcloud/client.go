@@ -68,8 +68,11 @@ func (c *Client) GetEvents(ctx context.Context, params QueryParams) (*EventRespo
 	if params.Radius > 0 {
 		query.Set("radius", fmt.Sprintf("%d", params.Radius))
 	}
-	if params.Date != "" {
-		query.Set("date", params.Date)
+	if params.FromTime != "" {
+		query.Set("fromTime", params.FromTime)
+	}
+	if params.ToTime != "" {
+		query.Set("toTime", params.ToTime)
 	}
 
 	// buildURL

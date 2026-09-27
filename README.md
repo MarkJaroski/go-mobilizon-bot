@@ -1,4 +1,5 @@
 # ConcertCloudMobilizonBot
+
 A simple bot mirroring events from Concert Cloud to a Mobilizòn instance
 
 ## Installation
@@ -26,10 +27,10 @@ Usage of go-mobilizon-bot:
       --city string           The concertcloud API param 'city'
       --config string         Use this directory for configuration. (default "/home/mark/.config/mobilizon")
       --country string        The concertcloud API param 'country'
-      --date string           The concertcloud API param 'date'
       --debug                 Debug mode.
       --draft                 Create events in draft mode.
       --file string           Instead of fetching from concertcloud, use local file.
+      --fromTime string       The concertcloud API param 'fromTime'
       --group int             The Mobilizon group ID to use for the event attribution. (default -1)
       --limit int             The concertcloud API param 'limit' (default 10)
       --mobilizonurl string   Your Mobilizon base URL (default "https://mobilisons.ch")
@@ -38,10 +39,12 @@ Usage of go-mobilizon-bot:
       --radius int            The concertcloud API param 'radius' (default 25)
       --register              Register this bot and quit. A client id will be output.
       --timezone string       The timezone to use for the event attribution. (default "Europe/Zurich")
+      --toTime string         The concertcloud API param 'toTime'
 ```
+
 ## Setup
 
-Once you've built the bot you'll need to register it. 
+Once you've built the bot you'll need to register it.
 
 ```bash
 
@@ -74,14 +77,13 @@ Then press any key to continue.
 
 ![image](https://github.com/user-attachments/assets/0d18d89d-1306-4d95-953b-b0b7df8379d1)
 
-You can check the results on the bot server at 
+You can check the results on the bot server at
 
 `~/.config/mobilizon/auth.json`
 
 and on your Mobilizon instance at the path:
 
 `/settings/authorized-apps`
-
 
 ## Examples
 
@@ -91,20 +93,20 @@ grabbing the values from a GraphQL query.
 
 See #8
 
-Then, if your goal is to upload events from ConcertCloud you just need a
-city name, and a download limit, unless you are ready for the whole events
-list
+When fetching from ConcertCloud, pass `--fromTime` to avoid uploading past
+events. Without `--fromTime` or `--toTime`, ConcertCloud returns the oldest
+events first. Use an RFC 3339 timestamp; the examples below use the current
+time.
 
 ```
-./go/bin/go-mobilizon-bot --city=Lausanne --actor=<actorid> --group=<groupid> --limit=1024
+./go/bin/go-mobilizon-bot --city=Lausanne --fromTime="$(date --iso-8601=seconds)" --actor=<actorid> --group=<groupid> --limit=1024
 ```
 
 Or a country name:
 
 ```
-/go-mobilizon-bot --country=Switzerland --actor=<actorid> --group=<groupid> --limit=2000
+./go/bin/go-mobilizon-bot --country=Switzerland --fromTime="$(date --iso-8601=seconds)" --actor=<actorid> --group=<groupid> --limit=2000
 ```
-
 
 Or if you prefer generate a local goskyr config and upload from the
 resulting events json you can something like this:
@@ -115,6 +117,3 @@ resulting events json you can something like this:
 
 There are systemd unit files in the `/examples` directory which should help
 you set up your mobilizon upload job.
-
-
-
